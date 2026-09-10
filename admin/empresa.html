@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Dados da empresa — Admin</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: system-ui, sans-serif; background: #f8fafc; color: #0f172a; }
+    .layout { display: grid; grid-template-columns: 240px 1fr; min-height: 100vh; }
+    .sidebar { background: #0f172a; color: #cbd5e1; padding: 16px 0; }
+    .sidebar__logo { display: flex; align-items: center; gap: 8px; padding: 0 16px 20px; border-bottom: 1px solid rgba(255,255,255,.1); margin-bottom: 16px; color: #fff; font-weight: 700; }
+    .sidebar__badge { background: #0ea5e9; color: #fff; padding: 2px 8px; border-radius: 6px; font-size: 10px; }
+    .sidebar__secao { padding: 16px 16px 8px; font-size: 11px; text-transform: uppercase; color: #64748b; font-weight: 600; }
+    .sidebar__lista { display: flex; flex-direction: column; gap: 2px; padding: 0 8px; }
+    .sidebar__item { padding: 10px 12px; border-radius: 8px; color: #cbd5e1; text-decoration: none; font-size: 14px; }
+    .sidebar__item:hover { background: rgba(255,255,255,.06); color: #fff; }
+    .sidebar__item.ativo { background: #0ea5e9; color: #fff; }
+    .main { display: flex; flex-direction: column; }
+    .topbar { background: #fff; border-bottom: 1px solid #e2e8f0; padding: 16px 24px; display: flex; justify-content: space-between; align-items: center; }
+    .topbar h1 { font-size: 18px; }
+    .btn { padding: 8px 16px; border-radius: 8px; border: 1px solid #0ea5e9; background: #0ea5e9; color: #fff; font-weight: 600; font-size: 14px; cursor: pointer; }
+    .btn--grande { padding: 12px 22px; font-size: 15px; width: 100%; }
+    .btn:disabled { opacity: .55; cursor: not-allowed; }
+    .conteudo { padding: 24px; max-width: 800px; }
+    .bloco { background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; margin-bottom: 16px; }
+    .bloco h2 { font-size: 15px; margin-bottom: 16px; padding-bottom: 10px; border-bottom: 1px solid #e2e8f0; }
+    .campo { margin-bottom: 14px; }
+    .campo label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 5px; }
+    .campo input, .campo textarea { width: 100%; padding: 9px 12px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 14px; font-family: inherit; }
+    .linha-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .linha-3 { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 12px; }
+    .status { padding: 10px 14px; border-radius: 8px; font-size: 13px; margin-top: 12px; }
+    .status--ok { background: #dcfce7; color: #166534; }
+    .status--err { background: #fee2e2; color: #991b1b; }
+    .erro { padding: 20px; background: #fee2e2; color: #991b1b; border-radius: 8px; font-family: monospace; font-size: 13px; margin: 20px; }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="sidebar__logo"><span>🏠</span><span>Minha Loja</span><span class="sidebar__badge">ADMIN</span></div>
+      <div class="sidebar__secao">Principal</div>
+      <nav class="sidebar__lista">
+        <a href="./index.html" class="sidebar__item">Dashboard</a>
+        <a href="./pedidos.html" class="sidebar__item">Pedidos</a>
+        <a href="./propostas.html" class="sidebar__item">Propostas</a>
+        <a href="./conversas.html" class="sidebar__item">Conversas</a>
+      </nav>
+      <div class="sidebar__secao">Catálogo</div>
+      <nav class="sidebar__lista">
+        <a href="./produtos.html" class="sidebar__item">Produtos</a>
+        <a href="./categorias.html" class="sidebar__item">Categorias</a>
+      </nav>
+      <div class="sidebar__secao">Configurações</div>
+      <nav class="sidebar__lista">
+        <a href="./empresa.html" class="sidebar__item ativo">Dados da empresa</a>
+        <a href="./identidade.html" class="sidebar__item">Identidade visual</a>
+      </nav>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <h1>Dados da empresa</h1>
+      </header>
+
+      <div id="carregando" style="padding:40px;text-align:center;color:#64748b;">
+        <div style="width:32px;height:32px;border:3px solid #e2e8f0;border-top-color:#0ea5e9;border-radius:50%;margin:0 auto 12px;animation:spin .7s linear infinite;"></div>
+        Carregando...
+        <style>@keyframes spin{to{transform:rotate(360deg)}}</style>
+      </div>
+
+      <form class="conteudo" id="form" style="display:none;">
+
+        <div class="bloco">
+          <h2>Informações da empresa</h2>
+          <div class="linha-2">
+            <div class="campo"><label>Nome da empresa</label><input type="text" id="nome_empresa" /></div>
+            <div class="campo"><label>Nome fantasia (exibido na loja)</label><input type="text" id="nome_fantasia" /></div>
+          </div>
+          <div class="campo"><label>CNPJ</label><input type="text" id="cnpj" placeholder="00.000.000/0000-00" /></div>
+          <div class="campo"><label>Descrição curta (aparece no rodapé)</label><textarea id="descricao" rows="3"></textarea></div>
+        </div>
+
+        <div class="bloco">
+          <h2>Contato</h2>
+          <div class="linha-2">
+            <div class="campo"><label>Telefone</label><input type="tel" id="telefone" placeholder="(00) 0000-0000" /></div>
+            <div class="campo"><label>WhatsApp (só números, com DDD)</label><input type="tel" id="whatsapp" placeholder="(00) 90000-0000" /></div>
+          </div>
+          <div class="campo"><label>E-mail</label><input type="email" id="email" /></div>
+          <div class="campo"><label>Horário de atendimento</label><input type="text" id="horario" placeholder="Seg a Sex, 9h às 18h" /></div>
+        </div>
+
+        <div class="bloco">
+          <h2>Endereço</h2>
+          <div class="campo"><label>Endereço</label><input type="text" id="endereco" placeholder="Rua, número, complemento" /></div>
+          <div class="linha-3">
+            <div class="campo"><label>Cidade</label><input type="text" id="cidade" /></div>
+            <div class="campo"><label>Estado</label><input type="text" id="estado" maxlength="2" placeholder="SP" /></div>
+            <div class="campo"><label>CEP</label><input type="text" id="cep" /></div>
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn--grande" id="btn-salvar">Salvar dados da empresa</button>
+        <div id="status" style="margin-top:12px;"></div>
+      </form>
+    </main>
+  </div>
+
+  <script type="module">
+    const $ = id => document.getElementById(id);
+
+    (async () => {
+      try {
+        const { supabase } = await import('../assets/js/supabase.js');
+        const { salvarEmpresa } = await import('../assets/js/services/company.service.js');
+
+        const r = await supabase.auth.getSession();
+        const session = r.data?.session;
+        if (!session) { location.href = '../login.html'; return; }
+
+        const p = await supabase.from('profiles').select('role').eq('id', session.user.id).maybeSingle();
+        if (!p.data || p.data.role !== 'admin') {
+          document.body.innerHTML = '<div class="erro">❌ Acesso restrito.</div>'; return;
+        }
+
+        const { data } = await supabase.from('company_settings').select('*').eq('id', 1).maybeSingle();
+        const e = data || {};
+
+        ['nome_empresa','nome_fantasia','cnpj','telefone','whatsapp','email','endereco','cidade','estado','cep','descricao','horario']
+          .forEach(k => { if (e[k]) $(k).value = e[k]; });
+
+        $('carregando').style.display = 'none';
+        $('form').style.display = 'block';
+
+        $('form').onsubmit = async (ev) => {
+          ev.preventDefault();
+          const btn = $('btn-salvar');
+          btn.disabled = true; btn.textContent = 'Salvando...';
+
+          const dados = {};
+          ['nome_empresa','nome_fantasia','cnpj','telefone','whatsapp','email','endereco','cidade','estado','cep','descricao','horario']
+            .forEach(k => dados[k] = $(k).value.trim());
+
+          try {
+            await salvarEmpresa(dados);
+            $('status').innerHTML = '<div class="status status--ok">✅ Dados salvos com sucesso!</div>';
+            btn.textContent = 'Salvo!';
+          } catch (err) {
+            console.error(err);
+            $('status').innerHTML = `<div class="status status--err">❌ ${err.message}</div>`;
+            btn.disabled = false; btn.textContent = 'Salvar dados da empresa';
+          }
+        };
+
+      } catch (e) {
+        console.error(e);
+        document.body.innerHTML = `<div class="erro">❌ ${e.message}</div>`;
+      }
+    })();
+  </script>
+</body>
+</html>
