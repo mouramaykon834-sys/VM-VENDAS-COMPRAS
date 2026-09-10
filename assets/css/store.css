@@ -11,20 +11,34 @@
   display: block;
 }
 
-/* Botão Admin (só aparece para admin) */
-.cabecalho__acao--admin {
+/* Botão Admin (só aparece para admin) — com hover travado */
+.cabecalho__acao--admin,
+.cabecalho__acao--admin:link,
+.cabecalho__acao--admin:visited {
   background: linear-gradient(135deg, var(--cor-principal, #0ea5e9), #0284c7);
   color: #fff !important;
   padding: 8px 14px;
   border-radius: 8px;
   font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  text-decoration: none;
+  position: relative;
+  z-index: 5;
+  transition: filter .15s;
 }
-.cabecalho__acao--admin:hover {
+.cabecalho__acao--admin:hover,
+.cabecalho__acao--admin:focus {
   filter: brightness(1.1);
   color: #fff !important;
   text-decoration: none;
+  background: linear-gradient(135deg, var(--cor-principal, #0ea5e9), #0284c7);
 }
-.cabecalho__acao--admin svg { stroke: #fff; }
+.cabecalho__acao--admin svg {
+  stroke: #fff;
+  flex-shrink: 0;
+}
 
 /* Botão voltar */
 .btn-voltar {
@@ -62,7 +76,7 @@
 /* Card produto */
 .produto-card { display: flex; flex-direction: column; background: #fff; border: 1px solid var(--cor-borda); border-radius: var(--raio-card); overflow: hidden; transition: transform .2s, box-shadow .2s; position: relative; height: 100%; }
 .produto-card:hover { transform: translateY(-2px); box-shadow: var(--sombra-md); }
-.produto-card__imagem { position: relative; aspect-ratio: 1/1; background: var(--cor-fundo-suave); overflow: hidden; }
+.produto-card__imagem { position: relative; aspect-ratio: 1/1; background: var(--cor-fundo-suave); overflow: hidden; display: block; }
 .produto-card__imagem img { width: 100%; height: 100%; object-fit: cover; transition: transform .3s; }
 .produto-card:hover .produto-card__imagem img { transform: scale(1.04); }
 .produto-card__sem-imagem { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; color: var(--cor-borda); }
