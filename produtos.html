@@ -27,10 +27,6 @@
               <input type="search" name="busca" placeholder="Nome ou descrição" />
             </div>
             <div class="filtros__bloco">
-              <div class="filtros__subtitulo">Categoria</div>
-              <div class="filtros__lista" id="filtro-categorias"><div class="spinner"></div></div>
-            </div>
-            <div class="filtros__bloco">
               <div class="filtros__subtitulo">Condição</div>
               <div class="filtros__lista">
                 <label class="checkbox"><input type="checkbox" name="condicao" value="novo" /><span>Novo</span></label>
@@ -45,10 +41,6 @@
                 <input type="number" name="precoMin" placeholder="Mín" min="0" step="0.01" />
                 <input type="number" name="precoMax" placeholder="Máx" min="0" step="0.01" />
               </div>
-            </div>
-            <div class="filtros__bloco">
-              <div class="filtros__subtitulo">Disponibilidade</div>
-              <label class="checkbox"><input type="checkbox" name="soDisponiveis" value="1" /><span>Somente disponíveis</span></label>
             </div>
             <div class="filtros__bloco" style="border:none;padding-bottom:0;">
               <button type="submit" class="btn btn--principal btn--bloco">Aplicar filtros</button>
@@ -65,12 +57,10 @@
                 <option value="recentes">Mais recentes</option>
                 <option value="menor-preco">Menor preço</option>
                 <option value="maior-preco">Maior preço</option>
-                <option value="relevancia">Mais relevantes</option>
               </select>
             </div>
           </div>
           <div id="lista-produtos" class="grid grid-3"></div>
-          <div id="paginacao" class="flex-centro gap-2 mt-8"></div>
         </section>
       </div>
     </div>
@@ -79,123 +69,79 @@
   <div id="footer"></div>
 
   <script type="module">
-    import { renderHeader } from './assets/js/components/header.js';
-    import { renderFooter } from './assets/js/components/footer.js';
-    import { iniciarConfiguracoes } from './assets/js/services/settings.service.js';
-    import { listarProdutos, listarCategorias, rotuloDisponibilidade, rotuloCondicao } from './assets/js/services/products.service.js';
+    (async () => {
+      try {
+        const { renderHeader } = await import('./assets/js/components/header.js');
+        const { renderFooter } = await import('./assets/js/components/footer.js');
+        await renderHeader('produtos');
+        await renderFooter();
+      } catch (e) {}
+    })();
 
-    const estado = { filtros: {}, ordenar: 'recentes', pagina: 1, porPagina: 12 };
-
+    const estado = { filtros: {}, ordenar: 'recentes' };
     const params = new URLSearchParams(location.search);
     if (params.get('q')) estado.filtros.busca = params.get('q');
-    if (params.get('categoria')) estado.filtros.categoria = params.get('categoria');
-    if (params.get('condicao')) estado.filtros.condicao = params.get('condicao');
     if (params.get('ordenar')) estado.ordenar = params.get('ordenar');
 
-    await iniciarConfiguracoes();
-    await renderHeader('produtos');
-    await renderFooter();
-    await carregarCategorias();
-    preencherFiltros();
-    await carregarProdutos();
-
-    async function carregarCategorias() {
-      const el = document.getElementById('filtro-categorias');
+    (async () => {
       try {
-        const cats = await listarCategorias();
-        if (!cats.length) { el.innerHTML = '<span class="texto-xs texto-suave">Nenhuma categoria cadastrada.</span>'; return; }
-        el.innerHTML = cats.map(c => '<label class="checkbox"><input type="radio" name="categoria" value="' + c.id + '" /><span>' + esc(c.nome) + '</span></label>').join('');
-        if (estado.filtros.categoria) {
-          const r = el.querySelector('input[value="' + estado.filtros.categoria + '"]');
-          if (r) r.checked = true;
-        }
-      } catch (e) {
-        el.innerHTML = '<span class="texto-xs texto-erro">Erro ao carregar categorias.</span>';
-      }
-    }
-
-    function preencherFiltros() {
-      const form = document.getElementById('form-filtros');
-      if (estado.filtros.busca) form.busca.value = estado.filtros.busca;
-      if (estado.filtros.condicao) {
-        const c = form.querySelector('input[name="condicao"][value="' + estado.filtros.condicao + '"]');
-        if (c) c.checked = true;
-      }
-      document.getElementById('ordenar').value = estado.ordenar;
-    }
+        const { iniciarConfiguracoes } = await import('./assets/js/services/settings.service.js');
+        await iniciarConfiguracoes();
+      } catch (e) {}
+      await carregarProdutos();
+    })();
 
     async function carregarProdutos() {
       const lista = document.getElementById('lista-produtos');
       const info = document.getElementById('info-resultados');
-      const pag = document.getElementById('paginacao');
       lista.innerHTML = '<div class="carregando" style="grid-column:1/-1;"><div class="spinner"></div></div>';
-      pag.innerHTML = '';
 
       try {
-        const r = await listarProdutos({
-          filtros: estado.filtros, ordenar: estado.ordenar,
-          pagina: estado.pagina, porPagina: estado.porPagina
-        });
+        const mod = await import('./assets/js/services/products.service.js');
+        const r = await Promise.race([
+          mod.listarProdutos({ filtros: estado.filtros, ordenar: estado.ordenar, pagina: 1, porPagina: 24 }),
+          new Promise((_, rej) => setTimeout(() => rej(new Error('timeout')), 8000))
+        ]);
 
-        info.textContent = r.total === 0 ? 'Nenhum produto encontrado'
-          : r.total + ' produto' + (r.total > 1 ? 's' : '') + ' encontrado' + (r.total > 1 ? 's' : '');
+        info.textContent = r.total === 0 ? 'Nenhum produto encontrado' : r.total + ' produto' + (r.total > 1 ? 's' : '') + ' encontrado' + (r.total > 1 ? 's' : '');
 
         if (!r.produtos.length) {
-          lista.innerHTML = '<div class="estado-vazio" style="grid-column:1/-1;"><div class="estado-vazio__titulo">Nenhum produto encontrado</div><p class="estado-vazio__descricao">Tente ajustar os filtros ou limpar a busca.</p></div>';
+          lista.innerHTML = '<div class="estado-vazio" style="grid-column:1/-1;"><div class="estado-vazio__titulo">Nenhum produto encontrado</div><p class="estado-vazio__descricao">Tente ajustar os filtros.</p></div>';
           return;
         }
 
-        lista.innerHTML = r.produtos.map(cardProduto).join('');
-        renderPaginacao(r.totalPaginas);
+        lista.innerHTML = r.produtos.map(function(p) { return cardProduto(p, mod); }).join('');
       } catch (e) {
-        console.error(e);
-        info.textContent = 'Erro ao carregar produtos';
+        info.textContent = 'Erro ao carregar';
         lista.innerHTML = '<div class="alerta alerta--erro" style="grid-column:1/-1;">Não foi possível carregar os produtos.</div>';
       }
     }
 
-    function cardProduto(p) {
-      const disp = rotuloDisponibilidade(p);
+    function cardProduto(p, mod) {
+      const disp = mod.rotuloDisponibilidade(p);
       const img = p.imagemPrincipal
-        ? '<img src="' + p.imagemPrincipal + '" alt="' + esc(p.nome) + '" loading="lazy" />'
-        : '<div class="produto-card__sem-imagem"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>';
+        ? '<img src="' + p.imagemPrincipal + '" alt="" loading="lazy" />'
+        : '<div class="produto-card__sem-imagem"></div>';
       const preco = p.temPromo
         ? '<div class="produto-card__preco-antigo">R$ ' + p.preco.toFixed(2) + '</div><div class="produto-card__preco produto-card__preco--promo">R$ ' + p.precoPromocional.toFixed(2) + '</div>'
         : '<div class="produto-card__preco">R$ ' + p.preco.toFixed(2) + '</div>';
-      return `
-        <article class="produto-card">
-          <a href="./produto.html?id=${p.id}" class="produto-card__imagem">
-            ${img}
-            <div class="produto-card__selos">
-              ${p.temPromo ? '<span class="badge badge--destaque">-' + p.descontoPct + '%</span>' : ''}
-              ${p.destaque ? '<span class="badge badge--principal">Destaque</span>' : ''}
-            </div>
-          </a>
-          <div class="produto-card__info">
-            <div class="produto-card__condicao">${rotuloCondicao(p.condicao)}</div>
-            <a href="./produto.html?id=${p.id}" class="produto-card__nome">${esc(p.nome)}</a>
-            ${preco}
-            <div><span class="badge badge--${disp.tipo}">${disp.texto}</span></div>
-            <div class="produto-card__acoes">
-              <a href="./produto.html?id=${p.id}" class="btn btn--principal btn--sm">Comprar</a>
-              <a href="./produto.html?id=${p.id}#proposta" class="btn btn--contorno btn--sm">Proposta</a>
-            </div>
-          </div>
-        </article>
-      `;
-    }
-
-    function renderPaginacao(total) {
-      const pag = document.getElementById('paginacao');
-      if (total <= 1) { pag.innerHTML = ''; return; }
-      let html = '';
-      for (let i = 1; i <= total; i++) {
-        html += '<button class="btn ' + (i === estado.pagina ? 'btn--principal' : 'btn--fantasma') + ' btn--sm" data-p="' + i + '">' + i + '</button>';
-      }
-      pag.innerHTML = html;
-      pag.querySelectorAll('[data-p]').forEach(function(b) {
-        b.onclick = function() { estado.pagina = Number(b.dataset.p); window.scrollTo({ top: 0, behavior: 'smooth' }); carregarProdutos(); };
-      });
+      return '<article class="produto-card">' +
+        '<a href="./produto.html?id=' + p.id + '" class="produto-card__imagem">' + img +
+          '<div class="produto-card__selos">' +
+            (p.temPromo ? '<span class="badge badge--destaque">-' + p.descontoPct + '%</span>' : '') +
+            (p.destaque ? '<span class="badge badge--principal">Destaque</span>' : '') +
+          '</div>' +
+        '</a>' +
+        '<div class="produto-card__info">' +
+          '<div class="produto-card__condicao">' + mod.rotuloCondicao(p.condicao) + '</div>' +
+          '<a href="./produto.html?id=' + p.id + '" class="produto-card__nome">' + esc(p.nome) + '</a>' +
+          preco +
+          '<div><span class="badge badge--' + disp.tipo + '">' + disp.texto + '</span></div>' +
+          '<div class="produto-card__acoes">' +
+            '<a href="./produto.html?id=' + p.id + '" class="btn btn--principal btn--sm">Comprar</a>' +
+          '</div>' +
+        '</div>' +
+      '</article>';
     }
 
     document.getElementById('form-filtros').onsubmit = function(e) {
@@ -203,25 +149,23 @@
       const form = e.target;
       const f = {};
       if (form.busca.value.trim()) f.busca = form.busca.value.trim();
-      const cat = form.querySelector('input[name="categoria"]:checked'); if (cat) f.categoria = cat.value;
-      const cond = form.querySelector('input[name="condicao"]:checked'); if (cond) f.condicao = cond.value;
+      const cond = form.querySelector('input[name="condicao"]:checked');
+      if (cond) f.condicao = cond.value;
       if (form.precoMin.value) f.precoMin = form.precoMin.value;
       if (form.precoMax.value) f.precoMax = form.precoMax.value;
-      if (form.soDisponiveis.checked) f.disponivel = true;
       estado.filtros = f;
-      estado.pagina = 1;
       carregarProdutos();
     };
 
     document.getElementById('btn-limpar').onclick = function() {
       document.getElementById('form-filtros').reset();
-      document.getElementById('filtro-categorias').querySelectorAll('input').forEach(function(i) { i.checked = false; });
-      estado.filtros = {}; estado.pagina = 1;
+      estado.filtros = {};
       carregarProdutos();
     };
 
     document.getElementById('ordenar').onchange = function(e) {
-      estado.ordenar = e.target.value; estado.pagina = 1; carregarProdutos();
+      estado.ordenar = e.target.value;
+      carregarProdutos();
     };
 
     function esc(s) { return s == null ? '' : String(s).replace(/[&<>"']/g, function(m) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]; }); }
