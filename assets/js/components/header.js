@@ -10,6 +10,13 @@ export async function renderHeader(ativo) {
   const el = document.getElementById('header');
   if (!el) return;
 
+  aplicarTemaSalvo();
+
+  const temaAtual = document.documentElement.getAttribute('data-tema') || 'claro';
+  const iconeTema = temaAtual === 'escuro'
+    ? '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>'
+    : '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>';
+
   el.innerHTML = `
     <header class="cabecalho">
       <div class="container cabecalho__interno">
@@ -21,6 +28,7 @@ export async function renderHeader(ativo) {
         </form>
 
         <nav class="cabecalho__acoes" aria-label="Ações do usuário">
+          <button type="button" class="cabecalho__acao" id="btn-tema" title="Alternar tema">${iconeTema}</button>
           <a href="./favoritos.html" class="cabecalho__acao" title="Favoritos">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
             <span class="cabecalho__acao-texto">Favoritos</span>
@@ -56,6 +64,19 @@ export async function renderHeader(ativo) {
       e.preventDefault();
       const q = formBusca.querySelector('input[name="q"]').value.trim();
       window.location.href = './produtos.html' + (q ? '?q=' + encodeURIComponent(q) : '');
+    });
+  }
+
+  const btnTema = document.getElementById('btn-tema');
+  if (btnTema) {
+    btnTema.addEventListener('click', function() {
+      const atual = document.documentElement.getAttribute('data-tema') || 'claro';
+      const novo = atual === 'escuro' ? 'claro' : 'escuro';
+      document.documentElement.setAttribute('data-tema', novo);
+      try { localStorage.setItem('vm-tema', novo); } catch (e) {}
+      btnTema.innerHTML = novo === 'escuro'
+        ? '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>'
+        : '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>';
     });
   }
 
@@ -113,7 +134,6 @@ export async function renderHeader(ativo) {
       if (ehAdmin) {
         const slot = document.getElementById('header-admin-slot');
         if (slot) {
-          // Cria com DOM puro para evitar qualquer problema de CSS/hover
           const a = document.createElement('a');
           a.href = './admin/';
           a.className = 'cabecalho__acao cabecalho__acao--admin';
@@ -124,6 +144,13 @@ export async function renderHeader(ativo) {
       }
     } catch (e) {}
   })();
+}
+
+function aplicarTemaSalvo() {
+  try {
+    const salvo = localStorage.getItem('vm-tema');
+    if (salvo === 'escuro') document.documentElement.setAttribute('data-tema', 'escuro');
+  } catch (e) {}
 }
 
 function comTimeout(p, ms) {
