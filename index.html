@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Minha Loja — Em construção</title>
+  <meta name="description" content="Loja virtual da minha empresa. Em breve, catálogo completo de produtos." />
+
+  <style>
+    /* Reset simples */
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --cor-principal: #0ea5e9;
+      --cor-fundo: #f8fafc;
+      --cor-texto: #0f172a;
+      --cor-suave: #64748b;
+    }
+
+    body {
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+      background: var(--cor-fundo);
+      color: var(--cor-texto);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      line-height: 1.5;
+    }
+
+    .cartao {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 16px;
+      padding: 40px 32px;
+      max-width: 480px;
+      width: 100%;
+      text-align: center;
+      box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
+    }
+
+    .logo {
+      width: 64px;
+      height: 64px;
+      margin: 0 auto 20px;
+      border-radius: 16px;
+      background: var(--cor-principal);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-weight: 700;
+      font-size: 28px;
+    }
+
+    h1 {
+      font-size: 22px;
+      margin-bottom: 10px;
+    }
+
+    p {
+      color: var(--cor-suave);
+      font-size: 15px;
+      margin-bottom: 6px;
+    }
+
+    .status {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 22px;
+      padding: 8px 14px;
+      border-radius: 999px;
+      background: #dcfce7;
+      color: #166534;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .status::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #16a34a;
+    }
+  </style>
+</head>
+<body>
+  <main class="cartao">
+    <div class="logo">ML</div>
+    <h1>Minha Loja</h1>
+    <p>Ambiente da loja em construção.</p>
+    <p>Em breve: catálogo, propostas, chat e pedidos.</p>
+
+    <div class="status">GitHub Pages funcionando</div>
+  </main>
+</body>
+</html>
