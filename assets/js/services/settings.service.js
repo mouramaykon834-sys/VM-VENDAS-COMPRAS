@@ -5,26 +5,8 @@ import { supabase } from '../supabase.js';
 
 let cache = null;
 let carregandoPromise = null;
-const CACHE_KEY = 'vm-settings-cache-v1';
-const CACHE_TTL = 5 * 60 * 1000; // 5 minutos
 
-function lerCacheLocal() {
-  try {
-    const raw = localStorage.getItem(CACHE_KEY);
-    if (!raw) return null;
-    const { data, ts } = JSON.parse(raw);
-    if (Date.now() - ts > CACHE_TTL) return null;
-    return data;
-  } catch { return null; }
-}
-
-function gravarCacheLocal(data) {
-  try {
-    localStorage.setItem(CACHE_KEY, JSON.stringify({ data, ts: Date.now() }));
-  } catch (_) {}
-}
-
-function comTimeout(promise, ms = 8000) {
+function comTimeout(promise, ms = 5000) {
   return Promise.race([
     promise,
     new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), ms))
@@ -34,11 +16,6 @@ function comTimeout(promise, ms = 8000) {
 export async function carregarConfiguracoes(force = false) {
   if (cache && !force) return cache;
   if (carregandoPromise) return carregandoPromise;
-
-  if (!force) {
-    const local = lerCacheLocal();
-    if (local) { cache = local; return local; }
-  }
 
   carregandoPromise = (async () => {
     try {
@@ -53,10 +30,8 @@ export async function carregarConfiguracoes(force = false) {
         store: store?.data || {},
         visual: visual?.data || {}
       };
-      gravarCacheLocal(cache);
       return cache;
     } catch (e) {
-      console.error('[settings] Erro:', e);
       cache = { company: {}, store: {}, visual: {} };
       return cache;
     } finally {
@@ -69,7 +44,6 @@ export async function carregarConfiguracoes(force = false) {
 
 export function aplicarConfiguracoes({ company = {}, store = {}, visual = {} } = {}) {
   const root = document.documentElement;
-
   if (visual.cor_principal)  root.style.setProperty('--cor-principal', visual.cor_principal);
   if (visual.cor_secundaria) root.style.setProperty('--cor-secundaria', visual.cor_secundaria);
   if (visual.cor_destaque)   root.style.setProperty('--cor-destaque', visual.cor_destaque);
@@ -98,5 +72,4 @@ export async function iniciarConfiguracoes() {
 export function limparCacheConfiguracoes() {
   cache = null;
   carregandoPromise = null;
-  try { localStorage.removeItem(CACHE_KEY); } catch (_) {}
 }
