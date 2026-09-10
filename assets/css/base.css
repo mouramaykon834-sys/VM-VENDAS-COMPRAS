@@ -1,0 +1,371 @@
+/* =============================================================
+   BASE — VM VENDAS E COMPRAS
+   =============================================================
+   Estilos universais: reset, tipografia, formulários, links e
+   utilitários. Depende de tokens.css (deve ser carregado antes).
+   ============================================================= */
+
+/* -------------------------------------------------------------
+   1. RESET
+   ------------------------------------------------------------- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body {
+  min-height: 100vh;
+  font-family: var(--fonte-principal);
+  font-size: var(--texto-base);
+  line-height: var(--linha-normal);
+  color: var(--cor-texto);
+  background-color: var(--cor-fundo);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* Remove estilos padrão de mídia */
+img,
+picture,
+video,
+canvas,
+svg {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+/* Remove estilos padrão de listas */
+ul,
+ol {
+  list-style: none;
+}
+
+/* -------------------------------------------------------------
+   2. TIPOGRAFIA
+   ------------------------------------------------------------- */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--fonte-titulo);
+  font-weight: var(--peso-bold);
+  line-height: var(--linha-apertada);
+  color: var(--cor-texto);
+}
+
+h1 { font-size: var(--texto-3xl); }
+h2 { font-size: var(--texto-2xl); }
+h3 { font-size: var(--texto-xl); }
+h4 { font-size: var(--texto-lg); }
+h5 { font-size: var(--texto-base); }
+h6 { font-size: var(--texto-sm); }
+
+p {
+  line-height: var(--linha-normal);
+}
+
+small {
+  font-size: var(--texto-sm);
+}
+
+strong, b {
+  font-weight: var(--peso-semibold);
+}
+
+code, pre, kbd, samp {
+  font-family: var(--fonte-mono);
+  font-size: 0.92em;
+}
+
+pre {
+  background: var(--cor-fundo-suave);
+  padding: var(--esp-4);
+  border-radius: var(--raio-md);
+  overflow-x: auto;
+}
+
+/* -------------------------------------------------------------
+   3. LINKS
+   ------------------------------------------------------------- */
+a {
+  color: var(--cor-principal);
+  text-decoration: none;
+  transition: color var(--transicao-rapida);
+}
+
+a:hover {
+  color: var(--cor-secundaria);
+  text-decoration: underline;
+}
+
+a:focus-visible {
+  outline: none;
+  box-shadow: var(--anel-foco);
+  border-radius: var(--raio-sm);
+}
+
+/* -------------------------------------------------------------
+   4. FORMULÁRIOS
+   ------------------------------------------------------------- */
+input,
+textarea,
+select,
+button {
+  font: inherit;
+  color: inherit;
+}
+
+input,
+textarea,
+select {
+  width: 100%;
+  padding: var(--pad-input);
+  background-color: #fff;
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio-input);
+  font-size: var(--texto-base);
+  transition: border-color var(--transicao-rapida),
+              box-shadow var(--transicao-rapida);
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  outline: none;
+  border-color: var(--cor-principal);
+  box-shadow: var(--anel-foco);
+}
+
+input:disabled,
+textarea:disabled,
+select:disabled {
+  background-color: var(--cor-fundo-suave);
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+label {
+  display: block;
+  font-size: var(--texto-sm);
+  font-weight: var(--peso-medio);
+  margin-bottom: var(--esp-2);
+  color: var(--cor-texto);
+}
+
+/* Remove setas feias do input number */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+/* -------------------------------------------------------------
+   5. BOTÕES (base — variações virão em components.css)
+   ------------------------------------------------------------- */
+button {
+  cursor: pointer;
+  border: none;
+  background: none;
+  padding: 0;
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* -------------------------------------------------------------
+   6. TABELAS
+   ------------------------------------------------------------- */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--texto-sm);
+}
+
+th, td {
+  padding: var(--esp-3) var(--esp-4);
+  text-align: left;
+  border-bottom: 1px solid var(--cor-borda);
+}
+
+th {
+  font-weight: var(--peso-semibold);
+  color: var(--cor-texto-suave);
+  background-color: var(--cor-fundo-suave);
+}
+
+/* -------------------------------------------------------------
+   7. SELEÇÃO DE TEXTO
+   ------------------------------------------------------------- */
+::selection {
+  background-color: var(--cor-principal);
+  color: #fff;
+}
+
+/* -------------------------------------------------------------
+   8. SCROLLBAR (Chrome, Edge, Safari)
+   ------------------------------------------------------------- */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: var(--cor-fundo-suave);
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: var(--raio-full);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* -------------------------------------------------------------
+   9. UTILITÁRIOS
+   ------------------------------------------------------------- */
+/* Texto */
+.texto-centro   { text-align: center; }
+.texto-direita  { text-align: right; }
+.texto-esquerda { text-align: left; }
+.texto-suave    { color: var(--cor-texto-suave); }
+.texto-principal { color: var(--cor-principal); }
+.texto-sucesso  { color: var(--cor-sucesso); }
+.texto-erro     { color: var(--cor-erro); }
+.texto-alerta   { color: var(--cor-alerta); }
+
+.texto-sm { font-size: var(--texto-sm); }
+.texto-xs { font-size: var(--texto-xs); }
+.texto-lg { font-size: var(--texto-lg); }
+.texto-xl { font-size: var(--texto-xl); }
+
+.peso-medio    { font-weight: var(--peso-medio); }
+.peso-semibold { font-weight: var(--peso-semibold); }
+.peso-bold     { font-weight: var(--peso-bold); }
+
+/* Visibilidade */
+.oculto       { display: none !important; }
+.invisivel    { visibility: hidden; }
+.bloqueado    { pointer-events: none; opacity: 0.5; }
+
+/* Flexbox */
+.flex          { display: flex; }
+.flex-col      { display: flex; flex-direction: column; }
+.flex-centro   { display: flex; align-items: center; justify-content: center; }
+.flex-entre    { display: flex; align-items: center; justify-content: space-between; }
+.flex-inicio   { display: flex; align-items: center; justify-content: flex-start; }
+.flex-fim      { display: flex; align-items: center; justify-content: flex-end; }
+.flex-wrap     { flex-wrap: wrap; }
+.flex-1        { flex: 1; }
+
+.gap-1 { gap: var(--esp-1); }
+.gap-2 { gap: var(--esp-2); }
+.gap-3 { gap: var(--esp-3); }
+.gap-4 { gap: var(--esp-4); }
+.gap-6 { gap: var(--esp-6); }
+
+/* Margens */
+.mt-1 { margin-top: var(--esp-1); }
+.mt-2 { margin-top: var(--esp-2); }
+.mt-3 { margin-top: var(--esp-3); }
+.mt-4 { margin-top: var(--esp-4); }
+.mt-6 { margin-top: var(--esp-6); }
+.mt-8 { margin-top: var(--esp-8); }
+
+.mb-1 { margin-bottom: var(--esp-1); }
+.mb-2 { margin-bottom: var(--esp-2); }
+.mb-3 { margin-bottom: var(--esp-3); }
+.mb-4 { margin-bottom: var(--esp-4); }
+.mb-6 { margin-bottom: var(--esp-6); }
+.mb-8 { margin-bottom: var(--esp-8); }
+
+.ml-2 { margin-left: var(--esp-2); }
+.mr-2 { margin-right: var(--esp-2); }
+.mx-auto { margin-left: auto; margin-right: auto; }
+
+/* Padding */
+.p-2 { padding: var(--esp-2); }
+.p-3 { padding: var(--esp-3); }
+.p-4 { padding: var(--esp-4); }
+.p-6 { padding: var(--esp-6); }
+
+/* Largura / altura */
+.w-full { width: 100%; }
+.h-full { height: 100%; }
+
+/* Container padrão */
+.container {
+  width: 100%;
+  max-width: var(--largura-maxima);
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: var(--esp-4);
+  padding-right: var(--esp-4);
+}
+
+/* Divisor */
+.divisor {
+  border: 0;
+  height: 1px;
+  background-color: var(--cor-borda);
+  margin: var(--esp-4) 0;
+}
+
+/* Cartão genérico */
+.cartao {
+  background: #fff;
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio-card);
+  box-shadow: var(--sombra-sm);
+  padding: var(--pad-card);
+}
+
+/* Acessibilidade — só visível para leitores de tela */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* -------------------------------------------------------------
+   10. RESPONSIVIDADE BÁSICA
+   ------------------------------------------------------------- */
+@media (max-width: 640px) {
+  h1 { font-size: var(--texto-2xl); }
+  h2 { font-size: var(--texto-xl); }
+  h3 { font-size: var(--texto-lg); }
+}
+
+/* Reduz animações se o usuário preferir */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
