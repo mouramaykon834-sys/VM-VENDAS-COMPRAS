@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Produtos — Minha Loja</title>
+  <meta name="description" content="Catálogo completo de produtos. Filtre por categoria, preço, condição e encontre o que você procura." />
+
+  <link rel="stylesheet" href="./assets/css/tokens.css" />
+  <link rel="stylesheet" href="./assets/css/base.css" />
+  <link rel="stylesheet" href="./assets/css/layout.css" />
+  <link rel="stylesheet" href="./assets/css/components.css" />
+  <link rel="stylesheet" href="./assets/css/store.css" />
+</head>
+<body>
+
+  <div id="header"></div>
+
+  <main class="conteudo">
+    <div class="container">
+
+      <!-- Cabeçalho da página -->
+      <div class="migalhas">
+        <a href="./index.html">Início</a>
+        <span>Produtos</span>
+      </div>
+      <h1 class="pagina-titulo">Catálogo de produtos</h1>
+
+      <div class="catalogo">
+
+        <!-- Filtros (barra lateral) -->
+        <aside class="filtros" aria-label="Filtros de busca">
+          <h2 class="filtros__titulo">Filtros</h2>
+
+          <form id="form-filtros">
+
+            <div class="filtros__bloco">
+              <div class="filtros__subtitulo">Buscar</div>
+              <input type="search" name="busca" placeholder="Nome ou descrição" />
+            </div>
+
+            <div class="filtros__bloco">
+              <div class="filtros__subtitulo">Categoria</div>
+              <div class="filtros__lista" id="filtro-categorias">
+                <div class="spinner"></div>
+              </div>
+            </div>
+
+            <div class="filtros__bloco">
+              <div class="filtros__subtitulo">Condição</div>
+              <div class="filtros__lista">
+                <label class="checkbox">
+                  <input type="checkbox" name="condicao" value="novo" />
+                  <span>Novo</span>
+                </label>
+                <label class="checkbox">
+                  <input type="checkbox" name="condicao" value="seminovo" />
+                  <span>Seminovo</span>
+                </label>
+                <label class="checkbox">
+                  <input type="checkbox" name="condicao" value="usado" />
+                  <span>Usado</span>
+                </label>
+                <label class="checkbox">
+                  <input type="checkbox" name="condicao" value="outro" />
+                  <span>Outro</span>
+                </label>
+              </div>
+            </div>
+
+            <div class="filtros__bloco">
+              <div class="filtros__subtitulo">Faixa de preço</div>
+              <div class="campo-grupo">
+                <input type="number" name="precoMin" placeholder="Mín" min="0" step="0.01" />
+                <input type="number" name="precoMax" placeholder="Máx" min="0" step="0.01" />
+              </div>
+            </div>
+
+            <div class="filtros__bloco">
+              <div class="filtros__subtitulo">Disponibilidade</div>
+              <label class="checkbox">
+                <input type="checkbox" name="soDisponiveis" value="1" />
+                <span>Somente disponíveis</span>
+              </label>
+            </div>
+
+            <div class="filtros__bloco" style="border:none; padding-bottom:0;">
+              <button type="submit" class="btn btn--principal btn--bloco">
+                Aplicar filtros
+              </button>
+              <button type="button" id="btn-limpar" class="btn btn--fantasma btn--bloco mt-2">
+                Limpar filtros
+              </button>
+            </div>
+
+          </form>
+        </aside>
+
+        <!-- Resultados -->
+        <section aria-label="Resultados">
+
+          <div class="barra-resultados">
+            <div class="barra-resultados__info" id="info-resultados">
+              Carregando produtos...
+            </div>
+            <div class="flex gap-2">
+              <label for="ordenar" class="sr-only">Ordenar por</label>
+              <select id="ordenar" style="width: auto;">
+                <option value="recentes">Mais recentes</option>
+                <option value="menor-preco">Menor preço</option>
+                <option value="maior-preco">Maior preço</option>
+                <option value="relevancia">Mais relevantes</option>
+              </select>
+            </div>
+          </div>
+
+          <div id="lista-produtos" class="grid grid-3">
+            <!-- Cards injetados via JS -->
+          </div>
+
+          <div id="paginacao" class="flex-centro gap-2 mt-8"></div>
+
+        </section>
+      </div>
+
+    </div>
+  </main>
+
+  <div id="footer"></div>
+
+  <script type="module">
+    import { renderHeader } from './assets/js/components/header.js';
+    import { renderFooter } from './assets/js/components/footer.js';
+    import {
+      listarProdutos, listarCategorias,
+      rotuloDisponibilidade, rotuloCondicao
+    } from './assets/js/services/products.service.js';
+
+    // -------------------------------------------------------------
+    // Estado local da página
+    // -------------------------------------------------------------
+    const estado = {
+      filtros: {},
+      ordenar: 'recentes',
+      pagina: 1,
+      porPagina: 12
+    };
+
+    // -------------------------------------------------------------
+    // Lê parâmetros da URL (?q=...&categoria=...&ordenar=...)
+    // -------------------------------------------------------------
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('q'))         estado.filtros.busca = params.get('q');
+    if (params.get('categoria')) estado.filtros.categoria = params.get('categoria');
+    if (params.get('condicao'))  estado.filtros.condicao = params.get('condicao');
+    if (params.get('ordenar'))   estado.ordenar = params.get('ordenar');
+
+    // -------------------------------------------------------------
+    // Inicialização
+    // -------------------------------------------------------------
+    await renderHeader('produtos');
+    await renderFooter();
+    await carregarCategorias();
+    preencherFiltrosComURL();
+    await carregarProdutos();
+
+    // -------------------------------------------------------------
+    // Carregar categorias no filtro
+    // -------------------------------------------------------------
+    async function carregarCategorias() {
+      const el = document.getElementById('filtro-categorias');
+      try {
+        const cats = await listarCategorias();
+        if (!cats.length) {
+          el.innerHTML = '<span class="texto-xs texto-suave">Nenhuma categoria cadastrada.</span>';
+          return;
+        }
+        el.innerHTML = cats.map(c => `
+          <label class="checkbox">
+            <input type="radio" name="categoria" value="${c.id}" />
+            <span>${escapeHtml(c.nome)}</span>
+          </label>
+        `).join('');
+
+        // Restaura seleção se veio da URL
+        if (estado.filtros.categoria) {
+          const r = el.querySelector(`input[value="${estado.filtros.categoria}"]`);
+          if (r) r.checked = true;
+        }
+      } catch (e) {
+        el.innerHTML = '<span class="texto-xs texto-erro">Erro ao carregar categorias.</span>';
+      }
+    }
+
+    // -------------------------------------------------------------
+    // Preencher filtros com valores da URL
+    // -------------------------------------------------------------
+    function preencherFiltrosComURL() {
+      const form = document.getElementById('form-filtros');
+      if (estado.filtros.busca)   form.busca.value = estado.filtros.busca;
+      if (estado.filtros.condicao) {
+        const c = form.querySelector(`input[name="condicao"][value="${estado.filtros.condicao}"]`);
+        if (c) c.checked = true;
+      }
+      document.getElementById('ordenar').value = estado.ordenar;
+    }
+
+    // -------------------------------------------------------------
+    // Carregar produtos com filtros atuais
+    // -------------------------------------------------------------
+    async function carregarProdutos() {
+      const lista = document.getElementById('lista-produtos');
+      const info  = document.getElementById('info-resultados');
+      const pag   = document.getElementById('paginacao');
+
+      lista.innerHTML = `<div class="estado-vazio" style="grid-column: 1 / -1;">
+        <div class="spinner"></div>
+      </div>`;
+      pag.innerHTML = '';
+
+      try {
+        const { produtos, total, totalPaginas } = await listarProdutos({
+          filtros: estado.filtros,
+          ordenar: estado.ordenar,
+          pagina: estado.pagina,
+          porPagina: estado.porPagina
+        });
+
+        info.textContent = total === 0
+          ? 'Nenhum produto encontrado'
+          : `${total} produto${total > 1 ? 's' : ''} encontrado${total > 1 ? 's' : ''}`;
+
+        if (!produtos.length) {
+          lista.innerHTML = `<div class="estado-vazio" style="grid-column: 1 / -1;">
+            <div class="estado-vazio__titulo">Nenhum produto encontrado</div>
+            <p class="estado-vazio__descricao">
+              ${totalVazioMensagem()}
+            </p>
+            <a href="./index.html" class="btn btn--contorno">Voltar ao início</a>
+          </div>`;
+          return;
+        }
+
+        lista.innerHTML = produtos.map(cardProduto).join('');
+        renderizarPaginacao(totalPaginas);
+
+      } catch (e) {
+        console.error(e);
+        info.textContent = 'Erro ao carregar produtos';
+        lista.innerHTML = `<div class="alert alerta--erro" style="grid-column: 1 / -1;">
+          Não foi possível carregar os produtos. Verifique sua conexão e tente novamente.
+        </div>`;
+      }
+    }
+
+    function totalVazioMensagem() {
+      if (Object.keys(estado.filtros).length > 0) {
+        return 'Tente ajustar os filtros ou limpar a busca.';
+      }
+      return 'Os produtos aparecerão aqui assim que forem cadastrados pela loja.';
+    }
+
+    // -------------------------------------------------------------
+    // Card de produto (mesmo layout do home)
+    // -------------------------------------------------------------
+    function cardProduto(p) {
+      const disp = rotuloDisponibilidade(p);
+      const imagemHTML = p.imagemPrincipal
+        ? `<img src="${p.imagemPrincipal}" alt="${escapeHtml(p.nome)}" loading="lazy" />`
+        : `<div class="produto-card__sem-imagem">
+             <svg width="48" height="48" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="1.5">
+               <rect x="3" y="3" width="18" height="18" rx="2"/>
+               <circle cx="8.5" cy="8.5" r="1.5"/>
+               <polyline points="21 15 16 10 5 21"/>
+             </svg>
+           </div>`;
+
+      const precoHTML = p.temPromo
+        ? `<div class="produto-card__preco-antigo">R$ ${p.preco.toFixed(2)}</div>
+           <div class="produto-card__preco produto-card__preco--promo">
+             R$ ${p.precoPromocional.toFixed(2)}
+           </div>`
+        : `<div class="produto-card__preco">R$ ${p.preco.toFixed(2)}</div>`;
+
+      return `
+        <article class="produto-card">
+          <a href="./produto.html?id=${p.id}" class="produto-card__imagem">
+            ${imagemHTML}
+            <div class="produto-card__selos">
+              ${p.temPromo ? `<span class="badge badge--destaque">-${p.descontoPct}%</span>` : ''}
+              ${p.destaque ? `<span class="badge badge--principal">Destaque</span>` : ''}
+            </div>
+          </a>
+          <button class="produto-card__favorito" data-fav="${p.id}" aria-label="Favoritar">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+            </svg>
+          </button>
+          <div class="produto-card__info">
+            <div class="produto-card__condicao">${rotuloCondicao(p.condicao)}</div>
+            <a href="./produto.html?id=${p.id}" class="produto-card__nome">${escapeHtml(p.nome)}</a>
+            ${precoHTML}
+            <div><span class="badge badge--${disp.tipo}">${disp.texto}</span></div>
+            <div class="produto-card__acoes">
+              <a href="./produto.html?id=${p.id}" class="btn btn--principal btn--sm">Comprar</a>
+              <a href="./produto.html?id=${p.id}#proposta" class="btn btn--contorno btn--sm">Proposta</a>
+            </div>
+          </div>
+        </article>
+      `;
+    }
+
+    // -------------------------------------------------------------
+    // Paginação
+    // -------------------------------------------------------------
+    function renderizarPaginacao(totalPaginas) {
+      const pag = document.getElementById('paginacao');
+      if (totalPaginas <= 1) { pag.innerHTML = ''; return; }
+
+      const btn = (num, ativo = false, desabilitado = false) => {
+        if (desabilitado) {
+          return `<button class="btn btn--fantasma btn--sm" disabled>${num}</button>`;
+        }
+        return `<button class="btn ${ativo ? 'btn--principal' : 'btn--fantasma'} btn--sm"
+                 data-pagina="${num}">${num}</button>`;
+      };
+
+      let html = '';
+      html += btn('«', false, estado.pagina === 1);
+      for (let i = 1; i <= totalPaginas; i++) {
+        // Mostra só vizinhas quando muitas páginas
+        if (totalPaginas > 7 &&
+            i !== 1 && i !== totalPaginas &&
+            Math.abs(i - estado.pagina) > 1) {
+          if (Math.abs(i - estado.pagina) === 2) html += '<span>…</span>';
+          continue;
+        }
+        html += btn(i, i === estado.pagina);
+      }
+      html += btn('»', false, estado.pagina === totalPaginas);
+
+      pag.innerHTML = html;
+
+      pag.querySelectorAll('[data-pagina]').forEach(b => {
+        b.addEventListener('click', () => {
+          const val = b.dataset.pagina;
+          if (val === '«') estado.pagina = Math.max(1, estado.pagina - 1);
+          else if (val === '»') estado.pagina = Math.min(totalPaginas, estado.pagina + 1);
+          else estado.pagina = Number(val);
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+          carregarProdutos();
+        });
+      });
+    }
+
+    // -------------------------------------------------------------
+    // Eventos do formulário
+    // -------------------------------------------------------------
+    document.getElementById('form-filtros').addEventListener('submit', (e) => {
+      e.preventDefault();
+      coletarFiltros();
+      estado.pagina = 1;
+      carregarProdutos();
+    });
+
+    document.getElementById('btn-limpar').addEventListener('click', () => {
+      document.getElementById('form-filtros').reset();
+      document.getElementById('filtro-categorias')
+        .querySelectorAll('input').forEach(i => i.checked = false);
+      estado.filtros = {};
+      estado.pagina = 1;
+      carregarProdutos();
+    });
+
+    document.getElementById('ordenar').addEventListener('change', (e) => {
+      estado.ordenar = e.target.value;
+      estado.pagina = 1;
+      carregarProdutos();
+    });
+
+    function coletarFiltros() {
+      const form = document.getElementById('form-filtros');
+      const f = {};
+
+      if (form.busca.value.trim()) f.busca = form.busca.value.trim();
+
+      const cat = form.querySelector('input[name="categoria"]:checked');
+      if (cat) f.categoria = cat.value;
+
+      const cond = form.querySelector('input[name="condicao"]:checked');
+      if (cond) f.condicao = cond.value;
+
+      if (form.precoMin.value) f.precoMin = form.precoMin.value;
+      if (form.precoMax.value) f.precoMax = form.precoMax.value;
+
+      if (form.soDisponiveis.checked) f.disponivel = true;
+
+      estado.filtros = f;
+    }
+
+    // -------------------------------------------------------------
+    // Util
+    // -------------------------------------------------------------
+    function escapeHtml(s) {
+      if (s == null) return '';
+      return String(s)
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#39;');
+    }
+  </script>
+</body>
+</html>
