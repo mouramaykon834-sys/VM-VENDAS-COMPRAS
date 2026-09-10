@@ -22,71 +22,72 @@
   <div id="footer"></div>
 
   <script type="module">
-    import { renderHeader } from './assets/js/components/header.js';
-    import { renderFooter } from './assets/js/components/footer.js';
-    import { iniciarConfiguracoes } from './assets/js/services/settings.service.js';
-    import { supabase } from './assets/js/supabase.js';
-    import { listarMeusFavoritos, removerFavorito } from './assets/js/services/favorites.service.js';
-    import { rotuloDisponibilidade, rotuloCondicao } from './assets/js/services/products.service.js';
-
-    await iniciarConfiguracoes();
-    await renderHeader('favoritos');
-    await renderFooter();
-
-    const el = document.getElementById('conteudo');
-    const esc = s => s == null ? '' : String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
-
-    async function render() {
+    (async () => {
       try {
-        const r = await supabase.auth.getSession();
-        if (!r.data?.session) {
-          el.innerHTML = `<div class="estado-vazio"><div class="estado-vazio__titulo">Faça login</div><a href="./login.html?redirect=favoritos.html" class="btn btn--principal">Fazer login</a></div>`;
+        const { renderHeader } = await import('./assets/js/components/header.js');
+        const { renderFooter } = await import('./assets/js/components/footer.js');
+        await renderHeader('favoritos');
+        await renderFooter();
+      } catch (e) {}
+    })();
+
+    (async () => {
+      const el = document.getElementById('conteudo');
+      try {
+        const { supabase } = await import('./assets/js/supabase.js');
+        const r = await Promise.race([
+          supabase.auth.getUser(),
+          new Promise((_, rej) => setTimeout(() => rej(new Error('timeout')), 5000))
+        ]);
+
+        if (!r || !r.data || !r.data.user) {
+          el.innerHTML = '<div class="estado-vazio"><div class="estado-vazio__titulo">Faça login</div><p class="estado-vazio__descricao">É preciso estar logado para ver seus favoritos.</p><a href="./login.html?redirect=favoritos.html" class="btn btn--principal">Fazer login</a></div>';
           return;
         }
 
-        const favs = await listarMeusFavoritos();
-        if (!favs.length) {
-          el.innerHTML = `<div class="estado-vazio"><div class="estado-vazio__titulo">Nenhum favorito ainda</div><p class="estado-vazio__descricao">Toque no ❤ nos produtos que você gostar.</p><a href="./produtos.html" class="btn btn--principal">Ver produtos</a></div>`;
+        const { listarMeusFavoritos } = await import('./assets/js/services/favorites.service.js');
+        const favs = await Promise.race([
+          listarMeusFavoritos(),
+          new Promise((_, rej) => setTimeout(() => rej(new Error('timeout')), 8000))
+        ]);
+
+        if (!favs || !favs.length) {
+          el.innerHTML = '<div class="estado-vazio"><div class="estado-vazio__titulo">Nenhum favorito ainda</div><p class="estado-vazio__descricao">Toque no ❤ nos produtos que você gostar.</p><a href="./produtos.html" class="btn btn--principal">Ver produtos</a></div>';
           return;
         }
 
-        el.innerHTML = `<div class="grid grid-3">${favs.map(f => {
+        el.innerHTML = '<div class="grid grid-3">' + favs.map(function(f) {
           const p = f.products;
           if (!p) return '';
-          const imgs = (p.product_images || []).slice().sort((a,b) => (b.principal?1:0)-(a.principal?1:0));
-          const img = imgs[0]?.url;
-          const disp = rotuloDisponibilidade({ status: p.status, estoque: p.estoque });
+          const imgs = (p.product_images || []).slice().sort(function(a, b) { return (b.principal ? 1 : 0) - (a.principal ? 1 : 0); });
+          const img = imgs[0] ? imgs[0].url : null;
           const temPromo = p.preco_promocional != null && p.preco_promocional < p.preco;
           const preco = temPromo ? Number(p.preco_promocional) : Number(p.preco);
-          return `
-            <article class="produto-card">
-              <a href="./produto.html?id=${p.id}" class="produto-card__imagem">
-                ${img ? `<img src="${img}" alt="" loading="lazy" />` : `<div class="produto-card__sem-imagem"></div>`}
-              </a>
-              <button class="produto-card__favorito ativo" data-rm="${f.id}" title="Remover">❤</button>
-              <div class="produto-card__info">
-                <div class="produto-card__condicao">${rotuloCondicao(p.condicao)}</div>
-                <a href="./produto.html?id=${p.id}" class="produto-card__nome">${esc(p.nome)}</a>
-                <div class="produto-card__preco">R$ ${preco.toFixed(2)}</div>
-                <div><span class="badge badge--${disp.tipo}">${disp.texto}</span></div>
-                <div class="produto-card__acoes">
-                  <a href="./produto.html?id=${p.id}" class="btn btn--principal btn--sm">Ver</a>
-                </div>
-              </div>
-            </article>
-          `;
-        }).join('')}</div>`;
+          return '<article class="produto-card">' +
+            '<a href="./produto.html?id=' + p.id + '" class="produto-card__imagem">' +
+              (img ? '<img src="' + img + '" alt="" loading="lazy" />' : '<div class="produto-card__sem-imagem"></div>') +
+            '</a>' +
+            '<button class="produto-card__favorito ativo" data-rm="' + f.id + '">❤</button>' +
+            '<div class="produto-card__info">' +
+              '<a href="./produto.html?id=' + p.id + '" class="produto-card__nome">' + esc(p.nome) + '</a>' +
+              '<div class="produto-card__preco">R$ ' + preco.toFixed(2) + '</div>' +
+              '<div class="produto-card__acoes"><a href="./produto.html?id=' + p.id + '" class="btn btn--principal btn--sm">Ver</a></div>' +
+            '</div>' +
+          '</article>';
+        }).join('') + '</div>';
 
-        el.querySelectorAll('[data-rm]').forEach(b => b.onclick = async () => {
-          await removerFavorito(b.dataset.rm);
-          render();
+        const { removerFavorito } = await import('./assets/js/services/favorites.service.js');
+        el.querySelectorAll('[data-rm]').forEach(function(b) {
+          b.onclick = async function() {
+            try { await removerFavorito(b.dataset.rm); location.reload(); } catch (e) {}
+          };
         });
       } catch (e) {
-        console.error(e);
-        el.innerHTML = `<div class="alerta alerta--erro">${esc(e.message)}</div>`;
+        el.innerHTML = '<div class="alerta alerta--erro">Erro ao carregar favoritos. Tente novamente.</div>';
       }
-    }
-    render();
+    })();
+
+    function esc(s) { return s == null ? '' : String(s).replace(/[&<>"']/g, function(m) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]; }); }
   </script>
 </body>
 </html>
