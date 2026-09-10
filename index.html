@@ -3,98 +3,128 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Minha Loja — Em construção</title>
-  <meta name="description" content="Loja virtual da minha empresa. Em breve, catálogo completo de produtos." />
 
-  <style>
-    /* Reset simples */
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+  <title>Minha Loja — Produtos e ofertas</title>
+  <meta name="description" content="Loja virtual com produtos novos, usados e seminovos. Compre, faça propostas e negocie direto com a loja." />
 
-    :root {
-      --cor-principal: #0ea5e9;
-      --cor-fundo: #f8fafc;
-      --cor-texto: #0f172a;
-      --cor-suave: #64748b;
-    }
-
-    body {
-      font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
-      background: var(--cor-fundo);
-      color: var(--cor-texto);
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 24px;
-      line-height: 1.5;
-    }
-
-    .cartao {
-      background: #ffffff;
-      border: 1px solid #e2e8f0;
-      border-radius: 16px;
-      padding: 40px 32px;
-      max-width: 480px;
-      width: 100%;
-      text-align: center;
-      box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
-    }
-
-    .logo {
-      width: 64px;
-      height: 64px;
-      margin: 0 auto 20px;
-      border-radius: 16px;
-      background: var(--cor-principal);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: #fff;
-      font-weight: 700;
-      font-size: 28px;
-    }
-
-    h1 {
-      font-size: 22px;
-      margin-bottom: 10px;
-    }
-
-    p {
-      color: var(--cor-suave);
-      font-size: 15px;
-      margin-bottom: 6px;
-    }
-
-    .status {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      margin-top: 22px;
-      padding: 8px 14px;
-      border-radius: 999px;
-      background: #dcfce7;
-      color: #166534;
-      font-size: 13px;
-      font-weight: 600;
-    }
-
-    .status::before {
-      content: "";
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: #16a34a;
-    }
-  </style>
+  <!-- Design tokens e estilos -->
+  <link rel="stylesheet" href="./assets/css/tokens.css" />
+  <link rel="stylesheet" href="./assets/css/base.css" />
+  <link rel="stylesheet" href="./assets/css/layout.css" />
+  <link rel="stylesheet" href="./assets/css/components.css" />
+  <link rel="stylesheet" href="./assets/css/store.css" />
 </head>
 <body>
-  <main class="cartao">
-    <div class="logo">ML</div>
-    <h1>Minha Loja</h1>
-    <p>Ambiente da loja em construção.</p>
-    <p>Em breve: catálogo, propostas, chat e pedidos.</p>
 
-    <div class="status">GitHub Pages funcionando</div>
+  <!-- Header será preenchido pelo JS -->
+  <div id="header"></div>
+
+  <main class="conteudo">
+    <div class="container">
+
+      <!-- Banner -->
+      <section class="banner-home">
+        <div class="banner-home__conteudo">
+          <h1 class="banner-home__titulo" id="home-titulo">
+            Bem-vindo à nossa loja
+          </h1>
+          <p class="banner-home__subtitulo" id="home-subtitulo">
+            Encontre produtos novos, usados e seminovos com preços imperdíveis.
+          </p>
+          <a href="./produtos.html" class="btn btn--destaque btn--lg">
+            Ver todos os produtos
+          </a>
+        </div>
+      </section>
+
+      <!-- Produtos em destaque -->
+      <section class="secao">
+        <div class="secao__cabecalho">
+          <h2 class="secao__titulo">Produtos em destaque</h2>
+          <a href="./produtos.html" class="secao__link">Ver todos</a>
+        </div>
+        <div class="grid grid-4" id="lista-destaques">
+          <!-- Cards serão injetados pelo JS -->
+          <div class="estado-vazio" style="grid-column: 1 / -1;">
+            <div class="spinner"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Ofertas -->
+      <section class="secao">
+        <div class="secao__cabecalho">
+          <h2 class="secao__titulo">Ofertas</h2>
+          <a href="./produtos.html?ordenar=menor-preco" class="secao__link">Ver todas</a>
+        </div>
+        <div class="grid grid-4" id="lista-ofertas">
+          <div class="estado-vazio" style="grid-column: 1 / -1;">
+            <div class="spinner"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Produtos recentes -->
+      <section class="secao">
+        <div class="secao__cabecalho">
+          <h2 class="secao__titulo">Novidades</h2>
+          <a href="./produtos.html?ordenar=recentes" class="secao__link">Ver todas</a>
+        </div>
+        <div class="grid grid-4" id="lista-recentes">
+          <div class="estado-vazio" style="grid-column: 1 / -1;">
+            <div class="spinner"></div>
+          </div>
+        </div>
+      </section>
+
+    </div>
   </main>
+
+  <!-- Footer será preenchido pelo JS -->
+  <div id="footer"></div>
+
+  <script type="module">
+    import { supabase } from './assets/js/supabase.js';
+    import { renderHeader } from './assets/js/components/header.js';
+    import { renderFooter } from './assets/js/components/footer.js';
+
+    // 1. Renderiza header e footer
+    await renderHeader('inicio');
+    await renderFooter();
+
+    // 2. Carrega configurações visuais da loja (título e subtítulo)
+    try {
+      const { data: store } = await supabase
+        .from('store_settings')
+        .select('titulo_home, subtitulo_home')
+        .eq('id', 1)
+        .maybeSingle();
+
+      if (store?.titulo_home) {
+        document.getElementById('home-titulo').textContent = store.titulo_home;
+      }
+      if (store?.subtitulo_home) {
+        document.getElementById('home-subtitulo').textContent = store.subtitulo_home;
+      }
+    } catch (_) { /* silencioso */ }
+
+    // 3. Placeholder: em breve vamos carregar produtos reais.
+    //    Por enquanto mostramos estado vazio explicativo.
+    const mostrarVazio = (id, texto) => {
+      document.getElementById(id).innerHTML = `
+        <div class="estado-vazio" style="grid-column: 1 / -1;">
+          <div class="estado-vazio__titulo">${texto}</div>
+          <p class="estado-vazio__descricao">
+            Os produtos aparecerão aqui assim que forem cadastrados no painel administrativo.
+          </p>
+          <a href="./admin/" class="btn btn--contorno">Ir para o painel admin</a>
+        </div>
+      `;
+    };
+
+    mostrarVazio('lista-destaques', 'Nenhum produto em destaque ainda');
+    mostrarVazio('lista-ofertas', 'Nenhuma oferta no momento');
+    mostrarVazio('lista-recentes', 'Nenhum produto cadastrado ainda');
+  </script>
 </body>
 </html>
