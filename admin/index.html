@@ -61,21 +61,23 @@
     import { iniciarConfiguracoes } from './assets/js/services/settings.service.js';
     import { listarDestaques, listarOfertas, listarRecentes, rotuloDisponibilidade, rotuloCondicao } from './assets/js/services/products.service.js';
 
-    await iniciarConfiguracoes();
+    // 1) Carrega configs UMA VEZ e aplica
+    const cfg = await iniciarConfiguracoes();
+
+    // 2) Header e footer (o header usa o cache já carregado)
     await renderHeader('inicio');
     await renderFooter();
 
-    // Banner
-    const cfg = await iniciarConfiguracoes();
-    const banner = document.getElementById('banner');
+    // 3) Banner da home (usa o cfg carregado acima)
     const store = cfg.store || {};
     if (store.banner_home_url) {
+      const banner = document.getElementById('banner');
       banner.style.background = `linear-gradient(rgba(15,23,42,.4), rgba(15,23,42,.6)), url(${store.banner_home_url}) center/cover`;
     }
     if (store.titulo_home) document.getElementById('home-titulo').textContent = store.titulo_home;
     if (store.subtitulo_home) document.getElementById('home-subtitulo').textContent = store.subtitulo_home;
 
-    // Carrega produtos
+    // 4) Produtos em paralelo
     await Promise.all([
       carregarSecao('lista-destaques', listarDestaques, 'Nenhum produto em destaque ainda'),
       carregarSecao('lista-ofertas', listarOfertas, 'Nenhuma oferta no momento'),
