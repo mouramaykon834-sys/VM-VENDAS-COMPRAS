@@ -5,51 +5,248 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="robots" content="noindex, nofollow" />
   <title>Categorias — Admin</title>
-
-  <link rel="stylesheet" href="../assets/css/tokens.css" />
-  <link rel="stylesheet" href="../assets/css/base.css" />
-  <link rel="stylesheet" href="../assets/css/layout.css" />
-  <link rel="stylesheet" href="../assets/css/components.css" />
-  <link rel="stylesheet" href="../assets/css/store.css" />
-  <link rel="stylesheet" href="../assets/css/admin.css" />
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: system-ui, sans-serif; background: #f8fafc; color: #0f172a; }
+    .layout { display: grid; grid-template-columns: 240px 1fr; min-height: 100vh; }
+    .sidebar { background: #0f172a; color: #cbd5e1; padding: 16px 0; }
+    .sidebar__logo { display: flex; align-items: center; gap: 8px; padding: 0 16px 20px; border-bottom: 1px solid rgba(255,255,255,.1); margin-bottom: 16px; color: #fff; font-weight: 700; }
+    .sidebar__badge { background: #0ea5e9; color: #fff; padding: 2px 8px; border-radius: 6px; font-size: 10px; }
+    .sidebar__secao { padding: 16px 16px 8px; font-size: 11px; text-transform: uppercase; color: #64748b; font-weight: 600; }
+    .sidebar__lista { display: flex; flex-direction: column; gap: 2px; padding: 0 8px; }
+    .sidebar__item { padding: 10px 12px; border-radius: 8px; color: #cbd5e1; text-decoration: none; font-size: 14px; }
+    .sidebar__item:hover { background: rgba(255,255,255,.06); color: #fff; }
+    .sidebar__item.ativo { background: #0ea5e9; color: #fff; }
+    .main { display: flex; flex-direction: column; }
+    .topbar { background: #fff; border-bottom: 1px solid #e2e8f0; padding: 16px 24px; display: flex; justify-content: space-between; align-items: center; }
+    .topbar h1 { font-size: 18px; }
+    .btn { padding: 8px 16px; border-radius: 8px; border: 1px solid #0ea5e9; background: #0ea5e9; color: #fff; font-weight: 600; font-size: 14px; cursor: pointer; text-decoration: none; display: inline-block; }
+    .btn:hover { filter: brightness(.94); }
+    .btn--fantasma { background: transparent; color: #0ea5e9; }
+    .btn--perigo { background: transparent; color: #dc2626; border-color: transparent; padding: 6px 10px; }
+    .conteudo { padding: 24px; }
+    .vazio { background: #fff; padding: 60px 24px; text-align: center; border-radius: 12px; border: 1px solid #e2e8f0; color: #64748b; }
+    .tabela { width: 100%; background: #fff; border-collapse: collapse; border-radius: 12px; overflow: hidden; border: 1px solid #e2e8f0; }
+    .tabela th { text-align: left; padding: 12px 16px; background: #f8fafc; font-size: 12px; text-transform: uppercase; color: #64748b; }
+    .tabela td { padding: 12px 16px; border-top: 1px solid #e2e8f0; font-size: 14px; }
+    .tabela tr:hover td { background: #f8fafc; }
+    .badge { padding: 3px 10px; border-radius: 9999px; font-size: 11px; font-weight: 600; }
+    .badge--ok { background: #dcfce7; color: #166534; }
+    .badge--no { background: #f1f5f9; color: #64748b; }
+    .erro { padding: 20px; background: #fee2e2; color: #991b1b; border-radius: 8px; font-family: monospace; font-size: 13px; white-space: pre-wrap; }
+    /* Modal */
+    .modal-bg { position: fixed; inset: 0; background: rgba(15,23,42,.6); display: none; align-items: center; justify-content: center; padding: 24px; z-index: 999; }
+    .modal-bg.aberto { display: flex; }
+    .modal { background: #fff; border-radius: 12px; max-width: 480px; width: 100%; padding: 24px; }
+    .modal h2 { font-size: 18px; margin-bottom: 16px; }
+    .modal label { display: block; font-size: 13px; font-weight: 600; margin: 12px 0 4px; }
+    .modal input, .modal textarea, .modal select { width: 100%; padding: 10px 12px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 14px; font-family: inherit; }
+    .modal__acoes { display: flex; gap: 8px; justify-content: flex-end; margin-top: 20px; }
+  </style>
 </head>
 <body>
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="sidebar__logo"><span>🏠</span><span>Minha Loja</span><span class="sidebar__badge">ADMIN</span></div>
+      <div class="sidebar__secao">Principal</div>
+      <nav class="sidebar__lista">
+        <a href="./index.html" class="sidebar__item">Dashboard</a>
+        <a href="./pedidos.html" class="sidebar__item">Pedidos</a>
+        <a href="./propostas.html" class="sidebar__item">Propostas</a>
+        <a href="./conversas.html" class="sidebar__item">Conversas</a>
+      </nav>
+      <div class="sidebar__secao">Catálogo</div>
+      <nav class="sidebar__lista">
+        <a href="./produtos.html" class="sidebar__item">Produtos</a>
+        <a href="./categorias.html" class="sidebar__item ativo">Categorias</a>
+      </nav>
+    </aside>
 
-  <div class="admin-layout">
-    <aside id="admin-sidebar" class="admin-sidebar"></aside>
-    <div id="admin-sidebar-overlay" class="admin-sidebar-overlay"></div>
-
-    <main class="admin-main">
-      <header class="admin-topbar">
-        <button id="admin-menu-btn" class="admin-topbar__menu-btn" aria-label="Abrir menu">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
-               stroke="currentColor" stroke-width="2">
-            <line x1="3" y1="6" x2="21" y2="6"/>
-            <line x1="3" y1="12" x2="21" y2="12"/>
-            <line x1="3" y1="18" x2="21" y2="18"/>
-          </svg>
-        </button>
-        <h1 class="admin-topbar__titulo">Categorias</h1>
-        <div class="admin-topbar__acoes">
-          <button class="btn btn--principal btn--sm" id="btn-nova-categoria">
-            + Nova categoria
-          </button>
-        </div>
+    <main class="main">
+      <header class="topbar">
+        <h1>Categorias</h1>
+        <button class="btn" id="btn-nova">+ Nova categoria</button>
       </header>
-
-      <div class="admin-conteudo">
-        <p class="admin-pagina-sub">
-          Organize seus produtos em categorias.
-        </p>
-        <div id="lista-categorias">
-          <div class="carregando"><div class="spinner"></div></div>
-        </div>
+      <div class="conteudo" id="conteudo">
+        <div class="vazio">Carregando...</div>
       </div>
     </main>
   </div>
 
-  <div id="modal-categoria" class="oculto"></div>
+  <div class="modal-bg" id="modal-bg">
+    <div class="modal">
+      <h2 id="modal-titulo">Nova categoria</h2>
+      <form id="form">
+        <label>Nome *</label>
+        <input type="text" id="nome" required />
+        <label>Descrição</label>
+        <textarea id="descricao" rows="3"></textarea>
+        <label>Ordem</label>
+        <input type="number" id="ordem" value="0" min="0" />
+        <label>Ativa</label>
+        <select id="ativo"><option value="true">Sim</option><option value="false">Não</option></select>
+        <div class="modal__acoes">
+          <button type="button" class="btn btn--fantasma" id="btn-cancelar">Cancelar</button>
+          <button type="submit" class="btn" id="btn-salvar">Salvar</button>
+        </div>
+      </form>
+    </div>
+  </div>
 
-  <script type="module" src="../assets/js/pages/admin-categorias.js"></script>
+  <script type="module">
+    const conteudo = document.getElementById('conteudo');
+    const modalBg = document.getElementById('modal-bg');
+    const form = document.getElementById('form');
+    const tituloModal = document.getElementById('modal-titulo');
+
+    let supabase, session, perfil;
+    let editandoId = null;
+    let categorias = [];
+
+    function erro(msg) {
+      conteudo.innerHTML = `<div class="erro"><strong>❌ Erro</strong>\n\n${msg}</div>`;
+    }
+
+    function slugify(s) {
+      return s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+        .replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+    }
+
+    async function carregar() {
+      const { data, error } = await supabase
+        .from('categories')
+        .select('*')
+        .order('ordem', { ascending: true })
+        .order('nome', { ascending: true });
+
+      if (error) { erro(error.message); return; }
+      categorias = data || [];
+
+      if (!categorias.length) {
+        conteudo.innerHTML = `
+          <div class="vazio">
+            <div style="font-size:18px;font-weight:600;color:#0f172a;margin-bottom:8px;">Nenhuma categoria ainda</div>
+            <p>Clique em "+ Nova categoria" para criar a primeira.</p>
+          </div>`;
+        return;
+      }
+
+      conteudo.innerHTML = `
+        <table class="tabela">
+          <thead><tr><th>Ordem</th><th>Nome</th><th>Slug</th><th>Status</th><th style="text-align:right;">Ações</th></tr></thead>
+          <tbody>
+            ${categorias.map(c => `
+              <tr>
+                <td>${c.ordem ?? 0}</td>
+                <td><strong>${escape(c.nome)}</strong></td>
+                <td style="color:#64748b;">${escape(c.slug || '')}</td>
+                <td>${c.ativo ? '<span class="badge badge--ok">Ativa</span>' : '<span class="badge badge--no">Inativa</span>'}</td>
+                <td style="text-align:right;">
+                  <button class="btn btn--fantasma" data-edit="${c.id}">Editar</button>
+                  <button class="btn btn--perigo" data-del="${c.id}">Excluir</button>
+                </td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      `;
+
+      conteudo.querySelectorAll('[data-edit]').forEach(b => {
+        b.onclick = () => {
+          const cat = categorias.find(x => x.id === b.dataset.edit);
+          abrirModal(cat);
+        };
+      });
+      conteudo.querySelectorAll('[data-del]').forEach(b => {
+        b.onclick = async () => {
+          const cat = categorias.find(x => x.id === b.dataset.del);
+          if (!confirm(`Excluir "${cat.nome}"?`)) return;
+          const { error } = await supabase.from('categories').delete().eq('id', cat.id);
+          if (error) { alert(error.message); return; }
+          carregar();
+        };
+      });
+    }
+
+    function abrirModal(cat = null) {
+      editandoId = cat?.id || null;
+      tituloModal.textContent = cat ? 'Editar categoria' : 'Nova categoria';
+      document.getElementById('nome').value = cat?.nome || '';
+      document.getElementById('descricao').value = cat?.descricao || '';
+      document.getElementById('ordem').value = cat?.ordem ?? 0;
+      document.getElementById('ativo').value = String(cat?.ativo ?? true);
+      modalBg.classList.add('aberto');
+    }
+
+    function fecharModal() {
+      modalBg.classList.remove('aberto');
+      form.reset();
+      editandoId = null;
+    }
+
+    document.getElementById('btn-nova').onclick = () => abrirModal();
+    document.getElementById('btn-cancelar').onclick = fecharModal;
+    modalBg.onclick = (e) => { if (e.target === modalBg) fecharModal(); };
+
+    form.onsubmit = async (e) => {
+      e.preventDefault();
+      const btn = document.getElementById('btn-salvar');
+      btn.disabled = true;
+      btn.textContent = 'Salvando...';
+
+      const nome = document.getElementById('nome').value.trim();
+      const payload = {
+        nome,
+        descricao: document.getElementById('descricao').value.trim() || null,
+        ordem: Number(document.getElementById('ordem').value) || 0,
+        ativo: document.getElementById('ativo').value === 'true',
+        slug: slugify(nome)
+      };
+
+      let error;
+      if (editandoId) {
+        ({ error } = await supabase.from('categories').update(payload).eq('id', editandoId));
+      } else {
+        ({ error } = await supabase.from('categories').insert(payload));
+      }
+
+      btn.disabled = false;
+      btn.textContent = 'Salvar';
+
+      if (error) { alert('Erro: ' + error.message); return; }
+      fecharModal();
+      carregar();
+    };
+
+    function escape(s) {
+      if (s == null) return '';
+      return String(s).replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]));
+    }
+
+    // -------------------------------------------------------------
+    // Inicialização
+    // -------------------------------------------------------------
+    (async () => {
+      try {
+        ({ supabase } = await import('../assets/js/supabase.js'));
+
+        const r = await supabase.auth.getSession();
+        session = r.data?.session;
+        if (!session) { window.location.href = '../login.html'; return; }
+
+        const p = await supabase.from('profiles').select('role').eq('id', session.user.id).maybeSingle();
+        perfil = p.data;
+        if (!perfil || perfil.role !== 'admin') {
+          erro('Acesso restrito. Este perfil não é admin.');
+          return;
+        }
+
+        await carregar();
+      } catch (e) {
+        console.error(e);
+        erro(e.message);
+      }
+    })();
+  </script>
 </body>
 </html>
