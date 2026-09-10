@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Notificações — Minha Loja</title>
+  <link rel="stylesheet" href="./assets/css/tokens.css" />
+  <link rel="stylesheet" href="./assets/css/base.css" />
+  <link rel="stylesheet" href="./assets/css/layout.css" />
+  <link rel="stylesheet" href="./assets/css/components.css" />
+  <link rel="stylesheet" href="./assets/css/store.css" />
+</head>
+<body>
+  <div id="header"></div>
+  <main class="conteudo">
+    <div class="container" style="max-width:800px;">
+      <div class="migalhas"><a href="./index.html">Início</a><span>Notificações</span></div>
+      <div class="flex-entre mb-4">
+        <h1 class="pagina-titulo" style="margin:0;">Notificações</h1>
+        <button class="btn btn--contorno btn--sm" id="btn-marcar-todas">Marcar todas como lidas</button>
+      </div>
+      <div id="conteudo"><div class="carregando"><div class="spinner spinner--lg"></div></div></div>
+    </div>
+  </main>
+  <div id="footer"></div>
+
+  <script type="module">
+    import { renderHeader } from './assets/js/components/header.js';
+    import { renderFooter } from './assets/js/components/footer.js';
+    import { iniciarConfiguracoes } from './assets/js/services/settings.service.js';
+    import { supabase } from './assets/js/supabase.js';
+    import { listarMinhasNotificacoes, marcarLida, marcarTodasLidas } from './assets/js/services/notifications.service.js';
+
+    await iniciarConfiguracoes();
+    await renderHeader('conta');
+    await renderFooter();
+
+    const el = document.getElementById('conteudo');
+    const esc = s => s == null ? '' : String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+
+    async function render() {
+      const r = await supabase.auth.getSession();
+      if (!r.data?.session) {
+        el.innerHTML = `<div class="estado-vazio"><div class="estado-vazio__titulo">Faça login</div><a href="./login.html?redirect=notificacoes.html" class="btn btn--principal">Fazer login</a></div>`;
+        return;
+      }
+
+      const lista = await listarMinhasNotificacoes();
+      if (!lista.length) {
+        el.innerHTML = `<div class="estado-vazio"><div class="estado-vazio__titulo">Nenhuma notificação</div><p class="estado-vazio__descricao">Você será avisado aqui quando houver novidades.</p></div>`;
+        return;
+      }
+
+      el.innerHTML = lista.map(n => `
+        <a href="${n.link || '#'}" class="cartao" data-id="${n.id}" style="display:block;margin-bottom:10px;text-decoration:none;color:inherit;${n.lida ? '' : 'border-left:4px solid var(--cor-principal);'}">
+          <div class="flex-entre mb-1">
+            <strong style="font-size:14px;">${esc(n.titulo)}</strong>
+            <span style="font-size:11px;color:var(--cor-texto-suave);">${new Date(n.created_at).toLocaleString('pt-BR')}</span>
+          </div>
+          ${n.mensagem ? `<div style="font-size:13px;color:var(--cor-texto-suave);">${esc(n.mensagem)}</div>` : ''}
+        </a>
+      `).join('');
+
+      el.querySelectorAll('[data-id]').forEach(a => a.onclick = async () => {
+        await marcarLida(a.dataset.id);
+      });
+    }
+
+    document.getElementById('btn-marcar-todas').onclick = async () => {
+      await marcarTodasLidas();
+      render();
+    };
+
+    render();
+  </script>
+</body>
+</html>

@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Finalizar pedido — Minha Loja</title>
+  <link rel="stylesheet" href="./assets/css/tokens.css" />
+  <link rel="stylesheet" href="./assets/css/base.css" />
+  <link rel="stylesheet" href="./assets/css/layout.css" />
+  <link rel="stylesheet" href="./assets/css/components.css" />
+  <link rel="stylesheet" href="./assets/css/store.css" />
+</head>
+<body>
+  <div id="header"></div>
+
+  <main class="conteudo">
+    <div class="container" style="max-width:900px;">
+      <div class="migalhas"><a href="./index.html">Início</a><a href="./carrinho.html">Carrinho</a><span>Finalizar</span></div>
+      <h1 class="pagina-titulo">Finalizar pedido</h1>
+
+      <div id="conteudo-checkout"><div class="carregando"><div class="spinner spinner--lg"></div></div></div>
+    </div>
+  </main>
+
+  <div id="footer"></div>
+
+  <script type="module">
+    import { renderHeader } from './assets/js/components/header.js';
+    import { renderFooter } from './assets/js/components/footer.js';
+    import { iniciarConfiguracoes } from './assets/js/services/settings.service.js';
+    import { supabase } from './assets/js/supabase.js';
+    import { criarPedido } from './assets/js/services/orders.service.js';
+    import { carregarEmpresa } from './assets/js/services/company.service.js';
+
+    await iniciarConfiguracoes();
+    await renderHeader('carrinho');
+    await renderFooter();
+
+    const el = document.getElementById('conteudo-checkout');
+
+    function ler() { try { return JSON.parse(localStorage.getItem('carrinho') || '[]'); } catch { return []; } }
+    function esc(s) { return s == null ? '' : String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+
+    async function init() {
+      const itens = ler();
+      if (!itens.length) {
+        el.innerHTML = `<div class="estado-vazio"><div class="estado-vazio__titulo">Carrinho vazio</div><a href="./produtos.html" class="btn btn--principal">Ver produtos</a></div>`;
+        return;
+      }
+
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        el.innerHTML = `
+          <div class="estado-vazio">
+            <div class="estado-vazio__titulo">Faça login para continuar</div>
+            <p class="estado-vazio__descricao">Você precisa estar logado para finalizar o pedido.</p>
+            <a href="./login.html?redirect=checkout.html" class="btn btn--principal">Fazer login</a>
+            <a href="./cadastro.html" class="btn btn--contorno">Criar conta</a>
+          </div>`;
+        return;
+      }
+
+      const perfil = (await supabase.from('profiles').select('*').eq('id', user.id).maybeSingle()).data || {};
+      const subtotal = itens.reduce((s, i) => s + i.preco * i.quantidade, 0);
+
+      el.innerHTML = `
+        <div style="display:grid;grid-template-columns:1fr 320px;gap:24px;align-items:start;">
+          <form id="form-checkout" class="cartao" style="padding:24px;">
+            <h2 style="margin-bottom:16px;font-size:16px;">Dados de contato</h2>
+            <div class="campo"><label>Nome completo</label><input type="text" id="nome" value="${esc(perfil.nome || '')}" required /></div>
+            <div class="campo-grupo" style="gap:12px;">
+              <div class="campo" style="flex:1;"><label>Telefone</label><input type="tel" id="telefone" value="${esc(perfil.telefone || '')}" /></div>
+              <div class="campo" style="flex:1;"><label>WhatsApp</label><input type="tel" id="whatsapp" value="${esc(perfil.whatsapp || '')}" /></div>
+            </div>
+            <div class="campo"><label>E-mail</label><input type="email" id="email" value="${esc(user.email || '')}" required /></div>
+
+            <h2 style="margin:24px 0 16px;font-size:16px;">Endereço de entrega</h2>
+            <div class="campo"><label>Endereço</label><input type="text" id="endereco" placeholder="Rua, número, complemento" /></div>
+            <div class="campo-grupo" style="gap:12px;">
+              <div class="campo" style="flex:2;"><label>Cidade</label><input type="text" id="cidade" /></div>
+              <div class="campo" style="flex:1;"><label>Estado</label><input type="text" id="estado" maxlength="2" placeholder="SP" /></div>
+              <div class="campo" style="flex:1;"><label>CEP</label><input type="text" id="cep" /></div>
+            </div>
+
+            <div class="campo"><label>Observações do pedido (opcional)</label><textarea id="obs" rows="3" placeholder="Forma de pagamento, observação, etc"></textarea></div>
+          </form>
+
+          <aside class="cartao" style="padding:24px;position:sticky;top:80px;">
+            <h2 style="margin-bottom:16px;font-size:16px;">Resumo do pedido</h2>
+            ${itens.map(i => `
+              <div style="display:flex;gap:8px;padding:8px 0;border-bottom:1px solid var(--cor-borda);font-size:13px;">
+                <div style="flex:1;">
+                  <div style="font-weight:600;">${esc(i.nome)}</div>
+                  <div style="color:var(--cor-texto-suave);">${i.quantidade}× R$ ${Number(i.preco).toFixed(2)}</div>
+                </div>
+                <div style="font-weight:700;">R$ ${(i.preco * i.quantidade).toFixed(2)}</div>
+              </div>
+            `).join('')}
+            <div class="resumo__total" style="margin-top:16px;padding-top:16px;">
+              <span>Total</span>
+              <span>R$ ${subtotal.toFixed(2)}</span>
+            </div>
+
+            <button id="btn-finalizar" class="btn btn--principal btn--bloco btn--lg mt-4">
+              Confirmar pedido
+            </button>
+            <div id="msg" style="margin-top:12px;"></div>
+          </aside>
+        </div>
+      `;
+
+      document.getElementById('btn-finalizar').onclick = async (e) => {
+        e.preventDefault();
+        const btn = e.target;
+        btn.disabled = true;
+        btn.textContent = 'Enviando pedido...';
+
+        const dadosContato = {
+          nome: document.getElementById('nome').value.trim(),
+          telefone: document.getElementById('telefone').value.trim(),
+          whatsapp: document.getElementById('whatsapp').value.trim(),
+          email: document.getElementById('email').value.trim(),
+          endereco: {
+            endereco: document.getElementById('endereco').value.trim(),
+            cidade: document.getElementById('cidade').value.trim(),
+            estado: document.getElementById('estado').value.trim().toUpperCase(),
+            cep: document.getElementById('cep').value.trim()
+          }
+        };
+
+        if (!dadosContato.nome || !dadosContato.email) {
+          document.getElementById('msg').innerHTML = '<div class="alerta alerta--erro">Preencha nome e e-mail.</div>';
+          btn.disabled = false; btn.textContent = 'Confirmar pedido';
+          return;
+        }
+
+        try {
+          const pedido = await criarPedido({
+            itens,
+            dadosContato,
+            observacoes: document.getElementById('obs').value.trim()
+          });
+
+          localStorage.removeItem('carrinho');
+
+          document.getElementById('msg').innerHTML = `
+            <div class="alerta alerta--sucesso">
+              ✅ Pedido <strong>${pedido.numero}</strong> criado com sucesso!<br>
+              Total: R$ ${pedido.total.toFixed(2)}
+            </div>`;
+          btn.textContent = 'Pedido enviado!';
+
+          setTimeout(() => location.href = './pedidos.html', 2000);
+        } catch (err) {
+          console.error(err);
+          document.getElementById('msg').innerHTML = `<div class="alerta alerta--erro">❌ ${esc(err.message)}</div>`;
+          btn.disabled = false; btn.textContent = 'Confirmar pedido';
+        }
+      };
+    }
+
+    init();
+  </script>
+</body>
+</html>

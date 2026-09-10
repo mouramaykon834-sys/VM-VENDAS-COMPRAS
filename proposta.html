@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Proposta — Minha Loja</title>
+  <link rel="stylesheet" href="./assets/css/tokens.css" />
+  <link rel="stylesheet" href="./assets/css/base.css" />
+  <link rel="stylesheet" href="./assets/css/layout.css" />
+  <link rel="stylesheet" href="./assets/css/components.css" />
+  <link rel="stylesheet" href="./assets/css/store.css" />
+</head>
+<body>
+  <div id="header"></div>
+  <main class="conteudo">
+    <div class="container" style="max-width:800px;">
+      <div id="conteudo"><div class="carregando"><div class="spinner spinner--lg"></div></div></div>
+    </div>
+  </main>
+  <div id="footer"></div>
+
+  <script type="module">
+    import { renderHeader } from './assets/js/components/header.js';
+    import { renderFooter } from './assets/js/components/footer.js';
+    import { iniciarConfiguracoes } from './assets/js/services/settings.service.js';
+    import { supabase } from './assets/js/supabase.js';
+    import { buscarProposta, rotuloStatusProposta, cancelarProposta } from './assets/js/services/proposals.service.js';
+
+    await iniciarConfiguracoes();
+    await renderHeader('conta');
+    await renderFooter();
+
+    const el = document.getElementById('conteudo');
+    const params = new URLSearchParams(location.search);
+    const id = params.get('id');
+    const esc = s => s == null ? '' : String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+
+    (async () => {
+      const r = await supabase.auth.getSession();
+      if (!r.data?.session) { location.href = './login.html?redirect=proposta.html%3Fid=' + id; return; }
+      if (!id) { el.innerHTML = '<div class="estado-vazio">Proposta não encontrada.</div>'; return; }
+
+      try {
+        const p = await buscarProposta(id);
+        if (!p || p.user_id !== r.data.session.user.id) { el.innerHTML = '<div class="estado-vazio">Proposta não encontrada ou não é sua.</div>'; return; }
+
+        const { texto, tipo } = rotuloStatusProposta(p.status);
+        const img = (p.products?.product_images || []).slice().sort((a,b) => (b.principal?1:0)-(a.principal?1:0))[0]?.url;
+
+        el.innerHTML = `
+          <div class="migalhas"><a href="./index.html">Início</a><a href="./propostas.html">Propostas</a><span>${esc(p.numero)}</span></div>
+          <h1 class="pagina-titulo">Proposta ${esc(p.numero)}</h1>
+
+          <div class="cartao" style="margin-bottom:16px;">
+            <div class="flex-entre mb-4">
+              <span class="badge badge--${tipo}">${texto}</span>
+              <span style="font-size:12px;color:var(--cor-texto-suave);">${new Date(p.created_at).toLocaleString('pt-BR')}</span>
+            </div>
+
+            <div style="display:grid;grid-template-columns:80px 1fr;gap:16px;align-items:start;">
+              ${img ? `<img src="${img}" style="width:80px;height:80px;object-fit:cover;border-radius:8px;" />` : `<div style="width:80px;height:80px;background:#f1f5f9;border-radius:8px;"></div>`}
+              <div>
+                <strong style="font-size:16px;">${esc(p.products?.nome || '-')}</strong>
+                <div style="color:var(--cor-texto-suave);font-size:13px;margin-top:4px;">Preço anunciado: R$ ${Number(p.preco_anunciado).toFixed(2)}</div>
+                <div style="margin-top:8px;">Quantidade: <strong>${p.quantidade}</strong></div>
+                <div>Você ofertou: <strong>R$ ${Number(p.valor_proposta).toFixed(2)}</strong></div>
+              </div>
+            </div>
+
+            ${p.mensagem ? `<div style="margin-top:16px;padding:12px;background:var(--cor-fundo-suave);border-radius:8px;"><strong>Sua mensagem:</strong><br>${esc(p.mensagem)}</div>` : ''}
+
+            ${p.valor_contra ? `<div style="margin-top:16px;padding:12px;background:#dbeafe;border-radius:8px;"><strong>Contraproposta da loja:</strong> R$ ${Number(p.valor_contra).toFixed(2)}</div>` : ''}
+            ${p.resposta_loja ? `<div style="margin-top:8px;padding:12px;background:#f0f9ff;border-radius:8px;"><strong>Resposta:</strong><br>${esc(p.resposta_loja)}</div>` : ''}
+          </div>
+
+          <div class="flex gap-2" style="flex-wrap:wrap;">
+            <a href="./produto.html?id=${p.product_id}" class="btn btn--contorno">Ver produto</a>
+            <a href="./conversa.html?proposta=${p.id}" class="btn btn--contorno">Conversar com a loja</a>
+            ${p.status === 'enviada' ? `<button class="btn btn--erro" id="btn-cancelar">Cancelar proposta</button>` : ''}
+          </div>
+        `;
+
+        const btnCancel = document.getElementById('btn-cancelar');
+        if (btnCancel) {
+          btnCancel.onclick = async () => {
+            if (!confirm('Cancelar essa proposta?')) return;
+            try { await cancelarProposta(p.id); location.reload(); }
+            catch (err) { alert('Erro: ' + err.message); }
+          };
+        }
+      } catch (e) {
+        el.innerHTML = `<div class="alerta alerta--erro">${esc(e.message)}</div>`;
+      }
+    })();
+  </script>
+</body>
+</html>

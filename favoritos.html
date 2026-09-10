@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Meus favoritos — Minha Loja</title>
+  <link rel="stylesheet" href="./assets/css/tokens.css" />
+  <link rel="stylesheet" href="./assets/css/base.css" />
+  <link rel="stylesheet" href="./assets/css/layout.css" />
+  <link rel="stylesheet" href="./assets/css/components.css" />
+  <link rel="stylesheet" href="./assets/css/store.css" />
+</head>
+<body>
+  <div id="header"></div>
+  <main class="conteudo">
+    <div class="container">
+      <div class="migalhas"><a href="./index.html">Início</a><span>Favoritos</span></div>
+      <h1 class="pagina-titulo">Meus favoritos</h1>
+      <div id="conteudo"><div class="carregando"><div class="spinner spinner--lg"></div></div></div>
+    </div>
+  </main>
+  <div id="footer"></div>
+
+  <script type="module">
+    import { renderHeader } from './assets/js/components/header.js';
+    import { renderFooter } from './assets/js/components/footer.js';
+    import { iniciarConfiguracoes } from './assets/js/services/settings.service.js';
+    import { supabase } from './assets/js/supabase.js';
+    import { listarMeusFavoritos, removerFavorito } from './assets/js/services/favorites.service.js';
+    import { rotuloDisponibilidade, rotuloCondicao } from './assets/js/services/products.service.js';
+
+    await iniciarConfiguracoes();
+    await renderHeader('favoritos');
+    await renderFooter();
+
+    const el = document.getElementById('conteudo');
+    const esc = s => s == null ? '' : String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+
+    async function render() {
+      const r = await supabase.auth.getSession();
+      if (!r.data?.session) {
+        el.innerHTML = `<div class="estado-vazio"><div class="estado-vazio__titulo">Faça login</div><a href="./login.html?redirect=favoritos.html" class="btn btn--principal">Fazer login</a></div>`;
+        return;
+      }
+      try {
+        const favs = await listarMeusFavoritos();
+        if (!favs.length) {
+          el.innerHTML = `<div class="estado-vazio"><div class="estado-vazio__titulo">Nenhum favorito ainda</div><p class="estado-vazio__descricao">Toque no ❤ nos produtos que você gostar.</p><a href="./produtos.html" class="btn btn--principal">Ver produtos</a></div>`;
+          return;
+        }
+
+        el.innerHTML = `<div class="grid grid-3">${favs.map(f => {
+          const p = f.products;
+          if (!p) return '';
+          const img = (p.product_images || []).slice().sort((a,b) => (b.principal?1:0)-(a.principal?1:0))[0]?.url;
+          const disp = rotuloDisponibilidade({ status: p.status, estoque: p.estoque });
+          const temPromo = p.preco_promocional != null && p.preco_promocional < p.preco;
+          const preco = temPromo ? Number(p.preco_promocional) : Number(p.preco);
+          return `
+            <article class="produto-card">
+              <a href="./produto.html?id=${p.id}" class="produto-card__imagem">
+                ${img ? `<img src="${img}" alt="" />` : `<div class="produto-card__sem-imagem"></div>`}
+              </a>
+              <button class="produto-card__favorito ativo" data-rm="${f.id}" title="Remover">❤</button>
+              <div class="produto-card__info">
+                <div class="produto-card__condicao">${rotuloCondicao(p.condicao)}</div>
+                <a href="./produto.html?id=${p.id}" class="produto-card__nome">${esc(p.nome)}</a>
+                <div class="produto-card__preco">R$ ${preco.toFixed(2)}</div>
+                <div><span class="badge badge--${disp.tipo}">${disp.texto}</span></div>
+                <div class="produto-card__acoes">
+                  <a href="./produto.html?id=${p.id}" class="btn btn--principal btn--sm">Ver</a>
+                </div>
+              </div>
+            </article>
+          `;
+        }).join('')}</div>`;
+
+        el.querySelectorAll('[data-rm]').forEach(b => b.onclick = async () => {
+          await removerFavorito(b.dataset.rm);
+          render();
+        });
+      } catch (e) {
+        el.innerHTML = `<div class="alerta alerta--erro">${esc(e.message)}</div>`;
+      }
+    }
+    render();
+  </script>
+</body>
+</html>

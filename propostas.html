@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Minhas propostas — Minha Loja</title>
+  <link rel="stylesheet" href="./assets/css/tokens.css" />
+  <link rel="stylesheet" href="./assets/css/base.css" />
+  <link rel="stylesheet" href="./assets/css/layout.css" />
+  <link rel="stylesheet" href="./assets/css/components.css" />
+  <link rel="stylesheet" href="./assets/css/store.css" />
+</head>
+<body>
+  <div id="header"></div>
+  <main class="conteudo">
+    <div class="container">
+      <div class="migalhas"><a href="./index.html">Início</a><span>Minhas propostas</span></div>
+      <h1 class="pagina-titulo">Minhas propostas</h1>
+      <div id="conteudo"><div class="carregando"><div class="spinner spinner--lg"></div></div></div>
+    </div>
+  </main>
+  <div id="footer"></div>
+
+  <script type="module">
+    import { renderHeader } from './assets/js/components/header.js';
+    import { renderFooter } from './assets/js/components/footer.js';
+    import { iniciarConfiguracoes } from './assets/js/services/settings.service.js';
+    import { supabase } from './assets/js/supabase.js';
+    import { listarMinhasPropostas, rotuloStatusProposta } from './assets/js/services/proposals.service.js';
+
+    await iniciarConfiguracoes();
+    await renderHeader('conta');
+    await renderFooter();
+
+    const el = document.getElementById('conteudo');
+    const esc = s => s == null ? '' : String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+
+    (async () => {
+      const r = await supabase.auth.getSession();
+      if (!r.data?.session) {
+        el.innerHTML = `<div class="estado-vazio"><div class="estado-vazio__titulo">Faça login</div><a href="./login.html?redirect=propostas.html" class="btn btn--principal">Fazer login</a></div>`;
+        return;
+      }
+
+      try {
+        const props = await listarMinhasPropostas();
+        if (!props.length) {
+          el.innerHTML = `<div class="estado-vazio"><div class="estado-vazio__titulo">Nenhuma proposta ainda</div><p class="estado-vazio__descricao">Quando você enviar uma proposta em algum produto, ela aparece aqui.</p><a href="./produtos.html" class="btn btn--principal">Ver produtos</a></div>`;
+          return;
+        }
+
+        el.innerHTML = props.map(p => {
+          const { texto, tipo } = rotuloStatusProposta(p.status);
+          const img = (p.products?.product_images || []).slice().sort((a,b) => (b.principal?1:0)-(a.principal?1:0))[0]?.url;
+          return `
+            <div class="cartao" style="margin-bottom:12px;">
+              <div style="display:grid;grid-template-columns:64px 1fr auto;gap:12px;align-items:center;">
+                ${img ? `<img src="${img}" style="width:64px;height:64px;object-fit:cover;border-radius:8px;" />` : `<div style="width:64px;height:64px;background:#f1f5f9;border-radius:8px;"></div>`}
+                <div>
+                  <strong>${esc(p.numero)}</strong>
+                  <div style="font-size:12px;color:var(--cor-texto-suave);">${esc(p.products?.nome || '-')}</div>
+                  <div style="font-size:13px;margin-top:4px;">
+                    Você ofertou <strong>R$ ${Number(p.valor_proposta).toFixed(2)}</strong>
+                    ${p.valor_contra ? ` · Contraproposta: <strong style="color:var(--cor-principal);">R$ ${Number(p.valor_contra).toFixed(2)}</strong>` : ''}
+                  </div>
+                </div>
+                <div style="text-align:right;">
+                  <span class="badge badge--${tipo}">${texto}</span>
+                  <div style="font-size:11px;color:var(--cor-texto-suave);margin-top:6px;">${new Date(p.created_at).toLocaleDateString('pt-BR')}</div>
+                  <a href="./proposta.html?id=${p.id}" class="btn btn--contorno btn--sm mt-2">Ver</a>
+                </div>
+              </div>
+            </div>
+          `;
+        }).join('');
+      } catch (e) {
+        el.innerHTML = `<div class="alerta alerta--erro">${esc(e.message)}</div>`;
+      }
+    })();
+  </script>
+</body>
+</html>

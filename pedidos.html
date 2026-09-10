@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Meus pedidos — Minha Loja</title>
+  <link rel="stylesheet" href="./assets/css/tokens.css" />
+  <link rel="stylesheet" href="./assets/css/base.css" />
+  <link rel="stylesheet" href="./assets/css/layout.css" />
+  <link rel="stylesheet" href="./assets/css/components.css" />
+  <link rel="stylesheet" href="./assets/css/store.css" />
+</head>
+<body>
+  <div id="header"></div>
+
+  <main class="conteudo">
+    <div class="container">
+      <div class="migalhas"><a href="./index.html">Início</a><span>Meus pedidos</span></div>
+      <h1 class="pagina-titulo">Meus pedidos</h1>
+      <div id="conteudo-pedidos"><div class="carregando"><div class="spinner spinner--lg"></div></div></div>
+    </div>
+  </main>
+
+  <div id="footer"></div>
+
+  <script type="module">
+    import { renderHeader } from './assets/js/components/header.js';
+    import { renderFooter } from './assets/js/components/footer.js';
+    import { iniciarConfiguracoes } from './assets/js/services/settings.service.js';
+    import { supabase } from './assets/js/supabase.js';
+    import { listarMeusPedidos, rotuloStatusPedido } from './assets/js/services/orders.service.js';
+
+    await iniciarConfiguracoes();
+    await renderHeader('conta');
+    await renderFooter();
+
+    const el = document.getElementById('conteudo-pedidos');
+
+    async function init() {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        el.innerHTML = `<div class="estado-vazio"><div class="estado-vazio__titulo">Faça login</div><p class="estado-vazio__descricao">É preciso estar logado para ver seus pedidos.</p><a href="./login.html?redirect=pedidos.html" class="btn btn--principal">Fazer login</a></div>`;
+        return;
+      }
+
+      try {
+        const pedidos = await listarMeusPedidos();
+        if (!pedidos.length) {
+          el.innerHTML = `<div class="estado-vazio"><div class="estado-vazio__titulo">Nenhum pedido ainda</div><p class="estado-vazio__descricao">Quando você fizer um pedido, ele vai aparecer aqui.</p><a href="./produtos.html" class="btn btn--principal">Ver produtos</a></div>`;
+          return;
+        }
+
+        el.innerHTML = pedidos.map(p => {
+          const { texto, tipo } = rotuloStatusPedido(p.status);
+          return `
+            <div class="cartao" style="margin-bottom:16px;">
+              <div class="flex-entre mb-3" style="flex-wrap:wrap;gap:8px;">
+                <div>
+                  <strong style="font-size:16px;">Pedido ${esc(p.numero)}</strong>
+                  <div style="font-size:12px;color:var(--cor-texto-suave);">${new Date(p.created_at).toLocaleString('pt-BR')}</div>
+                </div>
+                <span class="badge badge--${tipo}">${texto}</span>
+              </div>
+              <div style="font-size:13px;color:var(--cor-texto-suave);margin-bottom:8px;">
+                ${p.order_items.map(i => `${i.quantidade}× ${esc(i.product_nome)}`).join(' • ')}
+              </div>
+              <div class="flex-entre" style="padding-top:12px;border-top:1px solid var(--cor-borda);">
+                <span style="font-weight:700;">Total: R$ ${Number(p.total).toFixed(2)}</span>
+              </div>
+            </div>
+          `;
+        }).join('');
+      } catch (e) {
+        console.error(e);
+        el.innerHTML = `<div class="alerta alerta--erro">Erro ao carregar pedidos: ${esc(e.message)}</div>`;
+      }
+    }
+
+    function esc(s) { return s == null ? '' : String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+
+    init();
+  </script>
+</body>
+</html>

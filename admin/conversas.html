@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Conversas — Admin</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: system-ui, sans-serif; background: #f8fafc; color: #0f172a; }
+    .layout { display: grid; grid-template-columns: 240px 1fr; min-height: 100vh; }
+    .sidebar { background: #0f172a; color: #cbd5e1; padding: 16px 0; }
+    .sidebar__logo { display: flex; align-items: center; gap: 8px; padding: 0 16px 20px; border-bottom: 1px solid rgba(255,255,255,.1); margin-bottom: 16px; color: #fff; font-weight: 700; }
+    .sidebar__badge { background: #0ea5e9; color: #fff; padding: 2px 8px; border-radius: 6px; font-size: 10px; }
+    .sidebar__secao { padding: 16px 16px 8px; font-size: 11px; text-transform: uppercase; color: #64748b; font-weight: 600; }
+    .sidebar__lista { display: flex; flex-direction: column; gap: 2px; padding: 0 8px; }
+    .sidebar__item { padding: 10px 12px; border-radius: 8px; color: #cbd5e1; text-decoration: none; font-size: 14px; }
+    .sidebar__item:hover { background: rgba(255,255,255,.06); color: #fff; }
+    .sidebar__item.ativo { background: #0ea5e9; color: #fff; }
+    .main { display: flex; flex-direction: column; }
+    .topbar { background: #fff; border-bottom: 1px solid #e2e8f0; padding: 16px 24px; }
+    .topbar h1 { font-size: 18px; }
+    .conteudo { padding: 24px; }
+    .lista { background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden; }
+    .item { display: grid; grid-template-columns: 1fr auto; gap: 12px; padding: 14px 18px; border-bottom: 1px solid #e2e8f0; text-decoration: none; color: inherit; }
+    .item:last-child { border-bottom: none; }
+    .item:hover { background: #f8fafc; }
+    .item__nome { font-weight: 600; font-size: 14px; }
+    .item__assunto { font-size: 13px; color: #64748b; margin-top: 2px; }
+    .item__ultima { font-size: 12px; color: #94a3b8; margin-top: 4px; }
+    .item__lado { text-align: right; }
+    .badge { background: #dc2626; color: #fff; padding: 2px 8px; border-radius: 9999px; font-size: 11px; font-weight: 700; }
+    .badge--zero { background: #e2e8f0; color: #94a3b8; }
+    .vazio { background: #fff; padding: 60px 24px; text-align: center; border-radius: 12px; border: 1px solid #e2e8f0; color: #64748b; }
+    .erro { padding: 20px; background: #fee2e2; color: #991b1b; border-radius: 8px; margin: 20px; font-family: monospace; }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="sidebar__logo"><span>🏠</span><span>Minha Loja</span><span class="sidebar__badge">ADMIN</span></div>
+      <div class="sidebar__secao">Principal</div>
+      <nav class="sidebar__lista">
+        <a href="./index.html" class="sidebar__item">Dashboard</a>
+        <a href="./pedidos.html" class="sidebar__item">Pedidos</a>
+        <a href="./propostas.html" class="sidebar__item">Propostas</a>
+        <a href="./conversas.html" class="sidebar__item ativo">Conversas</a>
+      </nav>
+      <div class="sidebar__secao">Catálogo</div>
+      <nav class="sidebar__lista">
+        <a href="./produtos.html" class="sidebar__item">Produtos</a>
+        <a href="./categorias.html" class="sidebar__item">Categorias</a>
+      </nav>
+      <div class="sidebar__secao">Configurações</div>
+      <nav class="sidebar__lista">
+        <a href="./empresa.html" class="sidebar__item">Dados da empresa</a>
+        <a href="./identidade.html" class="sidebar__item">Identidade visual</a>
+      </nav>
+    </aside>
+    <main class="main">
+      <header class="topbar"><h1>Conversas</h1></header>
+      <div class="conteudo" id="conteudo"><div class="vazio">Carregando...</div></div>
+    </main>
+  </div>
+
+  <script type="module">
+    const el = document.getElementById('conteudo');
+    const esc = s => s == null ? '' : String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+
+    (async () => {
+      try {
+        const { supabase } = await import('../assets/js/supabase.js');
+        const r = await supabase.auth.getSession();
+        if (!r.data?.session) { location.href = '../login.html'; return; }
+        const p = await supabase.from('profiles').select('role').eq('id', r.data.session.user.id).maybeSingle();
+        if (!p.data || p.data.role !== 'admin') { el.innerHTML = '<div class="erro">Acesso restrito</div>'; return; }
+
+        const { data, error } = await supabase
+          .from('chats')
+          .select(`id, assunto, ultima_msg, ultima_msg_at, nao_lidas_admin, profiles:user_id ( nome, email )`)
+          .order('ultima_msg_at', { ascending: false, nullsFirst: false });
+
+        if (error) { el.innerHTML = `<div class="erro">${esc(error.message)}</div>`; return; }
+        if (!data.length) {
+          el.innerHTML = `<div class="vazio"><div style="font-size:18px;font-weight:600;color:#0f172a;margin-bottom:8px;">Nenhuma conversa</div><p>As mensagens dos clientes aparecerão aqui.</p></div>`;
+          return;
+        }
+
+        el.innerHTML = `<div class="lista">${data.map(c => `
+          <a href="./conversa.html?id=${c.id}" class="item">
+            <div>
+              <div class="item__nome">${esc(c.profiles?.nome || 'Cliente')}</div>
+              <div class="item__assunto">${esc(c.assunto || 'Conversa')}</div>
+              <div class="item__ultima">${esc((c.ultima_msg || '').slice(0, 80))}</div>
+            </div>
+            <div class="item__lado">
+              <span class="badge ${c.nao_lidas_admin > 0 ? '' : 'badge--zero'}">${c.nao_lidas_admin || 0}</span>
+              <div style="font-size:11px;color:#94a3b8;margin-top:6px;">${c.ultima_msg_at ? new Date(c.ultima_msg_at).toLocaleDateString('pt-BR') : ''}</div>
+            </div>
+          </a>
+        `).join('')}</div>`;
+
+      } catch (e) { el.innerHTML = `<div class="erro">${esc(e.message)}</div>`; }
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Conversa — Admin</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: system-ui, sans-serif; background: #f8fafc; color: #0f172a; }
+    .layout { display: grid; grid-template-columns: 240px 1fr; min-height: 100vh; }
+    .sidebar { background: #0f172a; color: #cbd5e1; padding: 16px 0; }
+    .sidebar__logo { display: flex; align-items: center; gap: 8px; padding: 0 16px 20px; border-bottom: 1px solid rgba(255,255,255,.1); margin-bottom: 16px; color: #fff; font-weight: 700; }
+    .sidebar__badge { background: #0ea5e9; color: #fff; padding: 2px 8px; border-radius: 6px; font-size: 10px; }
+    .sidebar__secao { padding: 16px 16px 8px; font-size: 11px; text-transform: uppercase; color: #64748b; font-weight: 600; }
+    .sidebar__lista { display: flex; flex-direction: column; gap: 2px; padding: 0 8px; }
+    .sidebar__item { padding: 10px 12px; border-radius: 8px; color: #cbd5e1; text-decoration: none; font-size: 14px; }
+    .sidebar__item:hover { background: rgba(255,255,255,.06); color: #fff; }
+    .sidebar__item.ativo { background: #0ea5e9; color: #fff; }
+    .main { display: flex; flex-direction: column; height: 100vh; }
+    .topbar { background: #fff; border-bottom: 1px solid #e2e8f0; padding: 14px 24px; display: flex; justify-content: space-between; align-items: center; }
+    .topbar h1 { font-size: 16px; }
+    .topbar a { color: #0ea5e9; text-decoration: none; font-size: 13px; }
+    .chat-body { flex: 1; overflow-y: auto; padding: 20px; background: #f8fafc; display: flex; flex-direction: column; gap: 8px; }
+    .msg { max-width: 70%; padding: 10px 14px; border-radius: 12px; font-size: 14px; line-height: 1.4; word-wrap: break-word; }
+    .msg--me { background: #0ea5e9; color: #fff; align-self: flex-end; }
+    .msg--other { background: #fff; color: #0f172a; border: 1px solid #e2e8f0; align-self: flex-start; }
+    .msg__hora { font-size: 10px; opacity: .7; margin-top: 4px; display: block; }
+    .msg img { max-width: 100%; border-radius: 8px; margin-top: 4px; }
+    .chat-input { padding: 12px 24px; border-top: 1px solid #e2e8f0; display: flex; gap: 8px; align-items: center; background: #fff; }
+    .chat-input input[type=text] { flex: 1; padding: 10px 14px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 14px; }
+    .chat-input input[type=file] { display: none; }
+    .btn { padding: 8px 16px; border-radius: 8px; border: 1px solid transparent; background: #0ea5e9; color: #fff; font-weight: 600; cursor: pointer; font-size: 14px; }
+    .btn--fantasma { background: transparent; color: #0ea5e9; }
+    .erro { padding: 20px; background: #fee2e2; color: #991b1b; border-radius: 8px; margin: 20px; font-family: monospace; }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="sidebar__logo"><span>🏠</span><span>Minha Loja</span><span class="sidebar__badge">ADMIN</span></div>
+      <div class="sidebar__secao">Principal</div>
+      <nav class="sidebar__lista">
+        <a href="./index.html" class="sidebar__item">Dashboard</a>
+        <a href="./pedidos.html" class="sidebar__item">Pedidos</a>
+        <a href="./propostas.html" class="sidebar__item">Propostas</a>
+        <a href="./conversas.html" class="sidebar__item ativo">Conversas</a>
+      </nav>
+      <div class="sidebar__secao">Catálogo</div>
+      <nav class="sidebar__lista">
+        <a href="./produtos.html" class="sidebar__item">Produtos</a>
+        <a href="./categorias.html" class="sidebar__item">Categorias</a>
+      </nav>
+    </aside>
+    <main class="main">
+      <header class="topbar" id="topbar">
+        <h1>Conversa</h1>
+        <a href="./conversas.html">← Voltar</a>
+      </header>
+      <div class="chat-body" id="corpo"><div class="erro">Carregando...</div></div>
+      <div class="chat-input" id="input-wrap" style="display:none;">
+        <input type="file" id="file-img" accept="image/*" />
+        <button class="btn btn--fantasma" id="btn-img" title="Anexar imagem">📎</button>
+        <input type="text" id="input-msg" placeholder="Digite uma mensagem..." />
+        <button class="btn" id="btn-enviar">Enviar</button>
+      </div>
+    </main>
+  </div>
+
+  <script type="module">
+    const params = new URLSearchParams(location.search);
+    const chatId = params.get('id');
+    const corpo = document.getElementById('corpo');
+    const esc = s => s == null ? '' : String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+
+    let supabase, user, chat;
+
+    (async () => {
+      try {
+        ({ supabase } = await import('../assets/js/supabase.js'));
+        const { listarMensagens, enviarMensagem, marcarComoLidas, uploadImagemChat, buscarChat } = await import('../assets/js/services/chat.service.js');
+
+        const r = await supabase.auth.getSession();
+        if (!r.data?.session) { location.href = '../login.html'; return; }
+        user = r.data.session.user;
+
+        const p = await supabase.from('profiles').select('role').eq('id', user.id).maybeSingle();
+        if (!p.data || p.data.role !== 'admin') { corpo.innerHTML = '<div class="erro">Acesso restrito</div>'; return; }
+        if (!chatId) { corpo.innerHTML = '<div class="erro">Conversa não encontrada</div>'; return; }
+
+        chat = await buscarChat(chatId);
+        if (!chat) { corpo.innerHTML = '<div class="erro">Conversa não encontrada</div>'; return; }
+
+        document.querySelector('#topbar h1').textContent = chat.profiles?.nome || 'Cliente';
+
+        document.getElementById('input-wrap').style.display = 'flex';
+
+        await recarregar();
+        await marcarComoLidas(chatId, 'admin');
+
+        supabase.channel('chat-admin-' + chatId)
+          .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'chat_messages', filter: `chat_id=eq.${chatId}` }, () => recarregar())
+          .subscribe();
+
+        document.getElementById('btn-enviar').onclick = async () => {
+          const inp = document.getElementById('input-msg');
+          const txt = inp.value.trim();
+          if (!txt) return;
+          inp.value = '';
+          await enviarMensagem(chatId, { conteudo: txt });
+          await recarregar();
+        };
+        document.getElementById('input-msg').onkeydown = (e) => { if (e.key === 'Enter') document.getElementById('btn-enviar').click(); };
+        document.getElementById('btn-img').onclick = () => document.getElementById('file-img').click();
+        document.getElementById('file-img').onchange = async (e) => {
+          const file = e.target.files?.[0];
+          if (!file) return;
+          try {
+            const { url, path } = await uploadImagemChat(chatId, file);
+            await enviarMensagem(chatId, { conteudo: null, imagem_url: url, storage_path: path });
+            await recarregar();
+          } catch (err) { alert('Erro: ' + err.message); }
+          e.target.value = '';
+        };
+
+        async function recarregar() {
+          const msgs = await listarMensagens(chatId);
+          corpo.innerHTML = msgs.map(m => {
+            const me = m.sender_id === user.id;
+            return `
+              <div class="msg msg--${me ? 'me' : 'other'}">
+                ${m.conteudo ? esc(m.conteudo) : ''}
+                ${m.imagem_url ? `<img src="${m.imagem_url}" alt="" />` : ''}
+                <span class="msg__hora">${new Date(m.created_at).toLocaleString('pt-BR')}</span>
+              </div>
+            `;
+          }).join('');
+          corpo.scrollTop = corpo.scrollHeight;
+        }
+      } catch (e) {
+        console.error(e);
+        corpo.innerHTML = `<div class="erro">${esc(e.message)}</div>`;
+      }
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Propostas — Admin</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: system-ui, sans-serif; background: #f8fafc; color: #0f172a; }
+    .layout { display: grid; grid-template-columns: 240px 1fr; min-height: 100vh; }
+    .sidebar { background: #0f172a; color: #cbd5e1; padding: 16px 0; }
+    .sidebar__logo { display: flex; align-items: center; gap: 8px; padding: 0 16px 20px; border-bottom: 1px solid rgba(255,255,255,.1); margin-bottom: 16px; color: #fff; font-weight: 700; }
+    .sidebar__badge { background: #0ea5e9; color: #fff; padding: 2px 8px; border-radius: 6px; font-size: 10px; }
+    .sidebar__secao { padding: 16px 16px 8px; font-size: 11px; text-transform: uppercase; color: #64748b; font-weight: 600; }
+    .sidebar__lista { display: flex; flex-direction: column; gap: 2px; padding: 0 8px; }
+    .sidebar__item { padding: 10px 12px; border-radius: 8px; color: #cbd5e1; text-decoration: none; font-size: 14px; }
+    .sidebar__item:hover { background: rgba(255,255,255,.06); color: #fff; }
+    .sidebar__item.ativo { background: #0ea5e9; color: #fff; }
+    .main { display: flex; flex-direction: column; }
+    .topbar { background: #fff; border-bottom: 1px solid #e2e8f0; padding: 16px 24px; display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+    .topbar h1 { font-size: 18px; }
+    .topbar select { padding: 8px 12px; border: 1px solid #e2e8f0; border-radius: 8px; }
+    .conteudo { padding: 24px; }
+    .tabela { width: 100%; background: #fff; border-collapse: collapse; border-radius: 12px; overflow: hidden; border: 1px solid #e2e8f0; }
+    .tabela th { text-align: left; padding: 12px 16px; background: #f8fafc; font-size: 12px; text-transform: uppercase; color: #64748b; }
+    .tabela td { padding: 12px 16px; border-top: 1px solid #e2e8f0; font-size: 14px; }
+    .tabela tr:hover td { background: #f8fafc; }
+    .badge { padding: 3px 10px; border-radius: 9999px; font-size: 11px; font-weight: 600; }
+    .badge--info { background: #dbeafe; color: #1e40af; }
+    .badge--alerta { background: #fef3c7; color: #92400e; }
+    .badge--sucesso { background: #dcfce7; color: #166534; }
+    .badge--erro { background: #fee2e2; color: #991b1b; }
+    .badge--neutro { background: #f1f5f9; color: #64748b; }
+    .vazio { background: #fff; padding: 60px 24px; text-align: center; border-radius: 12px; border: 1px solid #e2e8f0; color: #64748b; }
+    .erro { padding: 20px; background: #fee2e2; color: #991b1b; border-radius: 8px; margin: 20px; font-family: monospace; }
+    .btn { padding: 6px 10px; border-radius: 6px; border: 1px solid transparent; background: transparent; color: #0ea5e9; font-size: 13px; cursor: pointer; text-decoration: none; }
+    .btn:hover { background: #f0f9ff; }
+    /* Modal */
+    .modal-bg { position: fixed; inset: 0; background: rgba(15,23,42,.6); display: none; align-items: center; justify-content: center; padding: 24px; z-index: 999; }
+    .modal-bg.aberto { display: flex; }
+    .modal { background: #fff; border-radius: 12px; max-width: 560px; width: 100%; padding: 24px; max-height: 90vh; overflow-y: auto; }
+    .modal h2 { font-size: 18px; margin-bottom: 16px; }
+    .modal label { display: block; font-size: 13px; font-weight: 600; margin: 12px 0 4px; }
+    .modal input, .modal textarea, .modal select { width: 100%; padding: 10px 12px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 14px; font-family: inherit; }
+    .modal__acoes { display: flex; gap: 8px; justify-content: flex-end; margin-top: 20px; }
+    .btn--primario { background: #0ea5e9; color: #fff; padding: 10px 18px; font-weight: 600; }
+    .btn--primario:hover { background: #0284c7; color: #fff; }
+    .btn--fantasma { color: #0ea5e9; padding: 10px 18px; }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="sidebar__logo"><span>🏠</span><span>Minha Loja</span><span class="sidebar__badge">ADMIN</span></div>
+      <div class="sidebar__secao">Principal</div>
+      <nav class="sidebar__lista">
+        <a href="./index.html" class="sidebar__item">Dashboard</a>
+        <a href="./pedidos.html" class="sidebar__item">Pedidos</a>
+        <a href="./propostas.html" class="sidebar__item ativo">Propostas</a>
+        <a href="./conversas.html" class="sidebar__item">Conversas</a>
+      </nav>
+      <div class="sidebar__secao">Catálogo</div>
+      <nav class="sidebar__lista">
+        <a href="./produtos.html" class="sidebar__item">Produtos</a>
+        <a href="./categorias.html" class="sidebar__item">Categorias</a>
+      </nav>
+      <div class="sidebar__secao">Configurações</div>
+      <nav class="sidebar__lista">
+        <a href="./empresa.html" class="sidebar__item">Dados da empresa</a>
+        <a href="./identidade.html" class="sidebar__item">Identidade visual</a>
+      </nav>
+    </aside>
+    <main class="main">
+      <header class="topbar">
+        <h1>Propostas</h1>
+        <select id="filtro">
+          <option value="">Todas</option>
+          <option value="enviada">Enviadas</option>
+          <option value="em_analise">Em análise</option>
+          <option value="contraproposta">Contraproposta</option>
+          <option value="aceita">Aceitas</option>
+          <option value="recusada">Recusadas</option>
+          <option value="cancelada">Canceladas</option>
+        </select>
+      </header>
+      <div class="conteudo" id="conteudo"><div class="vazio">Carregando...</div></div>
+    </main>
+  </div>
+
+  <div class="modal-bg" id="modal-bg">
+    <div class="modal" id="modal-corpo"></div>
+  </div>
+
+  <script type="module">
+    let supabase;
+    const el = document.getElementById('conteudo');
+    const modalBg = document.getElementById('modal-bg');
+    const modalCorpo = document.getElementById('modal-corpo');
+    const esc = s => s == null ? '' : String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+
+    function badge(s) {
+      const map = {
+        enviada:        ['info', 'Enviada'],
+        em_analise:     ['info', 'Em análise'],
+        contraproposta: ['alerta', 'Contraproposta'],
+        aceita:         ['sucesso', 'Aceita'],
+        recusada:       ['erro', 'Recusada'],
+        cancelada:      ['neutro', 'Cancelada'],
+        concluida:      ['sucesso', 'Concluída']
+      };
+      const [tipo, texto] = map[s] || ['neutro', s];
+      return `<span class="badge badge--${tipo}">${texto}</span>`;
+    }
+
+    async function carregar() {
+      el.innerHTML = '<div class="vazio">Carregando...</div>';
+      const status = document.getElementById('filtro').value;
+
+      let q = supabase
+        .from('proposals')
+        .select(`id, numero, valor_proposta, preco_anunciado, quantidade, status, created_at, user_id, product_id, profiles:user_id ( nome, email, telefone, whatsapp ), products:product_id ( nome )`)
+        .order('created_at', { ascending: false });
+      if (status) q = q.eq('status', status);
+
+      const { data, error } = await q;
+      if (error) { el.innerHTML = `<div class="erro">${esc(error.message)}</div>`; return; }
+
+      if (!data.length) {
+        el.innerHTML = `<div class="vazio"><div style="font-size:18px;font-weight:600;color:#0f172a;margin-bottom:8px;">Nenhuma proposta</div><p>As propostas enviadas pelos clientes aparecerão aqui.</p></div>`;
+        return;
+      }
+
+      el.innerHTML = `
+        <table class="tabela">
+          <thead><tr><th>Número</th><th>Cliente</th><th>Produto</th><th>Ofertado</th><th>Anunciado</th><th>Status</th><th>Data</th><th></th></tr></thead>
+          <tbody>
+            ${data.map(p => `
+              <tr>
+                <td><strong>${esc(p.numero)}</strong></td>
+                <td>${esc(p.profiles?.nome || '-')}<div style="font-size:11px;color:#94a3b8;">${esc(p.profiles?.email || '')}</div></td>
+                <td>${esc(p.products?.nome || '-')}</td>
+                <td><strong>R$ ${Number(p.valor_proposta).toFixed(2)}</strong></td>
+                <td style="color:#94a3b8;">R$ ${Number(p.preco_anunciado).toFixed(2)}</td>
+                <td>${badge(p.status)}</td>
+                <td style="font-size:12px;color:#64748b;">${new Date(p.created_at).toLocaleDateString('pt-BR')}</td>
+                <td><button class="btn" data-ver="${p.id}">Analisar</button></td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      `;
+
+      el.querySelectorAll('[data-ver]').forEach(b => {
+        b.onclick = () => abrirModal(data.find(x => x.id === b.dataset.ver));
+      });
+    }
+
+    function abrirModal(p) {
+      modalBg.classList.add('aberto');
+      modalCorpo.innerHTML = `
+        <h2>Proposta ${esc(p.numero)}</h2>
+        <div style="padding:12px;background:#f8fafc;border-radius:8px;margin-bottom:16px;font-size:14px;line-height:1.7;">
+          <div><strong>Cliente:</strong> ${esc(p.profiles?.nome || '-')}</div>
+          <div><strong>E-mail:</strong> ${esc(p.profiles?.email || '-')}</div>
+          <div><strong>Telefone:</strong> ${esc(p.profiles?.telefone || '-')}</div>
+          <div><strong>WhatsApp:</strong> ${esc(p.profiles?.whatsapp || '-')}</div>
+        </div>
+        <div style="padding:12px;background:#f8fafc;border-radius:8px;margin-bottom:16px;font-size:14px;">
+          <div><strong>Produto:</strong> ${esc(p.products?.nome || '-')}</div>
+          <div><strong>Preço anunciado:</strong> R$ ${Number(p.preco_anunciado).toFixed(2)}</div>
+          <div><strong>Ofertado:</strong> R$ ${Number(p.valor_proposta).toFixed(2)}</div>
+          <div><strong>Quantidade:</strong> ${p.quantidade}</div>
+        </div>
+        <form id="form-resp">
+          <label>Ação</label>
+          <select id="acao" required>
+            <option value="">Escolha...</option>
+            <option value="em_analise">Marcar em análise</option>
+            <option value="contraproposta">Enviar contraproposta</option>
+            <option value="aceita">Aceitar</option>
+            <option value="recusada">Recusar</option>
+          </select>
+
+          <label>Valor da contraproposta (R$) — só se escolher "Enviar contraproposta"</label>
+          <input type="number" id="valor_contra" step="0.01" min="0" />
+
+          <label>Mensagem para o cliente</label>
+          <textarea id="resposta" rows="3" placeholder="Explicação, condição, etc"></textarea>
+
+          <div class="modal__acoes">
+            <button type="button" class="btn btn--fantasma" id="btn-fechar">Fechar</button>
+            <button type="submit" class="btn btn--primario">Salvar resposta</button>
+          </div>
+        </form>
+      `;
+
+      document.getElementById('btn-fechar').onclick = () => modalBg.classList.remove('aberto');
+      modalBg.onclick = (e) => { if (e.target === modalBg) modalBg.classList.remove('aberto'); };
+
+      document.getElementById('form-resp').onsubmit = async (e) => {
+        e.preventDefault();
+        const acao = document.getElementById('acao').value;
+        if (!acao) { alert('Escolha uma ação'); return; }
+
+        const valor = document.getElementById('valor_contra').value;
+        const resposta = document.getElementById('resposta').value.trim();
+
+        if (acao === 'contraproposta' && !valor) { alert('Informe o valor da contraproposta'); return; }
+
+        const payload = { status: acao };
+        if (valor) payload.valor_contra = Number(valor);
+        if (resposta) payload.resposta_loja = resposta;
+
+        const { error } = await supabase.from('proposals').update(payload).eq('id', p.id);
+        if (error) { alert('Erro: ' + error.message); return; }
+
+        // Notifica cliente
+        try {
+          await supabase.from('notifications').insert({
+            user_id: p.user_id,
+            tipo: 'proposta',
+            titulo: acao === 'aceita' ? 'Sua proposta foi aceita!'
+                  : acao === 'recusada' ? 'Sua proposta foi recusada'
+                  : acao === 'contraproposta' ? 'Nova contraproposta recebida'
+                  : 'Atualização na sua proposta',
+            mensagem: `Proposta ${p.numero}`,
+            link: `./proposta.html?id=${p.id}`
+          });
+        } catch (_) {}
+
+        modalBg.classList.remove('aberto');
+        carregar();
+      };
+    }
+
+    (async () => {
+      try {
+        ({ supabase } = await import('../assets/js/supabase.js'));
+        const r = await supabase.auth.getSession();
+        if (!r.data?.session) { location.href = '../login.html'; return; }
+        const p = await supabase.from('profiles').select('role').eq('id', r.data.session.user.id).maybeSingle();
+        if (!p.data || p.data.role !== 'admin') { el.innerHTML = '<div class="erro">Acesso restrito</div>'; return; }
+
+        document.getElementById('filtro').onchange = carregar;
+        await carregar();
+      } catch (e) { el.innerHTML = `<div class="erro">${esc(e.message)}</div>`; }
+    })();
+  </script>
+</body>
+</html>
