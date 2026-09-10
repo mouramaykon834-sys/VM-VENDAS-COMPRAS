@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Entrar — Minha Loja</title>
+
+  <link rel="stylesheet" href="./assets/css/tokens.css" />
+  <link rel="stylesheet" href="./assets/css/base.css" />
+  <link rel="stylesheet" href="./assets/css/layout.css" />
+  <link rel="stylesheet" href="./assets/css/components.css" />
+  <link rel="stylesheet" href="./assets/css/store.css" />
+
+  <style>
+    .tela-auth {
+      min-height: calc(100vh - var(--altura-header));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: var(--esp-6) var(--esp-4);
+    }
+    .cartao-auth {
+      width: 100%;
+      max-width: 420px;
+      background: #fff;
+      border: 1px solid var(--cor-borda);
+      border-radius: var(--raio-xl);
+      padding: var(--esp-8);
+      box-shadow: var(--sombra-md);
+    }
+    .cartao-auth__titulo {
+      font-size: var(--texto-2xl);
+      margin-bottom: var(--esp-2);
+      text-align: center;
+    }
+    .cartao-auth__subtitulo {
+      color: var(--cor-texto-suave);
+      text-align: center;
+      margin-bottom: var(--esp-6);
+      font-size: var(--texto-sm);
+    }
+    .cartao-auth__rodape {
+      margin-top: var(--esp-5);
+      padding-top: var(--esp-5);
+      border-top: 1px solid var(--cor-borda);
+      text-align: center;
+      font-size: var(--texto-sm);
+      color: var(--cor-texto-suave);
+    }
+  </style>
+</head>
+<body>
+
+  <div id="header"></div>
+
+  <main class="tela-auth">
+    <div class="cartao-auth">
+
+      <h1 class="cartao-auth__titulo">Entrar</h1>
+      <p class="cartao-auth__subtitulo">Acesse sua conta para comprar, favoritar e fazer propostas.</p>
+
+      <div id="aviso-erro" class="oculto"></div>
+
+      <form id="form-login" novalidate>
+
+        <div class="campo">
+          <label for="email">E-mail</label>
+          <input type="email" id="email" name="email" autocomplete="email" required />
+        </div>
+
+        <div class="campo">
+          <label for="senha">Senha</label>
+          <input type="password" id="senha" name="senha" autocomplete="current-password" required />
+        </div>
+
+        <button type="submit" class="btn btn--principal btn--bloco btn--lg" id="btn-entrar">
+          Entrar
+        </button>
+
+        <div class="flex-entre mt-4" style="font-size: var(--texto-sm);">
+          <a href="./recuperar-senha.html">Esqueci minha senha</a>
+        </div>
+
+      </form>
+
+      <div class="cartao-auth__rodape">
+        Não tem conta? <a href="./cadastro.html"><strong>Criar agora</strong></a>
+      </div>
+
+    </div>
+  </main>
+
+  <div id="footer"></div>
+
+  <script type="module">
+    import { renderHeader } from './assets/js/components/header.js';
+    import { renderFooter } from './assets/js/components/footer.js';
+    import { entrar } from './assets/js/services/auth.service.js';
+    import { requireGuest, redirecionarPosLogin } from './assets/js/core/guards.js';
+
+    // Se já estiver logado, manda para home
+    await requireGuest();
+    await renderHeader();
+    await renderFooter();
+
+    const form = document.getElementById('form-login');
+    const btn  = document.getElementById('btn-entrar');
+    const aviso = document.getElementById('aviso-erro');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      aviso.classList.add('oculto');
+
+      const email = form.email.value.trim();
+      const senha = form.senha.value;
+
+      if (!email || !senha) {
+        mostrarErro('Preencha e-mail e senha.');
+        return;
+      }
+
+      btn.disabled = true;
+      btn.textContent = 'Entrando...';
+
+      try {
+        await entrar({ email, senha });
+        redirecionarPosLogin();
+      } catch (err) {
+        mostrarErro(err.message || 'Erro ao entrar. Tente novamente.');
+        btn.disabled = false;
+        btn.textContent = 'Entrar';
+      }
+    });
+
+    function mostrarErro(msg) {
+      aviso.className = 'alerta alerta--erro';
+      aviso.innerHTML = `<div>${escapeHtml(msg)}</div>`;
+    }
+
+    function escapeHtml(s) {
+      if (s == null) return '';
+      return String(s)
+        .replaceAll('&', '&amp;').replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;').replaceAll('"', '&quot;')
+        .replaceAll("'", '&#39;');
+    }
+  </script>
+</body>
+</html>

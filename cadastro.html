@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Criar conta — Minha Loja</title>
+
+  <link rel="stylesheet" href="./assets/css/tokens.css" />
+  <link rel="stylesheet" href="./assets/css/base.css" />
+  <link rel="stylesheet" href="./assets/css/layout.css" />
+  <link rel="stylesheet" href="./assets/css/components.css" />
+  <link rel="stylesheet" href="./assets/css/store.css" />
+
+  <style>
+    .tela-auth {
+      min-height: calc(100vh - var(--altura-header));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: var(--esp-6) var(--esp-4);
+    }
+    .cartao-auth {
+      width: 100%;
+      max-width: 460px;
+      background: #fff;
+      border: 1px solid var(--cor-borda);
+      border-radius: var(--raio-xl);
+      padding: var(--esp-8);
+      box-shadow: var(--sombra-md);
+    }
+    .cartao-auth__titulo {
+      font-size: var(--texto-2xl);
+      margin-bottom: var(--esp-2);
+      text-align: center;
+    }
+    .cartao-auth__subtitulo {
+      color: var(--cor-texto-suave);
+      text-align: center;
+      margin-bottom: var(--esp-6);
+      font-size: var(--texto-sm);
+    }
+    .cartao-auth__rodape {
+      margin-top: var(--esp-5);
+      padding-top: var(--esp-5);
+      border-top: 1px solid var(--cor-borda);
+      text-align: center;
+      font-size: var(--texto-sm);
+      color: var(--cor-texto-suave);
+    }
+  </style>
+</head>
+<body>
+
+  <div id="header"></div>
+
+  <main class="tela-auth">
+    <div class="cartao-auth">
+
+      <h1 class="cartao-auth__titulo">Criar conta</h1>
+      <p class="cartao-auth__subtitulo">É rápido e gratuito. Você poderá favoritar, fazer propostas e conversar com a loja.</p>
+
+      <div id="aviso-erro" class="oculto"></div>
+      <div id="aviso-ok" class="oculto"></div>
+
+      <form id="form-cadastro" novalidate>
+
+        <div class="campo">
+          <label for="nome">Nome completo</label>
+          <input type="text" id="nome" name="nome" autocomplete="name" required />
+        </div>
+
+        <div class="campo">
+          <label for="email">E-mail</label>
+          <input type="email" id="email" name="email" autocomplete="email" required />
+        </div>
+
+        <div class="campo-grupo" style="gap: var(--esp-3);">
+          <div class="campo" style="flex:1; margin-bottom: 0;">
+            <label for="telefone">Telefone</label>
+            <input type="tel" id="telefone" name="telefone" autocomplete="tel" placeholder="(00) 0000-0000" />
+          </div>
+          <div class="campo" style="flex:1; margin-bottom: 0;">
+            <label for="whatsapp">WhatsApp</label>
+            <input type="tel" id="whatsapp" name="whatsapp" placeholder="(00) 90000-0000" />
+          </div>
+        </div>
+
+        <div class="campo mt-4">
+          <label for="senha">Senha</label>
+          <input type="password" id="senha" name="senha" autocomplete="new-password"
+                 minlength="6" required />
+          <span class="campo__dica">Mínimo 6 caracteres.</span>
+        </div>
+
+        <label class="checkbox mb-4">
+          <input type="checkbox" id="aceite" required />
+          <span class="texto-sm">Li e aceito os <a href="#">Termos de Uso</a> e a <a href="#">Política de Privacidade</a>.</span>
+        </label>
+
+        <button type="submit" class="btn btn--principal btn--bloco btn--lg" id="btn-criar">
+          Criar conta
+        </button>
+
+      </form>
+
+      <div class="cartao-auth__rodape">
+        Já tem conta? <a href="./login.html"><strong>Entrar</strong></a>
+      </div>
+
+    </div>
+  </main>
+
+  <div id="footer"></div>
+
+  <script type="module">
+    import { renderHeader } from './assets/js/components/header.js';
+    import { renderFooter } from './assets/js/components/footer.js';
+    import { cadastrar } from './assets/js/services/auth.service.js';
+    import { requireGuest, redirecionarPosLogin } from './assets/js/core/guards.js';
+
+    await requireGuest();
+    await renderHeader();
+    await renderFooter();
+
+    const form = document.getElementById('form-cadastro');
+    const btn  = document.getElementById('btn-criar');
+    const avisoErro = document.getElementById('aviso-erro');
+    const avisoOk   = document.getElementById('aviso-ok');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      avisoErro.classList.add('oculto');
+      avisoOk.classList.add('oculto');
+
+      const nome     = form.nome.value.trim();
+      const email    = form.email.value.trim();
+      const telefone = form.telefone.value.trim();
+      const whatsapp = form.whatsapp.value.trim();
+      const senha    = form.senha.value;
+
+      if (!nome || !email || !senha) {
+        mostrarErro('Preencha nome, e-mail e senha.');
+        return;
+      }
+      if (senha.length < 6) {
+        mostrarErro('A senha deve ter pelo menos 6 caracteres.');
+        return;
+      }
+      if (!document.getElementById('aceite').checked) {
+        mostrarErro('Você precisa aceitar os Termos de Uso e a Política de Privacidade.');
+        return;
+      }
+
+      btn.disabled = true;
+      btn.textContent = 'Criando conta...';
+
+      try {
+        const { session } = await cadastrar({ nome, email, telefone, whatsapp, senha });
+
+        if (session) {
+          redirecionarPosLogin();
+          return;
+        }
+
+        // Sem session = e-mail precisa ser confirmado
+        avisoOk.className = 'alerta alerta--sucesso';
+        avisoOk.innerHTML = `<div>
+          Conta criada com sucesso! <br>
+          Se você ativou a confirmação de e-mail, verifique sua caixa de entrada
+          para confirmar antes de entrar.
+        </div>`;
+
+        btn.textContent = 'Conta criada';
+        setTimeout(() => {
+          window.location.href = './login.html';
+        }, 3000);
+
+      } catch (err) {
+        mostrarErro(err.message || 'Erro ao criar conta. Tente novamente.');
+        btn.disabled = false;
+        btn.textContent = 'Criar conta';
+      }
+    });
+
+    function mostrarErro(msg) {
+      avisoErro.className = 'alerta alerta--erro';
+      avisoErro.innerHTML = `<div>${escapeHtml(msg)}</div>`;
+    }
+
+    function escapeHtml(s) {
+      if (s == null) return '';
+      return String(s)
+        .replaceAll('&', '&amp;').replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;').replaceAll('"', '&quot;')
+        .replaceAll("'", '&#39;');
+    }
+  </script>
+</body>
+</html>

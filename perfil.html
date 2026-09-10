@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Minha conta — Minha Loja</title>
+
+  <link rel="stylesheet" href="./assets/css/tokens.css" />
+  <link rel="stylesheet" href="./assets/css/base.css" />
+  <link rel="stylesheet" href="./assets/css/layout.css" />
+  <link rel="stylesheet" href="./assets/css/components.css" />
+  <link rel="stylesheet" href="./assets/css/store.css" />
+</head>
+<body>
+
+  <div id="header"></div>
+
+  <main class="conteudo">
+    <div class="container" style="max-width: 720px;">
+      <h1 class="pagina-titulo">Minha conta</h1>
+
+      <div class="tabs" role="tablist">
+        <button class="tab ativo" data-aba="dados">Meus dados</button>
+        <button class="tab" data-aba="senha">Alterar senha</button>
+      </div>
+
+      <div id="conteudo-dados">
+        <div class="carregando"><div class="spinner"></div></div>
+      </div>
+
+      <div id="conteudo-senha" class="oculto">
+        <div class="cartao">
+          <form id="form-senha">
+            <div class="campo">
+              <label for="nova-senha">Nova senha</label>
+              <input type="password" id="nova-senha" minlength="6" required />
+              <span class="campo__dica">Mínimo 6 caracteres.</span>
+            </div>
+            <div class="campo">
+              <label for="confirma-senha">Confirme a nova senha</label>
+              <input type="password" id="confirma-senha" minlength="6" required />
+            </div>
+            <button type="submit" class="btn btn--principal" id="btn-salvar-senha">
+              Alterar senha
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <div class="mt-8 flex gap-3" style="flex-wrap: wrap;">
+        <a href="./pedidos.html" class="btn btn--contorno">Meus pedidos</a>
+        <a href="./propostas.html" class="btn btn--contorno">Minhas propostas</a>
+        <a href="./favoritos.html" class="btn btn--contorno">Meus favoritos</a>
+        <a href="./chat.html" class="btn btn--contorno">Minhas conversas</a>
+        <button type="button" class="btn btn--erro" id="btn-sair">Sair da conta</button>
+      </div>
+
+    </div>
+  </main>
+
+  <div id="footer"></div>
+
+  <script type="module">
+    import { renderHeader } from './assets/js/components/header.js';
+    import { renderFooter } from './assets/js/components/footer.js';
+    import { requireAuth } from './assets/js/core/guards.js';
+    import {
+      perfilAtual, atualizarPerfil, sair, alterarSenha
+    } from './assets/js/services/auth.service.js';
+
+    // Exige login
+    await requireAuth();
+    await renderHeader('conta');
+    await renderFooter();
+
+    const elDados = document.getElementById('conteudo-dados');
+
+    // -------------------------------------------------------------
+    // Carrega dados do perfil
+    // -------------------------------------------------------------
+    async function carregarPerfil() {
+      const p = await perfilAtual();
+      if (!p) {
+        elDados.innerHTML = `<div class="alerta alerta--erro">Não foi possível carregar seus dados.</div>`;
+        return;
+      }
+
+      elDados.innerHTML = `
+        <div class="cartao">
+          <form id="form-dados">
+            <div class="campo">
+              <label for="nome">Nome completo</label>
+              <input type="text" id="nome" value="${escapeHtml(p.nome || '')}" required />
+            </div>
+            <div class="campo">
+              <label for="email">E-mail (não editável)</label>
+              <input type="email" id="email" value="${escapeHtml(p.email || '')}" disabled />
+            </div>
+            <div class="campo-grupo" style="gap: var(--esp-3);">
+              <div class="campo" style="flex:1; margin-bottom:0;">
+                <label for="telefone">Telefone</label>
+                <input type="tel" id="telefone" value="${escapeHtml(p.telefone || '')}" />
+              </div>
+              <div class="campo" style="flex:1; margin-bottom:0;">
+                <label for="whatsapp">WhatsApp</label>
+                <input type="tel" id="whatsapp" value="${escapeHtml(p.whatsapp || '')}" />
+              </div>
+            </div>
+            <div class="campo mt-4">
+              <label>Membro desde</label>
+              <div class="texto-suave texto-sm">
+                ${new Date(p.created_at).toLocaleDateString('pt-BR')}
+              </div>
+            </div>
+            <button type="submit" class="btn btn--principal" id="btn-salvar-dados">
+              Salvar alterações
+            </button>
+          </form>
+        </div>
+      `;
+
+      document.getElementById('form-dados').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const btn = document.getElementById('btn-salvar-dados');
+        btn.disabled = true;
+        btn.textContent = 'Salvando...';
+
+        try {
+          await atualizarPerfil({
+            nome: document.getElementById('nome').value,
+            telefone: document.getElementById('telefone').value,
+            whatsapp: document.getElementById('whatsapp').value
+          });
+          toast('Dados salvos com sucesso', '', 'sucesso');
+        } catch (err) {
+          console.error(err);
+          toast('Erro ao salvar', err.message || '', 'erro');
+        }
+        btn.disabled = false;
+        btn.textContent = 'Salvar alterações';
+      });
+    }
+
+    // -------------------------------------------------------------
+    // Alterar senha
+    // -------------------------------------------------------------
+    document.getElementById('form-senha').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = document.getElementById('btn-salvar-senha');
+      const s1 = document.getElementById('nova-senha').value;
+      const s2 = document.getElementById('confirma-senha').value;
+
+      if (s1.length < 6) {
+        toast('Senha muito curta', 'Mínimo 6 caracteres', 'erro');
+        return;
+      }
+      if (s1 !== s2) {
+        toast('As senhas não coincidem', '', 'erro');
+        return;
+      }
+
+      btn.disabled = true;
+      btn.textContent = 'Alterando...';
+
+      try {
+        await alterarSenha(s1);
+        toast('Senha alterada', 'Sua nova senha já está ativa.', 'sucesso');
+        document.getElementById('form-senha').reset();
+      } catch (err) {
+        toast('Erro ao alterar senha', err.message || '', 'erro');
+      }
+      btn.disabled = false;
+      btn.textContent = 'Alterar senha';
+    });
+
+    // -------------------------------------------------------------
+    // Abas
+    // -------------------------------------------------------------
+    document.querySelectorAll('.tab').forEach(t => {
+      t.addEventListener('click', () => {
+        document.querySelectorAll('.tab').forEach(x => x.classList.remove('ativo'));
+        t.classList.add('ativo');
+        const aba = t.dataset.aba;
+        document.getElementById('conteudo-dados').classList.toggle('oculto', aba !== 'dados');
+        document.getElementById('conteudo-senha').classList.toggle('oculto', aba !== 'senha');
+      });
+    });
+
+    // -------------------------------------------------------------
+    // Sair
+    // -------------------------------------------------------------
+    document.getElementById('btn-sair').addEventListener('click', async () => {
+      if (!confirm('Deseja realmente sair da sua conta?')) return;
+      await sair();
+      window.location.href = './index.html';
+    });
+
+    // -------------------------------------------------------------
+    // Toast
+    // -------------------------------------------------------------
+    function toast(titulo, msg = '', tipo = 'info') {
+      let area = document.querySelector('.toast-area');
+      if (!area) {
+        area = document.createElement('div');
+        area.className = 'toast-area';
+        document.body.appendChild(area);
+      }
+      const t = document.createElement('div');
+      t.className = `toast toast--${tipo}`;
+      t.innerHTML = `
+        <div class="toast__titulo">${escapeHtml(titulo)}</div>
+        ${msg ? `<div class="toast__msg">${escapeHtml(msg)}</div>` : ''}
+      `;
+      area.appendChild(t);
+      setTimeout(() => t.remove(), 4000);
+    }
+
+    function escapeHtml(s) {
+      if (s == null) return '';
+      return String(s)
+        .replaceAll('&', '&amp;').replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;').replaceAll('"', '&quot;')
+        .replaceAll("'", '&#39;');
+    }
+
+    // Carga inicial
+    await carregarPerfil();
+  </script>
+</body>
+</html>
