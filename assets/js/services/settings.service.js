@@ -1,33 +1,44 @@
 // =============================================================
 // SERVICE: CONFIGURAÇÕES — VM VENDAS E COMPRAS
 // =============================================================
-// Versão à prova de loop: timeout em cada consulta, cache
-// agressivo, e nunca deixa o await pendurado.
-// =============================================================
-
 import { supabase } from '../supabase.js';
 
 let cache = null;
 let carregandoPromise = null;
+const CACHE_KEY = 'vm-settings-cache-v1';
+const CACHE_TTL = 5 * 60 * 1000; // 5 minutos
 
-// -------------------------------------------------------------
-// Wrapper com timeout (evita requisições penduradas)
-// -------------------------------------------------------------
-function comTimeout(promise, ms = 6000) {
+function lerCacheLocal() {
+  try {
+    const raw = localStorage.getItem(CACHE_KEY);
+    if (!raw) return null;
+    const { data, ts } = JSON.parse(raw);
+    if (Date.now() - ts > CACHE_TTL) return null;
+    return data;
+  } catch { return null; }
+}
+
+function gravarCacheLocal(data) {
+  try {
+    localStorage.setItem(CACHE_KEY, JSON.stringify({ data, ts: Date.now() }));
+  } catch (_) {}
+}
+
+function comTimeout(promise, ms = 8000) {
   return Promise.race([
     promise,
-    new Promise((_, reject) =>
-      setTimeout(() => reject(new Error('timeout')), ms)
-    )
+    new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), ms))
   ]);
 }
 
-// -------------------------------------------------------------
-// Carrega com deduplicação de chamadas
-// -------------------------------------------------------------
 export async function carregarConfiguracoes(force = false) {
   if (cache && !force) return cache;
   if (carregandoPromise) return carregandoPromise;
+
+  if (!force) {
+    const local = lerCacheLocal();
+    if (local) { cache = local; return local; }
+  }
 
   carregandoPromise = (async () => {
     try {
@@ -35,19 +46,17 @@ export async function carregarConfiguracoes(force = false) {
         comTimeout(supabase.from('company_settings').select('*').eq('id', 1).maybeSingle()),
         comTimeout(supabase.from('store_settings').select('*').eq('id', 1).maybeSingle()),
         comTimeout(supabase.from('visual_settings').select('*').eq('id', 1).maybeSingle())
-      ]).catch(err => {
-        console.warn('[settings] Falha ao carregar (usando vazio):', err?.message);
-        return [{ data: null }, { data: null }, { data: null }];
-      });
+      ]).catch(() => [{ data: null }, { data: null }, { data: null }]);
 
       cache = {
         company: company?.data || {},
         store: store?.data || {},
         visual: visual?.data || {}
       };
+      gravarCacheLocal(cache);
       return cache;
     } catch (e) {
-      console.error('[settings] Erro fatal:', e);
+      console.error('[settings] Erro:', e);
       cache = { company: {}, store: {}, visual: {} };
       return cache;
     } finally {
@@ -58,9 +67,6 @@ export async function carregarConfiguracoes(force = false) {
   return carregandoPromise;
 }
 
-// -------------------------------------------------------------
-// Aplica cores/favicon/título
-// -------------------------------------------------------------
 export function aplicarConfiguracoes({ company = {}, store = {}, visual = {} } = {}) {
   const root = document.documentElement;
 
@@ -73,11 +79,7 @@ export function aplicarConfiguracoes({ company = {}, store = {}, visual = {} } =
 
   if (visual.favicon_url) {
     let link = document.querySelector("link[rel='icon']");
-    if (!link) {
-      link = document.createElement('link');
-      link.rel = 'icon';
-      document.head.appendChild(link);
-    }
+    if (!link) { link = document.createElement('link'); link.rel = 'icon'; document.head.appendChild(link); }
     link.href = visual.favicon_url;
   }
 
@@ -87,9 +89,6 @@ export function aplicarConfiguracoes({ company = {}, store = {}, visual = {} } =
   }
 }
 
-// -------------------------------------------------------------
-// Atalho combinado
-// -------------------------------------------------------------
 export async function iniciarConfiguracoes() {
   const cfg = await carregarConfiguracoes();
   aplicarConfiguracoes(cfg);
@@ -99,4 +98,5 @@ export async function iniciarConfiguracoes() {
 export function limparCacheConfiguracoes() {
   cache = null;
   carregandoPromise = null;
+  try { localStorage.removeItem(CACHE_KEY); } catch (_) {}
 }
