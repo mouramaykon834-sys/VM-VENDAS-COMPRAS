@@ -113,7 +113,13 @@ export async function renderHeader(ativo) {
       if (ehAdmin) {
         const slot = document.getElementById('header-admin-slot');
         if (slot) {
-          slot.innerHTML = '<a href="./admin/" class="cabecalho__acao cabecalho__acao--admin" title="Painel"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l9 4v6c0 5-3.5 9.5-9 10-5.5-.5-9-5-9-10V6z"/></svg><span class="cabecalho__acao-texto">Admin</span></a>';
+          // Cria com DOM puro para evitar qualquer problema de CSS/hover
+          const a = document.createElement('a');
+          a.href = './admin/';
+          a.className = 'cabecalho__acao cabecalho__acao--admin';
+          a.title = 'Painel administrativo';
+          a.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l9 4v6c0 5-3.5 9.5-9 10-5.5-.5-9-5-9-10V6z"/></svg><span class="cabecalho__acao-texto">Admin</span>';
+          slot.appendChild(a);
         }
       }
     } catch (e) {}
