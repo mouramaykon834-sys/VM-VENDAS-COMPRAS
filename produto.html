@@ -22,226 +22,152 @@
   <div id="modal-aviso" class="oculto"></div>
 
   <script type="module">
-    import { renderHeader } from './assets/js/components/header.js';
-    import { renderFooter } from './assets/js/components/footer.js';
-    import { iniciarConfiguracoes } from './assets/js/services/settings.service.js';
-    import { supabase } from './assets/js/supabase.js';
-    import { buscarProduto, rotuloDisponibilidade, rotuloCondicao } from './assets/js/services/products.service.js';
-    import { abrirWhatsapp } from './assets/js/services/whatsapp.service.js';
-    import { ehFavorito, alternarFavorito } from './assets/js/services/favorites.service.js';
-
-    const params = new URLSearchParams(location.search);
-    const produtoId = params.get('id');
-
-    await iniciarConfiguracoes();
-    await renderHeader('produtos');
-    await renderFooter();
-
-    if (!produtoId) { renderNaoEncontrado('Nenhum produto selecionado.'); }
-    else { await carregar(produtoId); }
-
-    async function carregar(id) {
-      const el = document.getElementById('conteudo-produto');
+    (async () => {
       try {
-        const p = await buscarProduto(id);
+        const { renderHeader } = await import('./assets/js/components/header.js');
+        const { renderFooter } = await import('./assets/js/components/footer.js');
+        await renderHeader('produtos');
+        await renderFooter();
+      } catch (e) {}
+    })();
+
+    (async () => {
+      const params = new URLSearchParams(location.search);
+      const produtoId = params.get('id');
+      if (!produtoId) { renderNaoEncontrado('Nenhum produto selecionado.'); return; }
+
+      try {
+        const mod = await import('./assets/js/services/products.service.js');
+        const p = await Promise.race([
+          mod.buscarProduto(produtoId),
+          new Promise((_, rej) => setTimeout(() => rej(new Error('timeout')), 8000))
+        ]);
         if (!p || p.status === 'oculto') { renderNaoEncontrado('Produto não encontrado.'); return; }
-
-        document.title = `${p.nome} — Minha Loja`;
-        const disp = rotuloDisponibilidade(p);
-        const cond = rotuloCondicao(p.condicao);
-        const imagens = p.imagens.length ? p.imagens : [{ url: null, id: 'ph' }];
-        const favorito = await ehFavorito(p.id);
-
-        el.innerHTML = `
-          <div class="migalhas">
-            <a href="./index.html">Início</a>
-            <span><a href="./produtos.html">Produtos</a></span>
-            ${p.categoria ? `<span><a href="./produtos.html?categoria=${p.categoriaId}">${esc(p.categoria.nome)}</a></span>` : ''}
-            <span>${esc(p.nome)}</span>
-          </div>
-          <div class="produto">
-            <div class="galeria">
-              <div class="galeria__principal" id="galeria-principal">
-                ${p.imagemPrincipal ? `<img src="${p.imagemPrincipal}" alt="${esc(p.nome)}" id="img-principal" />` : `<div class="produto-card__sem-imagem"></div>`}
-              </div>
-              ${imagens.length > 1 ? `<div class="galeria__miniaturas" id="galeria-miniaturas">${imagens.map((img, i) => `<button class="galeria__miniatura ${i === 0 ? 'ativa' : ''}" data-img="${img.url || ''}">${img.url ? `<img src="${img.url}" alt="" loading="lazy" />` : ''}</button>`).join('')}</div>` : ''}
-            </div>
-            <div class="produto__info">
-              <div class="produto__meta">
-                <span class="badge badge--neutro">${cond}</span>
-                <span class="badge badge--${disp.tipo}">${disp.texto}</span>
-                ${p.marca ? `<span class="texto-suave">Marca: <strong>${esc(p.marca)}</strong></span>` : ''}
-                ${p.sku ? `<span class="texto-suave">Cód: ${esc(p.sku)}</span>` : ''}
-              </div>
-              <h1 class="produto__nome">${esc(p.nome)}</h1>
-              ${p.descricaoCurta ? `<p class="texto-suave">${esc(p.descricaoCurta)}</p>` : ''}
-              <div class="produto__preco-bloco">
-                ${p.temPromo ? `<div class="produto__preco-antigo">R$ ${p.preco.toFixed(2)}</div><div class="produto__preco produto__preco--promo">R$ ${p.precoPromocional.toFixed(2)}</div>` : `<div class="produto__preco">R$ ${p.preco.toFixed(2)}</div>`}
-                <div class="produto__parcelas">Em até <strong>3x</strong> de R$ ${(p.precoFinal/3).toFixed(2)} sem juros</div>
-              </div>
-              <div class="produto__acoes">
-                <button class="btn btn--principal btn--lg btn--bloco" id="btn-comprar">🛒 Comprar agora</button>
-                <div class="produto__acoes-linha">
-                  <button class="btn btn--contorno" id="btn-proposta">💬 Fazer proposta</button>
-                  <button class="btn btn--contorno" id="btn-chat">💭 Conversar</button>
-                </div>
-                <div class="produto__acoes-linha">
-                  <button class="btn-whatsapp" id="btn-whatsapp">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-                    Falar no WhatsApp
-                  </button>
-                  <button class="btn btn--fantasma btn--icone" id="btn-favorito" style="font-size:22px;padding:12px;aspect-ratio:1;" title="Favoritar">${favorito ? '❤' : '🤍'}</button>
-                </div>
-              </div>
-              ${p.descricao ? `<div><h3 class="mb-2">Descrição</h3><p class="produto__descricao">${esc(p.descricao)}</p></div>` : ''}
-              ${renderCarac(p.caracteristicas)}
-              ${renderEsp(p)}
-            </div>
-          </div>
-        `;
-
-        ligar(p);
+        renderProduto(p, mod);
       } catch (e) {
-        console.error(e);
-        renderNaoEncontrado('Não foi possível carregar este produto.');
+        renderNaoEncontrado('Produto não encontrado.');
       }
-    }
+    })();
 
-    function ligar(p) {
-      document.querySelectorAll('.galeria__miniatura').forEach(btn => {
-        btn.onclick = () => {
+    function renderProduto(p, mod) {
+      document.title = p.nome + ' — Minha Loja';
+      const disp = mod.rotuloDisponibilidade(p);
+      const cond = mod.rotuloCondicao(p.condicao);
+      const imagens = (p.imagens && p.imagens.length) ? p.imagens : [{ url: null }];
+
+      const img = p.imagemPrincipal
+        ? '<img src="' + p.imagemPrincipal + '" alt="" />'
+        : '<div class="produto-card__sem-imagem"></div>';
+
+      const preco = p.temPromo
+        ? '<div class="produto__preco-antigo">R$ ' + p.preco.toFixed(2) + '</div><div class="produto__preco produto__preco--promo">R$ ' + p.precoPromocional.toFixed(2) + '</div>'
+        : '<div class="produto__preco">R$ ' + p.preco.toFixed(2) + '</div>';
+
+      const miniaturas = imagens.length > 1
+        ? '<div class="galeria__miniaturas" id="galeria-miniaturas">' + imagens.map(function(img, i) {
+            return '<button class="galeria__miniatura ' + (i === 0 ? 'ativa' : '') + '" data-img="' + (img.url || '') + '">' + (img.url ? '<img src="' + img.url + '" alt="" loading="lazy" />' : '') + '</button>';
+          }).join('') + '</div>'
+        : '';
+
+      const el = document.getElementById('conteudo-produto');
+      el.innerHTML =
+        '<div class="migalhas"><a href="./index.html">Início</a><span><a href="./produtos.html">Produtos</a></span><span>' + esc(p.nome) + '</span></div>' +
+        '<div class="produto">' +
+          '<div class="galeria">' +
+            '<div class="galeria__principal" id="galeria-principal">' + img + '</div>' +
+            miniaturas +
+          '</div>' +
+          '<div class="produto__info">' +
+            '<div class="produto__meta">' +
+              '<span class="badge badge--neutro">' + cond + '</span>' +
+              '<span class="badge badge--' + disp.tipo + '">' + disp.texto + '</span>' +
+              (p.marca ? '<span class="texto-suave">Marca: <strong>' + esc(p.marca) + '</strong></span>' : '') +
+            '</div>' +
+            '<h1 class="produto__nome">' + esc(p.nome) + '</h1>' +
+            (p.descricaoCurta ? '<p class="texto-suave">' + esc(p.descricaoCurta) + '</p>' : '') +
+            '<div class="produto__preco-bloco">' + preco +
+              '<div class="produto__parcelas">Em até <strong>3x</strong> de R$ ' + (p.precoFinal / 3).toFixed(2) + ' sem juros</div>' +
+            '</div>' +
+            '<div class="produto__acoes">' +
+              '<button class="btn btn--principal btn--lg btn--bloco" id="btn-comprar">🛒 Comprar agora</button>' +
+              '<div class="produto__acoes-linha">' +
+                '<button class="btn btn--contorno" id="btn-proposta">Fazer proposta</button>' +
+                '<button class="btn btn--contorno" id="btn-chat">Conversar</button>' +
+              '</div>' +
+              '<div class="produto__acoes-linha">' +
+                '<button class="btn-whatsapp" id="btn-whatsapp">Falar no WhatsApp</button>' +
+              '</div>' +
+            '</div>' +
+            (p.descricao ? '<div><h3 class="mb-2">Descrição</h3><p class="produto__descricao">' + esc(p.descricao) + '</p></div>' : '') +
+          '</div>' +
+        '</div>';
+
+      // Miniaturas
+      document.querySelectorAll('.galeria__miniatura').forEach(function(btn) {
+        btn.onclick = function() {
           const url = btn.dataset.img;
           if (!url) return;
-          document.getElementById('galeria-principal').innerHTML = `<img src="${url}" alt="" id="img-principal" />`;
-          document.querySelectorAll('.galeria__miniatura').forEach(b => b.classList.remove('ativa'));
+          document.getElementById('galeria-principal').innerHTML = '<img src="' + url + '" alt="" />';
+          document.querySelectorAll('.galeria__miniatura').forEach(function(b) { b.classList.remove('ativa'); });
           btn.classList.add('ativa');
         };
       });
 
-      document.getElementById('btn-comprar').onclick = () => { addCarrinho(p); location.href = './carrinho.html'; };
-
-      document.getElementById('btn-proposta').onclick = async () => {
-        const { data: { user } } = await supabase.auth.getUser();
-        if (!user) { aviso('Faça login', 'Você precisa estar logado para enviar proposta.', 'Fazer login', './login.html'); return; }
-        abrirProposta(p);
+      // Comprar
+      document.getElementById('btn-comprar').onclick = function() {
+        const c = JSON.parse(localStorage.getItem('carrinho') || '[]');
+        const idx = c.findIndex(function(i) { return i.id === p.id; });
+        if (idx >= 0) c[idx].quantidade += 1;
+        else c.push({ id: p.id, nome: p.nome, preco: p.precoFinal, imagem: p.imagemPrincipal, quantidade: 1 });
+        localStorage.setItem('carrinho', JSON.stringify(c));
+        location.href = './carrinho.html';
       };
 
-      document.getElementById('btn-chat').onclick = async () => {
-        const { data: { user } } = await supabase.auth.getUser();
-        if (!user) { aviso('Faça login', 'Você precisa estar logado para conversar.', 'Fazer login', './login.html'); return; }
-        abrirChat(p);
+      document.getElementById('btn-proposta').onclick = async function() {
+        const { supabase } = await import('./assets/js/supabase.js');
+        const r = await supabase.auth.getUser();
+        if (!r.data || !r.data.user) { aviso('Faça login', 'Você precisa estar logado para enviar proposta.', 'Fazer login', './login.html'); return; }
+        aviso('Proposta', 'A funcionalidade de proposta estará disponível em breve.', 'Ver chat', './chat.html');
       };
 
-      document.getElementById('btn-whatsapp').onclick = async () => {
-        const link = await abrirWhatsapp({ tipo: 'produto', produto: p });
-        if (!link) {
-          aviso('WhatsApp não configurado', 'O administrador ainda não cadastrou o WhatsApp da loja. Você pode usar o chat interno para conversar.', 'Abrir chat', '#');
-        }
+      document.getElementById('btn-chat').onclick = async function() {
+        const { supabase } = await import('./assets/js/supabase.js');
+        const r = await supabase.auth.getUser();
+        if (!r.data || !r.data.user) { aviso('Faça login', 'Você precisa estar logado para conversar.', 'Fazer login', './login.html'); return; }
+        aviso('Chat', 'A funcionalidade de chat estará disponível em breve.', 'Ver chat', './chat.html');
       };
 
-      document.getElementById('btn-favorito').onclick = async () => {
-        const { data: { user } } = await supabase.auth.getUser();
-        if (!user) { aviso('Faça login', 'Você precisa estar logado para favoritar.', 'Fazer login', './login.html'); return; }
-        const agora = await alternarFavorito(p.id);
-        document.getElementById('btn-favorito').textContent = agora ? '❤' : '🤍';
+      document.getElementById('btn-whatsapp').onclick = async function() {
+        try {
+          const { abrirWhatsapp } = await import('./assets/js/services/whatsapp.service.js');
+          const link = await abrirWhatsapp({ tipo: 'produto', produto: p });
+          if (!link) { aviso('WhatsApp não configurado', 'O administrador ainda não cadastrou o WhatsApp da loja. Use o chat.', 'Abrir chat', './chat.html'); }
+        } catch (e) { aviso('Erro', 'Não foi possível abrir o WhatsApp.', 'Fechar', '#'); }
       };
     }
-
-    function renderCarac(c) {
-      if (!Array.isArray(c) || !c.length) return '';
-      return `<div><h3 class="mb-2">Características</h3><ul style="list-style:disc;padding-left:1.2rem;">${c.map(x => `<li class="texto-sm">${esc(x)}</li>`).join('')}</ul></div>`;
-    }
-
-    function renderEsp(p) {
-      const linhas = [];
-      if (p.marca) linhas.push(['Marca', p.marca]);
-      if (p.modelo) linhas.push(['Modelo', p.modelo]);
-      if (p.sku) linhas.push(['Código / SKU', p.sku]);
-      if (p.condicao) linhas.push(['Condição', rotuloCondicao(p.condicao)]);
-      const esp = p.especificacoes || {};
-      Object.keys(esp).forEach(k => { if (esp[k] != null && esp[k] !== '') linhas.push([k, String(esp[k])]); });
-      if (!linhas.length) return '';
-      return `<div><h3 class="mb-2">Especificações</h3><div class="produto__especificacoes"><table><tbody>${linhas.map(([k,v]) => `<tr><th>${esc(k)}</th><td>${esc(v)}</td></tr>`).join('')}</tbody></table></div></div>`;
-    }
-
-    function addCarrinho(p) {
-      const c = JSON.parse(localStorage.getItem('carrinho') || '[]');
-      const idx = c.findIndex(i => i.id === p.id);
-      if (idx >= 0) c[idx].quantidade += 1;
-      else c.push({ id: p.id, nome: p.nome, preco: p.precoFinal, imagem: p.imagemPrincipal, quantidade: 1 });
-      localStorage.setItem('carrinho', JSON.stringify(c));
-    }
-
-    async function abrirChat(p) {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-      const { data: ex } = await supabase.from('chats').select('id').eq('user_id', user.id).eq('product_id', p.id).maybeSingle();
-      let id = ex?.id;
-      if (!id) {
-        const { data: novo, error } = await supabase.from('chats').insert({ user_id: user.id, product_id: p.id, assunto: `Interesse em: ${p.nome}` }).select('id').single();
-        if (error) return;
-        id = novo.id;
-      }
-      location.href = `./conversa.html?id=${id}`;
-    }
-
-    function abrirProposta(p) {
-      const el = document.getElementById('modal-proposta');
-      el.classList.remove('oculto');
-      el.innerHTML = `
-        <div class="modal-overlay" id="mp-bg">
-          <div class="modal" style="max-width:520px;">
-            <div class="modal__cabecalho"><h2 class="modal__titulo">Enviar proposta</h2><button class="modal__fechar" id="mp-x">×</button></div>
-            <form id="form-prop">
-              <div class="modal__corpo">
-                <p class="texto-sm texto-suave mb-4">Produto: <strong>${esc(p.nome)}</strong><br>Preço anunciado: <strong>R$ ${p.precoFinal.toFixed(2)}</strong></p>
-                <div class="campo"><label>Seu valor (R$)</label><input type="number" id="vp" min="0" step="0.01" required /></div>
-                <div class="campo"><label>Quantidade</label><input type="number" id="qp" min="1" value="1" required /></div>
-                <div class="campo"><label>Mensagem</label><textarea id="mp" rows="3"></textarea></div>
-              </div>
-              <div class="modal__rodape">
-                <button type="button" class="btn btn--fantasma" id="mp-cancel">Cancelar</button>
-                <button type="submit" class="btn btn--principal" id="mp-enviar">Enviar proposta</button>
-              </div>
-            </form>
-          </div>
-        </div>`;
-      document.getElementById('mp-x').onclick = () => fecharProp();
-      document.getElementById('mp-cancel').onclick = () => fecharProp();
-      document.getElementById('mp-bg').onclick = (e) => { if (e.target.id === 'mp-bg') fecharProp(); };
-      document.getElementById('form-prop').onsubmit = async (e) => {
-        e.preventDefault();
-        const btn = document.getElementById('mp-enviar');
-        btn.disabled = true; btn.textContent = 'Enviando...';
-        const { data: { user } } = await supabase.auth.getUser();
-        const { data: prop, error } = await supabase.from('proposals').insert({
-          user_id: user.id, product_id: p.id, preco_anunciado: p.precoFinal,
-          valor_proposta: Number(document.getElementById('vp').value),
-          quantidade: Number(document.getElementById('qp').value),
-          mensagem: document.getElementById('mp').value.trim() || null,
-          status: 'enviada'
-        }).select('id, numero').single();
-        if (error) { alert('Erro: ' + error.message); btn.disabled = false; btn.textContent = 'Enviar proposta'; return; }
-        fecharProp();
-        setTimeout(() => location.href = './propostas.html', 500);
-      };
-    }
-
-    function fecharProp() { const el = document.getElementById('modal-proposta'); el.classList.add('oculto'); el.innerHTML = ''; }
 
     function aviso(t, txt, bt, link) {
       const el = document.getElementById('modal-aviso');
       el.classList.remove('oculto');
-      el.innerHTML = `<div class="modal-overlay" id="ma-bg"><div class="modal" style="max-width:400px;"><div class="modal__cabecalho"><h2 class="modal__titulo">${esc(t)}</h2></div><div class="modal__corpo"><p>${esc(txt)}</p></div><div class="modal__rodape"><button class="btn btn--fantasma" id="ma-c">Fechar</button>${link && link !== '#' ? `<a href="${link}" class="btn btn--principal">${esc(bt)}</a>` : `<a href="./chat.html" class="btn btn--principal">Ir para o chat</a>`}</div></div></div>`;
-      document.getElementById('ma-c').onclick = () => { el.classList.add('oculto'); el.innerHTML = ''; };
-      document.getElementById('ma-bg').onclick = (e) => { if (e.target.id === 'ma-bg') { el.classList.add('oculto'); el.innerHTML = ''; } };
+      el.innerHTML =
+        '<div class="modal-overlay" id="ma-bg">' +
+          '<div class="modal" style="max-width:400px;">' +
+            '<div class="modal__cabecalho"><h2 class="modal__titulo">' + esc(t) + '</h2></div>' +
+            '<div class="modal__corpo"><p>' + esc(txt) + '</p></div>' +
+            '<div class="modal__rodape">' +
+              '<button class="btn btn--fantasma" id="ma-c">Fechar</button>' +
+              (link && link !== '#' ? '<a href="' + link + '" class="btn btn--principal">' + esc(bt) + '</a>' : '') +
+            '</div>' +
+          '</div>' +
+        '</div>';
+      document.getElementById('ma-c').onclick = function() { el.classList.add('oculto'); el.innerHTML = ''; };
     }
 
     function renderNaoEncontrado(msg) {
-      document.getElementById('conteudo-produto').innerHTML = `<div class="estado-vazio"><div class="estado-vazio__titulo">Produto não disponível</div><p class="estado-vazio__descricao">${esc(msg)}</p><a href="./produtos.html" class="btn btn--principal">Ver catálogo</a></div>`;
+      document.getElementById('conteudo-produto').innerHTML = '<div class="estado-vazio"><div class="estado-vazio__titulo">Produto não disponível</div><p class="estado-vazio__descricao">' + esc(msg) + '</p><a href="./produtos.html" class="btn btn--principal">Ver catálogo</a></div>';
     }
 
-    function esc(s) { return s == null ? '' : String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+    function esc(s) { return s == null ? '' : String(s).replace(/[&<>"']/g, function(m) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]; }); }
   </script>
 </body>
 </html>
