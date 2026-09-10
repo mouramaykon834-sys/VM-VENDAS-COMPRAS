@@ -1,56 +1,69 @@
 // =============================================================
 // SERVICE: CONFIGURAÇÕES — VM VENDAS E COMPRAS
 // =============================================================
-// Carrega company_settings, store_settings e visual_settings do
-// Supabase e aplica como CSS Variables no documento.
-// Também troca favicon e título da aba.
+// Versão à prova de loop: timeout em cada consulta, cache
+// agressivo, e nunca deixa o await pendurado.
 // =============================================================
 
 import { supabase } from '../supabase.js';
 
 let cache = null;
-let carregando = null;
+let carregandoPromise = null;
 
 // -------------------------------------------------------------
-// Carrega do banco (com cache e deduplicação de chamadas)
+// Wrapper com timeout (evita requisições penduradas)
 // -------------------------------------------------------------
-export async function carregarConfiguracoes(force = false) {
-  if (cache && !force) return cache;
-  if (carregando) return carregando;
-
-  carregando = (async () => {
-    try {
-      const [company, store, visual] = await Promise.all([
-        supabase.from('company_settings').select('*').eq('id', 1).maybeSingle(),
-        supabase.from('store_settings').select('*').eq('id', 1).maybeSingle(),
-        supabase.from('visual_settings').select('*').eq('id', 1).maybeSingle()
-      ]);
-
-      cache = {
-        company: company.data || {},
-        store: store.data || {},
-        visual: visual.data || {}
-      };
-      return cache;
-    } catch (e) {
-      console.error('[settings] Erro ao carregar:', e);
-      cache = { company: {}, store: {}, visual: {} };
-      return cache;
-    } finally {
-      carregando = null;
-    }
-  })();
-
-  return carregando;
+function comTimeout(promise, ms = 6000) {
+  return Promise.race([
+    promise,
+    new Promise((_, reject) =>
+      setTimeout(() => reject(new Error('timeout')), ms)
+    )
+  ]);
 }
 
 // -------------------------------------------------------------
-// Aplica cores, favicon e título como CSS Variables
+// Carrega com deduplicação de chamadas
+// -------------------------------------------------------------
+export async function carregarConfiguracoes(force = false) {
+  if (cache && !force) return cache;
+  if (carregandoPromise) return carregandoPromise;
+
+  carregandoPromise = (async () => {
+    try {
+      const [company, store, visual] = await Promise.all([
+        comTimeout(supabase.from('company_settings').select('*').eq('id', 1).maybeSingle()),
+        comTimeout(supabase.from('store_settings').select('*').eq('id', 1).maybeSingle()),
+        comTimeout(supabase.from('visual_settings').select('*').eq('id', 1).maybeSingle())
+      ]).catch(err => {
+        console.warn('[settings] Falha ao carregar (usando vazio):', err?.message);
+        return [{ data: null }, { data: null }, { data: null }];
+      });
+
+      cache = {
+        company: company?.data || {},
+        store: store?.data || {},
+        visual: visual?.data || {}
+      };
+      return cache;
+    } catch (e) {
+      console.error('[settings] Erro fatal:', e);
+      cache = { company: {}, store: {}, visual: {} };
+      return cache;
+    } finally {
+      carregandoPromise = null;
+    }
+  })();
+
+  return carregandoPromise;
+}
+
+// -------------------------------------------------------------
+// Aplica cores/favicon/título
 // -------------------------------------------------------------
 export function aplicarConfiguracoes({ company = {}, store = {}, visual = {} } = {}) {
   const root = document.documentElement;
 
-  // Cores da marca
   if (visual.cor_principal)  root.style.setProperty('--cor-principal', visual.cor_principal);
   if (visual.cor_secundaria) root.style.setProperty('--cor-secundaria', visual.cor_secundaria);
   if (visual.cor_destaque)   root.style.setProperty('--cor-destaque', visual.cor_destaque);
@@ -58,7 +71,6 @@ export function aplicarConfiguracoes({ company = {}, store = {}, visual = {} } =
   if (visual.cor_texto)      root.style.setProperty('--cor-texto', visual.cor_texto);
   if (visual.cor_sucesso)    root.style.setProperty('--cor-sucesso', visual.cor_sucesso);
 
-  // Favicon
   if (visual.favicon_url) {
     let link = document.querySelector("link[rel='icon']");
     if (!link) {
@@ -69,7 +81,6 @@ export function aplicarConfiguracoes({ company = {}, store = {}, visual = {} } =
     link.href = visual.favicon_url;
   }
 
-  // Título da aba — troca "Minha Loja" pelo nome real
   const nome = company.nome_fantasia || company.nome_empresa;
   if (nome && document.title.includes('Minha Loja')) {
     document.title = document.title.replaceAll('Minha Loja', nome);
@@ -77,7 +88,7 @@ export function aplicarConfiguracoes({ company = {}, store = {}, visual = {} } =
 }
 
 // -------------------------------------------------------------
-// Atalho: carrega e aplica de uma vez
+// Atalho combinado
 // -------------------------------------------------------------
 export async function iniciarConfiguracoes() {
   const cfg = await carregarConfiguracoes();
@@ -85,9 +96,7 @@ export async function iniciarConfiguracoes() {
   return cfg;
 }
 
-// -------------------------------------------------------------
-// Limpa o cache (quando admin altera a identidade visual)
-// -------------------------------------------------------------
 export function limparCacheConfiguracoes() {
   cache = null;
+  carregandoPromise = null;
 }
