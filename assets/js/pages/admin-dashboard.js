@@ -7,19 +7,30 @@ import { requireAdmin } from '../core/guards.js';
 import { renderAdminSidebar } from '../components/admin-sidebar.js';
 
 // -------------------------------------------------------------
-// Inicialização protegida — mostra o erro no Console se algo falhar
+// Inicialização
 // -------------------------------------------------------------
-try {
-  await requireAdmin();
-  await renderAdminSidebar('dashboard');
-  await carregarCards();
-  await carregarUltimosPedidos();
-  await carregarUltimasPropostas();
-  await carregarUltimasConversas();
-} catch (e) {
-  console.error('[admin-dashboard] Erro:', e);
-  mostrarErroNaTela(e);
-}
+(async function init() {
+  try {
+    await requireAdmin();
+  } catch (e) {
+    // Se requireAdmin lançou, é porque já redirecionamos ou bloqueamos.
+    // Para tudo aqui — não executa o resto.
+    console.warn('[admin-dashboard]', e?.message || e);
+    return;
+  }
+
+  // Daqui pra baixo, com certeza é admin ✅
+  try {
+    await renderAdminSidebar('dashboard');
+    await carregarCards();
+    await carregarUltimosPedidos();
+    await carregarUltimasPropostas();
+    await carregarUltimasConversas();
+  } catch (e) {
+    console.error('[admin-dashboard] Erro ao carregar dados:', e);
+    mostrarErroNaTela(e);
+  }
+})();
 
 // -------------------------------------------------------------
 async function carregarCards() {
@@ -27,12 +38,9 @@ async function carregarCards() {
   if (!el) return;
 
   const [
-    totalProdutos,
-    produtosDisponiveis,
-    totalPedidos,
-    pedidosAbertos,
-    totalPropostas,
-    propostasAbertas,
+    totalProdutos, produtosDisponiveis,
+    totalPedidos, pedidosAbertos,
+    totalPropostas, propostasAbertas,
     totalClientes
   ] = await Promise.all([
     contar('products'),
@@ -55,13 +63,11 @@ async function carregarCards() {
 async function contar(tabela, filtro = null) {
   try {
     let q = supabase.from(tabela).select('*', { count: 'exact', head: true });
-    if (filtro) {
-      Object.entries(filtro).forEach(([k, v]) => { q = q.eq(k, v); });
-    }
+    if (filtro) Object.entries(filtro).forEach(([k, v]) => { q = q.eq(k, v); });
     const { count } = await q;
     return count || 0;
   } catch (e) {
-    console.warn('[admin-dashboard] Erro ao contar', tabela, e);
+    console.warn('[admin-dashboard] erro ao contar', tabela, e);
     return 0;
   }
 }
@@ -77,14 +83,13 @@ function cardHTML(rotulo, valor, nota, icone) {
   `;
 }
 
-// -------------------------------------------------------------
 async function carregarUltimosPedidos() {
   const el = document.getElementById('admin-ultimos-pedidos');
   if (!el) return;
 
   const { data, error } = await supabase
     .from('orders')
-    .select('id, numero, status, total, created_at, user_id')
+    .select('id, numero, status, total, created_at')
     .order('created_at', { ascending: false })
     .limit(5);
 
@@ -95,9 +100,7 @@ async function carregarUltimosPedidos() {
 
   el.innerHTML = `
     <table class="admin-tabela">
-      <thead>
-        <tr><th>Pedido</th><th>Status</th><th>Total</th><th>Data</th></tr>
-      </thead>
+      <thead><tr><th>Pedido</th><th>Status</th><th>Total</th><th>Data</th></tr></thead>
       <tbody>
         ${data.map(p => `
           <tr>
@@ -129,9 +132,7 @@ async function carregarUltimasPropostas() {
 
   el.innerHTML = `
     <table class="admin-tabela">
-      <thead>
-        <tr><th>Número</th><th>Valor</th><th>Status</th><th>Data</th></tr>
-      </thead>
+      <thead><tr><th>Número</th><th>Valor</th><th>Status</th><th>Data</th></tr></thead>
       <tbody>
         ${data.map(p => `
           <tr>
@@ -163,9 +164,7 @@ async function carregarUltimasConversas() {
 
   el.innerHTML = `
     <table class="admin-tabela">
-      <thead>
-        <tr><th>Assunto</th><th>Última mensagem</th><th>Quando</th></tr>
-      </thead>
+      <thead><tr><th>Assunto</th><th>Última mensagem</th><th>Quando</th></tr></thead>
       <tbody>
         ${data.map(c => `
           <tr>
@@ -179,7 +178,6 @@ async function carregarUltimasConversas() {
   `;
 }
 
-// -------------------------------------------------------------
 function formatarData(iso) {
   if (!iso) return '-';
   return new Date(iso).toLocaleDateString('pt-BR', {
@@ -223,15 +221,13 @@ function svgIcone(nome) {
   }
 }
 
-// -------------------------------------------------------------
 function mostrarErroNaTela(e) {
   const main = document.querySelector('.admin-conteudo') || document.body;
   const div = document.createElement('div');
   div.className = 'alerta alerta--erro';
   div.innerHTML = `<div>
     <strong>Erro ao carregar o painel</strong><br>
-    ${escapeHtml(e?.message || 'Erro desconhecido')}<br>
-    <small>Abra o Console (F12) para mais detalhes.</small>
+    ${escapeHtml(e?.message || 'Erro desconhecido')}
   </div>`;
   main.prepend(div);
 }
