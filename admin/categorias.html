@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Categorias — Admin</title>
+
+  <link rel="stylesheet" href="../assets/css/tokens.css" />
+  <link rel="stylesheet" href="../assets/css/base.css" />
+  <link rel="stylesheet" href="../assets/css/layout.css" />
+  <link rel="stylesheet" href="../assets/css/components.css" />
+  <link rel="stylesheet" href="../assets/css/store.css" />
+  <link rel="stylesheet" href="../assets/css/admin.css" />
+</head>
+<body>
+
+  <div class="admin-layout">
+    <aside id="admin-sidebar" class="admin-sidebar"></aside>
+    <div id="admin-sidebar-overlay" class="admin-sidebar-overlay"></div>
+
+    <main class="admin-main">
+      <header class="admin-topbar">
+        <button id="admin-menu-btn" class="admin-topbar__menu-btn" aria-label="Abrir menu">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+               stroke="currentColor" stroke-width="2">
+            <line x1="3" y1="6" x2="21" y2="6"/>
+            <line x1="3" y1="12" x2="21" y2="12"/>
+            <line x1="3" y1="18" x2="21" y2="18"/>
+          </svg>
+        </button>
+        <h1 class="admin-topbar__titulo">Categorias</h1>
+        <div class="admin-topbar__acoes">
+          <button class="btn btn--principal btn--sm" id="btn-nova-categoria">
+            + Nova categoria
+          </button>
+        </div>
+      </header>
+
+      <div class="admin-conteudo">
+        <p class="admin-pagina-sub">
+          Organize seus produtos em categorias para facilitar a busca dos clientes.
+        </p>
+
+        <div id="lista-categorias">
+          <div class="carregando"><div class="spinner"></div></div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <div id="modal-categoria" class="oculto"></div>
+
+  <script type="module" src="../assets/js/pages/admin-categorias.js"></script>
+</body>
+</html>
