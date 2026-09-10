@@ -18,8 +18,6 @@
     </div>
   </main>
   <div id="footer"></div>
-  <div id="modal-proposta" class="oculto"></div>
-  <div id="modal-aviso" class="oculto"></div>
 
   <script type="module">
     (async () => {
@@ -102,7 +100,6 @@
           '</div>' +
         '</div>';
 
-      // Miniaturas
       document.querySelectorAll('.galeria__miniatura').forEach(function(btn) {
         btn.onclick = function() {
           const url = btn.dataset.img;
@@ -113,7 +110,6 @@
         };
       });
 
-      // Comprar
       document.getElementById('btn-comprar').onclick = function() {
         const c = JSON.parse(localStorage.getItem('carrinho') || '[]');
         const idx = c.findIndex(function(i) { return i.id === p.id; });
@@ -126,41 +122,116 @@
       document.getElementById('btn-proposta').onclick = async function() {
         const { supabase } = await import('./assets/js/supabase.js');
         const r = await supabase.auth.getUser();
-        if (!r.data || !r.data.user) { aviso('Faça login', 'Você precisa estar logado para enviar proposta.', 'Fazer login', './login.html'); return; }
-        aviso('Proposta', 'A funcionalidade de proposta estará disponível em breve.', 'Ver chat', './chat.html');
+        if (!r.data || !r.data.user) { mostrarAviso('Faça login', 'Você precisa estar logado para enviar proposta.', 'Fazer login', './login.html'); return; }
+        abrirModalProposta(p);
       };
 
       document.getElementById('btn-chat').onclick = async function() {
         const { supabase } = await import('./assets/js/supabase.js');
         const r = await supabase.auth.getUser();
-        if (!r.data || !r.data.user) { aviso('Faça login', 'Você precisa estar logado para conversar.', 'Fazer login', './login.html'); return; }
-        aviso('Chat', 'A funcionalidade de chat estará disponível em breve.', 'Ver chat', './chat.html');
+        if (!r.data || !r.data.user) { mostrarAviso('Faça login', 'Você precisa estar logado para conversar.', 'Fazer login', './login.html'); return; }
+        mostrarAviso('Chat interno', 'A funcionalidade de chat estará disponível em breve. Use o WhatsApp para contato imediato.', 'Abrir WhatsApp', '#');
       };
 
       document.getElementById('btn-whatsapp').onclick = async function() {
         try {
           const { abrirWhatsapp } = await import('./assets/js/services/whatsapp.service.js');
           const link = await abrirWhatsapp({ tipo: 'produto', produto: p });
-          if (!link) { aviso('WhatsApp não configurado', 'O administrador ainda não cadastrou o WhatsApp da loja. Use o chat.', 'Abrir chat', './chat.html'); }
-        } catch (e) { aviso('Erro', 'Não foi possível abrir o WhatsApp.', 'Fechar', '#'); }
+          if (!link) { mostrarAviso('WhatsApp não configurado', 'O administrador ainda não cadastrou o WhatsApp da loja.', 'Fechar', '#'); }
+        } catch (e) { mostrarAviso('Erro', 'Não foi possível abrir o WhatsApp.', 'Fechar', '#'); }
       };
     }
 
-    function aviso(t, txt, bt, link) {
-      const el = document.getElementById('modal-aviso');
-      el.classList.remove('oculto');
-      el.innerHTML =
-        '<div class="modal-overlay" id="ma-bg">' +
-          '<div class="modal" style="max-width:400px;">' +
-            '<div class="modal__cabecalho"><h2 class="modal__titulo">' + esc(t) + '</h2></div>' +
-            '<div class="modal__corpo"><p>' + esc(txt) + '</p></div>' +
-            '<div class="modal__rodape">' +
-              '<button class="btn btn--fantasma" id="ma-c">Fechar</button>' +
-              (link && link !== '#' ? '<a href="' + link + '" class="btn btn--principal">' + esc(bt) + '</a>' : '') +
+    function abrirModalProposta(p) {
+      const div = document.createElement('div');
+      div.style.cssText = 'position:fixed;inset:0;z-index:9999;background:rgba(15,23,42,.6);display:flex;align-items:center;justify-content:center;padding:16px;';
+      div.id = 'modal-proposta-overlay';
+
+      div.innerHTML =
+        '<div style="background:#fff;border-radius:16px;max-width:520px;width:100%;max-height:90vh;overflow-y:auto;box-shadow:0 20px 40px rgba(15,23,42,.2);">' +
+          '<div style="display:flex;justify-content:space-between;align-items:center;padding:16px 20px;border-bottom:1px solid #e2e8f0;">' +
+            '<h2 style="font-size:18px;font-weight:600;">Enviar proposta</h2>' +
+            '<button id="mp-x" style="background:none;border:none;font-size:24px;cursor:pointer;color:#64748b;line-height:1;">×</button>' +
+          '</div>' +
+          '<form id="form-prop" style="padding:20px;">' +
+            '<p style="font-size:13px;color:#64748b;margin-bottom:16px;">Produto: <strong>' + esc(p.nome) + '</strong><br>Preço anunciado: <strong>R$ ' + p.precoFinal.toFixed(2) + '</strong></p>' +
+            '<div style="margin-bottom:14px;">' +
+              '<label style="display:block;font-size:13px;font-weight:600;margin-bottom:5px;">Seu valor (R$)</label>' +
+              '<input type="number" id="vp" required min="0" step="0.01" style="width:100%;padding:10px 12px;border:1px solid #e2e8f0;border-radius:8px;font-size:14px;" />' +
             '</div>' +
+            '<div style="margin-bottom:14px;">' +
+              '<label style="display:block;font-size:13px;font-weight:600;margin-bottom:5px;">Quantidade</label>' +
+              '<input type="number" id="qp" required value="1" min="1" style="width:100%;padding:10px 12px;border:1px solid #e2e8f0;border-radius:8px;font-size:14px;" />' +
+            '</div>' +
+            '<div style="margin-bottom:14px;">' +
+              '<label style="display:block;font-size:13px;font-weight:600;margin-bottom:5px;">Mensagem</label>' +
+              '<textarea id="mp" rows="3" style="width:100%;padding:10px 12px;border:1px solid #e2e8f0;border-radius:8px;font-size:14px;font-family:inherit;"></textarea>' +
+            '</div>' +
+            '<div style="display:flex;gap:8px;justify-content:flex-end;margin-top:20px;">' +
+              '<button type="button" id="mp-cancel" style="padding:10px 18px;border-radius:8px;border:1px solid #e2e8f0;background:#fff;color:#0f172a;font-weight:600;cursor:pointer;">Cancelar</button>' +
+              '<button type="submit" id="mp-enviar" style="padding:10px 18px;border-radius:8px;border:none;background:#0ea5e9;color:#fff;font-weight:600;cursor:pointer;">Enviar proposta</button>' +
+            '</div>' +
+          '</form>' +
+        '</div>';
+
+      document.body.appendChild(div);
+
+      document.getElementById('mp-x').onclick = fecharModalProposta;
+      document.getElementById('mp-cancel').onclick = fecharModalProposta;
+      div.onclick = function(e) { if (e.target === div) fecharModalProposta(); };
+
+      document.getElementById('form-prop').onsubmit = async function(e) {
+        e.preventDefault();
+        const btn = document.getElementById('mp-enviar');
+        btn.disabled = true; btn.textContent = 'Enviando...';
+
+        try {
+          const { supabase } = await import('./assets/js/supabase.js');
+          const r = await supabase.auth.getUser();
+          const user = r.data ? r.data.user : null;
+          if (!user) throw new Error('Faça login primeiro');
+
+          const { error } = await supabase.from('proposals').insert({
+            user_id: user.id,
+            product_id: p.id,
+            preco_anunciado: p.precoFinal,
+            valor_proposta: Number(document.getElementById('vp').value),
+            quantidade: Number(document.getElementById('qp').value),
+            mensagem: document.getElementById('mp').value.trim() || null,
+            status: 'enviada'
+          });
+
+          if (error) throw error;
+
+          fecharModalProposta();
+          setTimeout(function() { location.href = './propostas.html'; }, 500);
+        } catch (err) {
+          alert('Erro: ' + err.message);
+          btn.disabled = false; btn.textContent = 'Enviar proposta';
+        }
+      };
+    }
+
+    function fecharModalProposta() {
+      const el = document.getElementById('modal-proposta-overlay');
+      if (el) el.remove();
+    }
+
+    function mostrarAviso(t, txt, bt, link) {
+      const div = document.createElement('div');
+      div.style.cssText = 'position:fixed;inset:0;z-index:9999;background:rgba(15,23,42,.6);display:flex;align-items:center;justify-content:center;padding:16px;';
+      div.innerHTML =
+        '<div style="background:#fff;border-radius:16px;max-width:400px;width:100%;padding:24px;text-align:center;">' +
+          '<h2 style="font-size:18px;font-weight:600;margin-bottom:12px;">' + esc(t) + '</h2>' +
+          '<p style="color:#64748b;font-size:14px;margin-bottom:20px;">' + esc(txt) + '</p>' +
+          '<div style="display:flex;gap:8px;justify-content:center;">' +
+            '<button id="av-c" style="padding:10px 18px;border-radius:8px;border:1px solid #e2e8f0;background:#fff;font-weight:600;cursor:pointer;">Fechar</button>' +
+            (link && link !== '#' ? '<a href="' + link + '" style="padding:10px 18px;border-radius:8px;border:none;background:#0ea5e9;color:#fff;font-weight:600;text-decoration:none;">' + esc(bt) + '</a>' : '') +
           '</div>' +
         '</div>';
-      document.getElementById('ma-c').onclick = function() { el.classList.add('oculto'); el.innerHTML = ''; };
+      document.body.appendChild(div);
+      document.getElementById('av-c').onclick = function() { div.remove(); };
+      div.onclick = function(e) { if (e.target === div) div.remove(); };
     }
 
     function renderNaoEncontrado(msg) {
