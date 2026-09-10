@@ -34,89 +34,38 @@
 
     .campo { margin-bottom: 14px; }
     .campo label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 5px; }
-    .campo input[type=text], .campo input[type=url] { width: 100%; padding: 9px 12px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 14px; }
+    .campo input[type=text] { width: 100%; padding: 9px 12px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 14px; }
     .campo__dica { display: block; font-size: 12px; color: #94a3b8; margin-top: 3px; }
 
-    .upload-logo {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 12px;
-      border: 2px dashed #e2e8f0;
-      border-radius: 10px;
-      cursor: pointer;
-      transition: all .15s;
-    }
+    .upload-logo { display: flex; align-items: center; gap: 12px; padding: 12px; border: 2px dashed #e2e8f0; border-radius: 10px; cursor: pointer; transition: all .15s; }
     .upload-logo:hover { border-color: #0ea5e9; background: #f0f9ff; }
-    .upload-logo__preview {
-      width: 64px; height: 64px;
-      border-radius: 8px;
-      background: #f1f5f9;
-      display: flex; align-items: center; justify-content: center;
-      overflow: hidden; flex-shrink: 0;
-      color: #94a3b8; font-size: 11px; text-align: center;
-    }
+    .upload-logo__preview { width: 64px; height: 64px; border-radius: 8px; background: #f1f5f9; display: flex; align-items: center; justify-content: center; overflow: hidden; flex-shrink: 0; color: #94a3b8; font-size: 11px; text-align: center; padding: 4px; }
     .upload-logo__preview img { width: 100%; height: 100%; object-fit: contain; }
     .upload-logo__texto { flex: 1; font-size: 13px; color: #64748b; }
     .upload-logo__texto strong { color: #0f172a; display: block; font-size: 14px; margin-bottom: 2px; }
 
-    .upload-banner {
-      border: 2px dashed #e2e8f0;
-      border-radius: 10px;
-      cursor: pointer;
-      transition: all .15s;
-      overflow: hidden;
-      aspect-ratio: 3 / 1;
-      background: #f1f5f9;
-      display: flex; align-items: center; justify-content: center;
-      color: #94a3b8; font-size: 13px;
-    }
+    .upload-banner { border: 2px dashed #e2e8f0; border-radius: 10px; cursor: pointer; transition: all .15s; overflow: hidden; aspect-ratio: 3 / 1; background: #f1f5f9; display: flex; align-items: center; justify-content: center; color: #94a3b8; font-size: 13px; }
     .upload-banner:hover { border-color: #0ea5e9; }
     .upload-banner img { width: 100%; height: 100%; object-fit: cover; }
 
     .cores { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
     @media (max-width: 500px) { .cores { grid-template-columns: 1fr; } }
     .cor { display: flex; align-items: center; gap: 10px; }
-    .cor input[type=color] {
-      width: 44px; height: 44px;
-      border: 1px solid #e2e8f0;
-      border-radius: 8px;
-      cursor: pointer;
-      padding: 2px;
-      background: #fff;
-    }
+    .cor input[type=color] { width: 44px; height: 44px; border: 1px solid #e2e8f0; border-radius: 8px; cursor: pointer; padding: 2px; background: #fff; }
     .cor__info { flex: 1; }
     .cor__info label { display: block; font-size: 12px; font-weight: 600; margin-bottom: 2px; }
     .cor__info input[type=text] { width: 100%; padding: 6px 10px; border: 1px solid #e2e8f0; border-radius: 6px; font-family: monospace; font-size: 12px; }
 
-    /* PREVIEW */
     .preview { background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden; position: sticky; top: 24px; }
     .preview__titulo { padding: 12px 16px; border-bottom: 1px solid #e2e8f0; font-size: 13px; font-weight: 600; color: #64748b; }
-    .preview__header {
-      padding: 12px 16px;
-      display: flex; align-items: center; gap: 10px;
-      border-bottom: 1px solid #e2e8f0;
-    }
-    .preview__logo {
-      height: 32px; max-width: 100px;
-      display: flex; align-items: center;
-    }
+    .preview__header { padding: 12px 16px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid #e2e8f0; }
+    .preview__logo { height: 32px; max-width: 100px; display: flex; align-items: center; }
     .preview__logo img { max-height: 100%; max-width: 100%; object-fit: contain; }
     .preview__logo-texto { font-weight: 700; font-size: 15px; }
-    .preview__banner {
-      aspect-ratio: 3 / 1;
-      display: flex; align-items: center; padding: 20px;
-      color: #fff;
-    }
+    .preview__banner { aspect-ratio: 3 / 1; display: flex; align-items: center; padding: 20px; color: #fff; }
     .preview__banner h3 { font-size: 18px; margin-bottom: 4px; }
     .preview__banner p { font-size: 12px; opacity: .9; }
-    .preview__btn {
-      display: inline-block;
-      padding: 8px 14px;
-      border-radius: 6px;
-      font-size: 13px; font-weight: 600;
-      margin-top: 10px;
-    }
+    .preview__btn { display: inline-block; padding: 8px 14px; border-radius: 6px; font-size: 13px; font-weight: 600; margin-top: 10px; }
 
     .status { padding: 10px 14px; border-radius: 8px; font-size: 13px; margin-top: 12px; }
     .status--ok { background: #dcfce7; color: #166534; }
@@ -164,7 +113,7 @@
       <form class="conteudo" id="form" style="display:none;">
         <div class="grid">
 
-          <!-- ESQUERDA: Campos -->
+          <!-- ESQUERDA -->
           <div>
 
             <div class="bloco">
@@ -210,10 +159,10 @@
               <h2>Banner da home</h2>
               <div class="upload-banner" id="upload-banner">
                 <span>Clique para escolher o banner</span>
-                <input type="file" id="file-banner" accept="image/*" hidden />
               </div>
+              <input type="file" id="file-banner" accept="image/*" hidden />
               <div id="status-banner" style="margin-top:8px;"></div>
-              <div class="campo mt-3" style="margin-top:14px;">
+              <div class="campo" style="margin-top:14px;">
                 <label>Título do banner</label>
                 <input type="text" id="titulo_home" placeholder="Bem-vindo à nossa loja" />
               </div>
@@ -228,45 +177,27 @@
               <div class="cores">
                 <div class="cor">
                   <input type="color" id="cor_principal" value="#0ea5e9" />
-                  <div class="cor__info">
-                    <label>Principal</label>
-                    <input type="text" id="cor_principal_txt" value="#0ea5e9" />
-                  </div>
+                  <div class="cor__info"><label>Principal</label><input type="text" id="cor_principal_txt" value="#0ea5e9" /></div>
                 </div>
                 <div class="cor">
                   <input type="color" id="cor_secundaria" value="#0f172a" />
-                  <div class="cor__info">
-                    <label>Secundária</label>
-                    <input type="text" id="cor_secundaria_txt" value="#0f172a" />
-                  </div>
+                  <div class="cor__info"><label>Secundária</label><input type="text" id="cor_secundaria_txt" value="#0f172a" /></div>
                 </div>
                 <div class="cor">
                   <input type="color" id="cor_destaque" value="#f59e0b" />
-                  <div class="cor__info">
-                    <label>Destaque</label>
-                    <input type="text" id="cor_destaque_txt" value="#f59e0b" />
-                  </div>
+                  <div class="cor__info"><label>Destaque</label><input type="text" id="cor_destaque_txt" value="#f59e0b" /></div>
                 </div>
                 <div class="cor">
                   <input type="color" id="cor_fundo" value="#ffffff" />
-                  <div class="cor__info">
-                    <label>Fundo</label>
-                    <input type="text" id="cor_fundo_txt" value="#ffffff" />
-                  </div>
+                  <div class="cor__info"><label>Fundo</label><input type="text" id="cor_fundo_txt" value="#ffffff" /></div>
                 </div>
                 <div class="cor">
                   <input type="color" id="cor_texto" value="#0f172a" />
-                  <div class="cor__info">
-                    <label>Texto</label>
-                    <input type="text" id="cor_texto_txt" value="#0f172a" />
-                  </div>
+                  <div class="cor__info"><label>Texto</label><input type="text" id="cor_texto_txt" value="#0f172a" /></div>
                 </div>
                 <div class="cor">
                   <input type="color" id="cor_sucesso" value="#16a34a" />
-                  <div class="cor__info">
-                    <label>Sucesso</label>
-                    <input type="text" id="cor_sucesso_txt" value="#16a34a" />
-                  </div>
+                  <div class="cor__info"><label>Sucesso</label><input type="text" id="cor_sucesso_txt" value="#16a34a" /></div>
                 </div>
               </div>
             </div>
@@ -279,16 +210,14 @@
 
           </div>
 
-          <!-- DIREITA: Preview -->
+          <!-- DIREITA: PREVIEW -->
           <div class="preview">
             <div class="preview__titulo">Preview em tempo real</div>
-
-            <div class="preview__header" id="pv-header">
+            <div class="preview__header">
               <div class="preview__logo" id="pv-logo">
                 <span class="preview__logo-texto">Minha Loja</span>
               </div>
             </div>
-
             <div class="preview__banner" id="pv-banner" style="background: linear-gradient(135deg, #0ea5e9, #0f172a);">
               <div>
                 <h3 id="pv-titulo">Bem-vindo à nossa loja</h3>
@@ -306,7 +235,6 @@
   <script type="module">
     let supabase, session, perfil;
 
-    // Dados atuais (serão salvos)
     const dados = {
       logo_url: null,
       logo_compacta_url: null,
@@ -329,7 +257,7 @@
     }
 
     // -------------------------------------------------------------
-    // UPLOAD de imagem para o bucket "branding"
+    // Upload
     // -------------------------------------------------------------
     async function uploadImagem(file, prefixo) {
       const ext = (file.name.split('.').pop() || 'png').toLowerCase();
@@ -342,21 +270,19 @@
       if (error) throw error;
 
       const { data } = supabase.storage.from('branding').getPublicUrl(path);
-      return { url: data.publicUrl, path };
+      return data.publicUrl;
     }
 
     // -------------------------------------------------------------
-    // PREVIEW em tempo real
+    // Preview
     // -------------------------------------------------------------
     function atualizarPreview() {
-      // Logo
       if (dados.logo_url) {
         $('pv-logo').innerHTML = `<img src="${dados.logo_url}" alt="" />`;
       } else {
         $('pv-logo').innerHTML = `<span class="preview__logo-texto">Minha Loja</span>`;
       }
 
-      // Banner
       const banner = $('pv-banner');
       if (dados.banner_home_url) {
         banner.style.background = `linear-gradient(rgba(15,23,42,.35), rgba(15,23,42,.55)), url(${dados.banner_home_url}) center/cover`;
@@ -364,11 +290,8 @@
         banner.style.background = `linear-gradient(135deg, ${dados.cor_principal}, ${dados.cor_secundaria})`;
       }
 
-      // Título/subtítulo
       $('pv-titulo').textContent = dados.titulo_home || 'Bem-vindo à nossa loja';
       $('pv-subtitulo').textContent = dados.subtitulo_home || 'Encontre produtos com preços imperdíveis';
-
-      // Botão (cor de destaque)
       $('pv-btn').style.background = dados.cor_destaque;
     }
 
@@ -386,9 +309,8 @@
         const file = e.target.files?.[0];
         if (!file) return;
         status(st, 'info', 'Enviando...');
-
         try {
-          const { url } = await uploadImagem(file, prefixo);
+          const url = await uploadImagem(file, prefixo);
           dados[campo] = url;
           preview.innerHTML = `<img src="${url}" alt="" />`;
           status(st, 'ok', '✅ Imagem enviada. Não esqueça de salvar.');
@@ -405,50 +327,31 @@
     ligarUpload('upload-logo-compacto', 'file-logo-compacto', 'preview-logo-compacto', 'status-logo-compacto', 'logo_compacta_url', 'logo-compacto');
     ligarUpload('upload-favicon', 'file-favicon', 'preview-favicon', 'status-favicon', 'favicon_url', 'favicon');
 
-    // Banner (usa upload diferente, com preview no box)
-    $('upload-banner').onclick = () => $('file-banner').click();
-    $('file-banner').onchange = async (e) => {
+    // Banner (com imagem de fundo)
+    const areaBanner = $('upload-banner');
+    const inputBanner = $('file-banner');
+    const stBanner = $('status-banner');
+
+    areaBanner.onclick = () => inputBanner.click();
+    inputBanner.onchange = async (e) => {
       const file = e.target.files?.[0];
       if (!file) return;
-      const st = $('status-banner');
-      status(st, 'info', 'Enviando banner...');
-
+      status(stBanner, 'info', 'Enviando banner...');
       try {
-        const { url } = await uploadImagem(file, 'banner');
+        const url = await uploadImagem(file, 'banner');
         dados.banner_home_url = url;
-        $('upload-banner').innerHTML = `<img src="${url}" alt="" /><input type="file" id="file-banner" accept="image/*" hidden />`;
-        // Re-liga o input
-        const novoInput = document.getElementById('file-banner');
-        novoInput.onchange = arguments.callee;
-
-        // Simples: recarrega a página não, apenas permite trocar clicando de novo
-        $('upload-banner').onclick = async () => {
-          const inp = document.createElement('input');
-          inp.type = 'file';
-          inp.accept = 'image/*';
-          inp.onchange = async (ev) => {
-            const f = ev.target.files?.[0];
-            if (!f) return;
-            status(st, 'info', 'Enviando...');
-            const { url } = await uploadImagem(f, 'banner');
-            dados.banner_home_url = url;
-            $('upload-banner').innerHTML = `<img src="${url}" alt="" />`;
-            status(st, 'ok', '✅ Banner atualizado. Salve para confirmar.');
-            atualizarPreview();
-          };
-          inp.click();
-        };
-
-        status(st, 'ok', '✅ Banner enviado. Salve para confirmar.');
+        areaBanner.innerHTML = `<img src="${url}" alt="" />`;
+        status(stBanner, 'ok', '✅ Banner enviado. Salve para confirmar.');
         atualizarPreview();
       } catch (err) {
         console.error(err);
-        status(st, 'err', '❌ Erro: ' + err.message);
+        status(stBanner, 'err', '❌ Erro: ' + err.message);
       }
+      inputBanner.value = '';
     };
 
     // -------------------------------------------------------------
-    // Cores — color picker e input texto sincronizados
+    // Cores
     // -------------------------------------------------------------
     function ligarCor(idCor, idTexto, campo) {
       const cor = $(idCor);
@@ -487,21 +390,39 @@
       dados.subtitulo_home = $('subtitulo_home').value.trim() || null;
 
       try {
-        // Atualiza visual_settings (upsert na linha id=1)
-        const { error } = await supabase
-          .from('visual_settings')
-          .upsert({ id: 1, ...dados, updated_at: new Date().toISOString() });
-
-        if (error) throw error;
-
-        // Atualiza store_settings (título e subtítulo)
-        await supabase.from('store_settings').upsert({
+        // 1) Salva APENAS as colunas que existem em visual_settings
+        const dadosVisuais = {
           id: 1,
-          titulo_home: dados.titulo_home,
-          subtitulo_home: dados.subtitulo_home,
+          logo_url:          dados.logo_url,
+          logo_compacta_url: dados.logo_compacta_url,
+          favicon_url:       dados.favicon_url,
+          cor_principal:     dados.cor_principal,
+          cor_secundaria:    dados.cor_secundaria,
+          cor_destaque:      dados.cor_destaque,
+          cor_fundo:         dados.cor_fundo,
+          cor_texto:         dados.cor_texto,
+          cor_sucesso:       dados.cor_sucesso,
+          updated_at:        new Date().toISOString()
+        };
+
+        const { error: errVis } = await supabase
+          .from('visual_settings')
+          .upsert(dadosVisuais);
+        if (errVis) throw errVis;
+
+        // 2) Salva título, subtítulo e banner em store_settings
+        const dadosLoja = {
+          id: 1,
+          titulo_home:     dados.titulo_home,
+          subtitulo_home:  dados.subtitulo_home,
           banner_home_url: dados.banner_home_url,
-          updated_at: new Date().toISOString()
-        });
+          updated_at:      new Date().toISOString()
+        };
+
+        const { error: errLoja } = await supabase
+          .from('store_settings')
+          .upsert(dadosLoja);
+        if (errLoja) throw errLoja;
 
         status($('status-geral'), 'ok', '✅ Identidade visual salva! Recarregue a loja para ver.');
         btn.textContent = 'Salvo!';
@@ -537,28 +458,28 @@
         // Carrega visual_settings
         const { data: vis } = await supabase.from('visual_settings').select('*').eq('id', 1).maybeSingle();
         if (vis) {
-          Object.keys(dados).forEach(k => {
-            if (vis[k] != null) dados[k] = vis[k];
-          });
+          ['logo_url','logo_compacta_url','favicon_url',
+           'cor_principal','cor_secundaria','cor_destaque','cor_fundo','cor_texto','cor_sucesso']
+            .forEach(k => { if (vis[k] != null) dados[k] = vis[k]; });
         }
 
-        // Carrega store_settings (título, subtítulo, banner)
+        // Carrega store_settings
         const { data: store } = await supabase.from('store_settings').select('*').eq('id', 1).maybeSingle();
         if (store) {
           dados.titulo_home = store.titulo_home || '';
           dados.subtitulo_home = store.subtitulo_home || '';
-          dados.banner_home_url = store.banner_home_url || dados.banner_home_url;
+          dados.banner_home_url = store.banner_home_url || null;
         }
 
-        // Preenche os campos
+        // Preenche campos
         $('titulo_home').value = dados.titulo_home || '';
         $('subtitulo_home').value = dados.subtitulo_home || '';
 
-        // Preview de imagens salvas
-        if (dados.logo_url) $('preview-logo').innerHTML = `<img src="${dados.logo_url}" />`;
+        // Previews de imagens
+        if (dados.logo_url)          $('preview-logo').innerHTML = `<img src="${dados.logo_url}" />`;
         if (dados.logo_compacta_url) $('preview-logo-compacto').innerHTML = `<img src="${dados.logo_compacta_url}" />`;
-        if (dados.favicon_url) $('preview-favicon').innerHTML = `<img src="${dados.favicon_url}" />`;
-        if (dados.banner_home_url) $('upload-banner').innerHTML = `<img src="${dados.banner_home_url}" />`;
+        if (dados.favicon_url)       $('preview-favicon').innerHTML = `<img src="${dados.favicon_url}" />`;
+        if (dados.banner_home_url)   areaBanner.innerHTML = `<img src="${dados.banner_home_url}" />`;
 
         // Cores
         ['cor_principal','cor_secundaria','cor_destaque','cor_fundo','cor_texto','cor_sucesso'].forEach(campo => {
