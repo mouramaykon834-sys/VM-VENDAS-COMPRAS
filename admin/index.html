@@ -3,78 +3,204 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="robots" content="noindex, nofollow" />
-  <title>Dashboard — Admin</title>
-
-  <link rel="stylesheet" href="../assets/css/tokens.css" />
-  <link rel="stylesheet" href="../assets/css/base.css" />
-  <link rel="stylesheet" href="../assets/css/layout.css" />
-  <link rel="stylesheet" href="../assets/css/components.css" />
-  <link rel="stylesheet" href="../assets/css/store.css" />
-  <link rel="stylesheet" href="../assets/css/admin.css" />
+  <title>Diagnóstico — Admin</title>
+  <style>
+    body {
+      font-family: monospace, monospace;
+      padding: 20px;
+      background: #0f172a;
+      color: #e2e8f0;
+      line-height: 1.6;
+    }
+    h1 { font-size: 18px; margin-bottom: 16px; }
+    .passo {
+      padding: 12px 16px;
+      margin-bottom: 8px;
+      border-radius: 8px;
+      background: #1e293b;
+      border-left: 4px solid #64748b;
+    }
+    .ok    { border-left-color: #16a34a; background: #052e16; }
+    .erro  { border-left-color: #dc2626; background: #450a0a; }
+    .aviso { border-left-color: #f59e0b; background: #451a03; }
+    .passo strong { display: block; margin-bottom: 4px; }
+    .detalhe {
+      font-size: 12px;
+      color: #94a3b8;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+    .titulo-final {
+      margin-top: 24px;
+      padding: 16px;
+      border-radius: 8px;
+      font-size: 16px;
+      text-align: center;
+      font-weight: bold;
+    }
+    .sucesso-total { background: #16a34a; color: #fff; }
+    .erro-total { background: #dc2626; color: #fff; }
+  </style>
 </head>
 <body>
-
-  <div class="admin-layout">
-    <aside id="admin-sidebar" class="admin-sidebar"></aside>
-    <div id="admin-sidebar-overlay" class="admin-sidebar-overlay"></div>
-
-    <main class="admin-main">
-      <header class="admin-topbar">
-        <button id="admin-menu-btn" class="admin-topbar__menu-btn" aria-label="Abrir menu">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
-               stroke="currentColor" stroke-width="2">
-            <line x1="3" y1="6" x2="21" y2="6"/>
-            <line x1="3" y1="12" x2="21" y2="12"/>
-            <line x1="3" y1="18" x2="21" y2="18"/>
-          </svg>
-        </button>
-        <h1 class="admin-topbar__titulo">Dashboard</h1>
-        <div class="admin-topbar__acoes">
-          <a href="../index.html" class="btn btn--contorno btn--sm" target="_blank">Ver loja</a>
-        </div>
-      </header>
-
-      <div class="admin-conteudo">
-        <p class="admin-pagina-sub">
-          Visão geral da sua loja. Os números atualizam automaticamente.
-        </p>
-
-        <div id="admin-cards" class="admin-cards"></div>
-
-        <section class="admin-secao">
-          <div class="admin-secao__cabecalho">
-            <h2 class="admin-secao__titulo">Últimos pedidos</h2>
-            <a href="./pedidos.html" class="texto-sm">Ver todos</a>
-          </div>
-          <div class="admin-secao__corpo" id="admin-ultimos-pedidos">
-            <div class="admin-lista-vazia">Carregando...</div>
-          </div>
-        </section>
-
-        <section class="admin-secao">
-          <div class="admin-secao__cabecalho">
-            <h2 class="admin-secao__titulo">Últimas propostas</h2>
-            <a href="./propostas.html" class="texto-sm">Ver todas</a>
-          </div>
-          <div class="admin-secao__corpo" id="admin-ultimas-propostas">
-            <div class="admin-lista-vazia">Carregando...</div>
-          </div>
-        </section>
-
-        <section class="admin-secao">
-          <div class="admin-secao__cabecalho">
-            <h2 class="admin-secao__titulo">Últimas conversas</h2>
-            <a href="./conversas.html" class="texto-sm">Ver todas</a>
-          </div>
-          <div class="admin-secao__corpo" id="admin-ultimas-conversas">
-            <div class="admin-lista-vazia">Carregando...</div>
-          </div>
-        </section>
-      </div>
-    </main>
+  <h1>🔍 Diagnóstico do Painel Admin</h1>
+  <div id="resultado">
+    <div class="passo aviso">
+      <strong>Iniciando diagnóstico...</strong>
+      <div class="detalhe">Aguarde.</div>
+    </div>
   </div>
 
-  <script type="module" src="../assets/js/pages/admin-dashboard.js"></script>
+  <script type="module">
+    const el = document.getElementById('resultado');
+    const passos = [];
+
+    function addPasso(tipo, titulo, detalhe = '') {
+      passos.push({ tipo, titulo, detalhe });
+      renderizar();
+    }
+
+    function renderizar() {
+      el.innerHTML = passos.map(p => `
+        <div class="passo ${p.tipo}">
+          <strong>${p.titulo}</strong>
+          ${p.detalhe ? `<div class="detalhe">${escapar(p.detalhe)}</div>` : ''}
+        </div>
+      `).join('');
+    }
+
+    function escapar(s) {
+      return String(s)
+        .replaceAll('&', '&amp;').replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;');
+    }
+
+    function finalizar(tipo, titulo, detalhe = '') {
+      const div = document.createElement('div');
+      div.className = `titulo-final ${tipo}`;
+      div.textContent = titulo;
+      if (detalhe) {
+        const d = document.createElement('div');
+        d.className = 'detalhe';
+        d.style.marginTop = '8px';
+        d.textContent = detalhe;
+        div.appendChild(d);
+      }
+      el.appendChild(div);
+    }
+
+    // =============================================================
+    // PASSO 1 — Importar Supabase
+    // =============================================================
+    let supabase;
+    try {
+      const mod = await import('../assets/js/supabase.js');
+      supabase = mod.supabase;
+      addPasso('ok', '1. Importar supabase.js', 'Módulo carregado com sucesso.');
+    } catch (e) {
+      addPasso('erro', '1. Importar supabase.js', e.message || String(e));
+      finalizar('erro-total', 'FALHA: o arquivo supabase.js não foi carregado.');
+      throw e;
+    }
+
+    // =============================================================
+    // PASSO 2 — Verificar sessão
+    // =============================================================
+    let session;
+    try {
+      const r = await supabase.auth.getSession();
+      session = r.data?.session;
+      if (session) {
+        addPasso('ok', '2. Sessão de usuário', `Logado como: ${session.user.email}`);
+      } else {
+        addPasso('aviso', '2. Sessão de usuário', 'Nenhum usuário logado nesta aba.');
+      }
+    } catch (e) {
+      addPasso('erro', '2. Sessão de usuário', e.message || String(e));
+      finalizar('erro-total', 'FALHA: erro ao verificar sessão.');
+      throw e;
+    }
+
+    // =============================================================
+    // PASSO 3 — Consultar profiles
+    // =============================================================
+    let perfil;
+    if (session) {
+      try {
+        const { data, error, status, statusText } = await supabase
+          .from('profiles')
+          .select('id, nome, email, role')
+          .eq('id', session.user.id)
+          .maybeSingle();
+
+        if (error) {
+          addPasso('erro', '3. Consultar tabela profiles',
+            `Erro ${status} ${statusText}\n${error.message}\nCódigo: ${error.code || 'sem código'}`);
+          finalizar('erro-total', 'FALHA: não foi possível ler a tabela profiles.');
+          throw error;
+        }
+
+        if (!data) {
+          addPasso('erro', '3. Consultar tabela profiles',
+            'A tabela respondeu, mas NÃO EXISTE perfil com seu user id.\n' +
+            'Provavelmente o trigger on_auth_user_created não rodou.\n' +
+            `user_id: ${session.user.id}`);
+          finalizar('erro-total', 'FALHA: seu perfil não existe em profiles.');
+          throw new Error('Perfil inexistente');
+        }
+
+        perfil = data;
+        addPasso('ok', '3. Consultar tabela profiles',
+          `Perfil encontrado:\nid: ${data.id}\nnome: ${data.nome}\nrole: ${data.role}`);
+      } catch (e) {
+        if (!passos[passos.length - 1].titulo.includes('profiles')) {
+          addPasso('erro', '3. Consultar tabela profiles', e.message || String(e));
+        }
+        finalizar('erro-total', 'FALHA ao carregar perfil.');
+        throw e;
+      }
+    } else {
+      addPasso('aviso', '3. Consultar tabela profiles', 'Pulado — não há sessão ativa.');
+    }
+
+    // =============================================================
+    // PASSO 4 — Verificar se é admin
+    // =============================================================
+    if (perfil) {
+      if (perfil.role === 'admin') {
+        addPasso('ok', '4. Verificar permissão de admin', 'Você é ADMIN ✅');
+        finalizar('sucesso-total', '🎉 Tudo funcionando! O problema está nos guards ou componentes.');
+      } else {
+        addPasso('erro', '4. Verificar permissão de admin',
+          `Seu perfil tem role = "${perfil.role}".\n` +
+          'Não é admin. Rode no SQL Editor:\n\n' +
+          `update public.profiles set role='admin' where email='${session.user.email}';`);
+        finalizar('erro-total', 'Você não é admin. Rode o SQL acima.');
+      }
+    } else {
+      finalizar('erro-total', 'Você não está logado. Faça login primeiro em /login.html.');
+    }
+
+    // =============================================================
+    // Extra — testar leitura de orders, proposals, chats
+    // =============================================================
+    try {
+      const tabelas = ['orders', 'proposals', 'chats', 'products'];
+      let resumo = '';
+      for (const t of tabelas) {
+        const { count, error } = await supabase
+          .from(t)
+          .select('*', { count: 'exact', head: true });
+        if (error) {
+          resumo += `❌ ${t}: ${error.message}\n`;
+        } else {
+          resumo += `✅ ${t}: ${count} registros\n`;
+        }
+      }
+      addPasso('ok', '5. Leitura das tabelas', resumo);
+    } catch (e) {
+      addPasso('erro', '5. Leitura das tabelas', e.message || String(e));
+    }
+  </script>
 </body>
 </html>
