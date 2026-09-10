@@ -1,1 +1,531 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Editar produto — Admin</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: system-ui, sans-serif; background: #f8fafc; color: #0f172a; }
+    .layout { display: grid; grid-template-columns: 240px 1fr; min-height: 100vh; }
+    .sidebar { background: #0f172a; color: #cbd5e1; padding: 16px 0; }
+    .sidebar__logo { display: flex; align-items: center; gap: 8px; padding: 0 16px 20px; border-bottom: 1px solid rgba(255,255,255,.1); margin-bottom: 16px; color: #fff; font-weight: 700; }
+    .sidebar__badge { background: #0ea5e9; color: #fff; padding: 2px 8px; border-radius: 6px; font-size: 10px; }
+    .sidebar__secao { padding: 16px 16px 8px; font-size: 11px; text-transform: uppercase; color: #64748b; font-weight: 600; }
+    .sidebar__lista { display: flex; flex-direction: column; gap: 2px; padding: 0 8px; }
+    .sidebar__item { padding: 10px 12px; border-radius: 8px; color: #cbd5e1; text-decoration: none; font-size: 14px; }
+    .sidebar__item:hover { background: rgba(255,255,255,.06); color: #fff; }
+    .sidebar__item.ativo { background: #0ea5e9; color: #fff; }
+    .main { display: flex; flex-direction: column; }
+    .topbar { background: #fff; border-bottom: 1px solid #e2e8f0; padding: 16px 24px; display: flex; justify-content: space-between; align-items: center; }
+    .topbar h1 { font-size: 18px; }
+    .btn { padding: 8px 16px; border-radius: 8px; border: 1px solid #0ea5e9; background: #0ea5e9; color: #fff; font-weight: 600; font-size: 14px; cursor: pointer; text-decoration: none; display: inline-block; }
+    .btn:hover { filter: brightness(.94); }
+    .btn--fantasma { background: transparent; color: #0ea5e9; }
+    .btn--grande { padding: 12px 22px; font-size: 15px; }
+    .btn:disabled { opacity: .55; cursor: not-allowed; }
+    .conteudo { padding: 24px; max-width: 1200px; }
 
+    .grid { display: grid; grid-template-columns: 1fr 340px; gap: 24px; align-items: start; }
+    @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+    .bloco { background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; margin-bottom: 16px; }
+    .bloco h2 { font-size: 15px; margin-bottom: 16px; padding-bottom: 10px; border-bottom: 1px solid #e2e8f0; }
+
+    .campo { margin-bottom: 14px; }
+    .campo label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 5px; }
+    .campo input, .campo textarea, .campo select { width: 100%; padding: 9px 12px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 14px; font-family: inherit; background: #fff; }
+    .campo input:focus, .campo textarea:focus, .campo select:focus { outline: none; border-color: #0ea5e9; box-shadow: 0 0 0 3px rgba(14,165,233,.15); }
+    .campo textarea { resize: vertical; min-height: 80px; }
+    .campo__dica { display: block; font-size: 12px; color: #94a3b8; margin-top: 3px; }
+    .linha-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+    /* Upload */
+    .upload-area { border: 2px dashed #e2e8f0; border-radius: 10px; padding: 24px; text-align: center; color: #64748b; cursor: pointer; transition: all .15s; }
+    .upload-area:hover, .upload-area.drag { border-color: #0ea5e9; background: #f0f9ff; }
+    .upload-area svg { margin: 0 auto 8px; display: block; color: #94a3b8; }
+    .upload-area strong { color: #0f172a; display: block; margin-bottom: 4px; }
+    .upload-area .dica { font-size: 12px; }
+
+    .imagens-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 10px; margin-top: 14px; }
+    .img-card { aspect-ratio: 1; border-radius: 10px; overflow: hidden; border: 2px solid #e2e8f0; position: relative; background: #f8fafc; }
+    .img-card.principal { border-color: #0ea5e9; box-shadow: 0 0 0 3px rgba(14,165,233,.15); }
+    .img-card img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .img-card__sinal { position: absolute; top: 4px; left: 4px; background: #0ea5e9; color: #fff; font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 4px; }
+    .img-card__btn { position: absolute; top: 4px; right: 4px; width: 24px; height: 24px; border-radius: 6px; background: rgba(255,255,255,.95); color: #dc2626; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; font-weight: 700; }
+    .img-card__btn:hover { background: #fee2e2; }
+    .img-card__acao { position: absolute; bottom: 4px; left: 4px; right: 4px; padding: 4px; border-radius: 6px; background: rgba(15,23,42,.75); color: #fff; font-size: 11px; font-weight: 600; border: none; cursor: pointer; }
+    .img-card__acao:hover { background: #0ea5e9; }
+
+    .status-upload { padding: 10px 14px; border-radius: 8px; font-size: 13px; margin-top: 12px; }
+    .status-upload--info { background: #dbeafe; color: #1e40af; }
+    .status-upload--ok { background: #dcfce7; color: #166534; }
+    .status-upload--err { background: #fee2e2; color: #991b1b; }
+
+    .erro { padding: 20px; background: #fee2e2; color: #991b1b; border-radius: 8px; font-family: monospace; font-size: 13px; white-space: pre-wrap; margin: 20px; }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="sidebar__logo"><span>🏠</span><span>Minha Loja</span><span class="sidebar__badge">ADMIN</span></div>
+      <div class="sidebar__secao">Principal</div>
+      <nav class="sidebar__lista">
+        <a href="./index.html" class="sidebar__item">Dashboard</a>
+        <a href="./pedidos.html" class="sidebar__item">Pedidos</a>
+        <a href="./propostas.html" class="sidebar__item">Propostas</a>
+        <a href="./conversas.html" class="sidebar__item">Conversas</a>
+      </nav>
+      <div class="sidebar__secao">Catálogo</div>
+      <nav class="sidebar__lista">
+        <a href="./produtos.html" class="sidebar__item ativo">Produtos</a>
+        <a href="./categorias.html" class="sidebar__item">Categorias</a>
+      </nav>
+      <div class="sidebar__secao">Configurações</div>
+      <nav class="sidebar__lista">
+        <a href="./empresa.html" class="sidebar__item">Dados da empresa</a>
+        <a href="./identidade.html" class="sidebar__item">Identidade visual</a>
+      </nav>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <h1 id="titulo">Novo produto</h1>
+        <div style="display:flex;gap:8px;">
+          <a href="./produtos.html" class="btn btn--fantasma">Voltar</a>
+          <button class="btn" id="btn-salvar-topo">Salvar</button>
+        </div>
+      </header>
+
+      <div id="carregando" style="padding:40px;text-align:center;color:#64748b;">
+        <div style="width:32px;height:32px;border:3px solid #e2e8f0;border-top-color:#0ea5e9;border-radius:50%;margin:0 auto 12px;animation:spin .7s linear infinite;"></div>
+        Carregando...
+        <style>@keyframes spin{to{transform:rotate(360deg)}}</style>
+      </div>
+
+      <form class="conteudo" id="form" style="display:none;">
+        <div class="grid">
+
+          <!-- COLUNA ESQUERDA -->
+          <div>
+            <div class="bloco">
+              <h2>Informações principais</h2>
+              <div class="campo">
+                <label>Nome do produto *</label>
+                <input type="text" id="nome" required />
+              </div>
+              <div class="campo">
+                <label>Descrição curta</label>
+                <input type="text" id="descricao_curta" maxlength="200" placeholder="Resumo em uma linha" />
+                <span class="campo__dica">Aparece nos cards do catálogo</span>
+              </div>
+              <div class="campo">
+                <label>Descrição completa</label>
+                <textarea id="descricao" rows="6"></textarea>
+              </div>
+            </div>
+
+            <div class="bloco">
+              <h2>Fotos do produto</h2>
+              <div class="upload-area" id="upload-area">
+                <input type="file" id="input-files" multiple accept="image/*" hidden />
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                  <polyline points="17 8 12 3 7 8"/>
+                  <line x1="12" y1="3" x2="12" y2="15"/>
+                </svg>
+                <strong>Clique para escolher imagens</strong>
+                <span class="dica">ou arraste para cá · JPG, PNG ou WEBP</span>
+              </div>
+              <div id="status-upload"></div>
+              <div class="imagens-grid" id="imagens"></div>
+            </div>
+
+            <div class="bloco">
+              <h2>Especificações</h2>
+              <div class="linha-2">
+                <div class="campo"><label>Marca</label><input type="text" id="marca" /></div>
+                <div class="campo"><label>Modelo</label><input type="text" id="modelo" /></div>
+              </div>
+              <div class="campo"><label>Código / SKU</label><input type="text" id="sku" /></div>
+              <div class="campo">
+                <label>Características (uma por linha)</label>
+                <textarea id="caracteristicas" rows="4" placeholder="Garantia de 90 dias&#10;Acompanha cabo&#10;Caixa original"></textarea>
+              </div>
+              <div class="campo">
+                <label>Especificações técnicas (chave: valor, uma por linha)</label>
+                <textarea id="especificacoes" rows="4" placeholder="Cor: Preto&#10;Tamanho: 40cm&#10;Peso: 1,2kg"></textarea>
+              </div>
+            </div>
+          </div>
+
+          <!-- COLUNA DIREITA -->
+          <div>
+            <div class="bloco">
+              <h2>Publicação</h2>
+              <div class="campo">
+                <label>Status</label>
+                <select id="status">
+                  <option value="disponivel">Disponível</option>
+                  <option value="indisponivel">Indisponível</option>
+                  <option value="em_negociacao">Em negociação</option>
+                  <option value="vendido">Vendido</option>
+                  <option value="oculto">Oculto</option>
+                </select>
+              </div>
+              <div class="campo">
+                <label style="display:flex;align-items:center;gap:8px;cursor:pointer;">
+                  <input type="checkbox" id="destaque" style="width:auto;margin:0;" />
+                  <span>Destacar na home</span>
+                </label>
+              </div>
+            </div>
+
+            <div class="bloco">
+              <h2>Preços</h2>
+              <div class="campo">
+                <label>Preço (R$) *</label>
+                <input type="number" id="preco" min="0" step="0.01" required />
+              </div>
+              <div class="campo">
+                <label>Preço promocional (R$)</label>
+                <input type="number" id="preco_promocional" min="0" step="0.01" />
+                <span class="campo__dica">Deixe vazio para não ter promoção</span>
+              </div>
+            </div>
+
+            <div class="bloco">
+              <h2>Estoque e categoria</h2>
+              <div class="campo">
+                <label>Quantidade em estoque</label>
+                <input type="number" id="estoque" min="0" value="1" />
+              </div>
+              <div class="campo">
+                <label>Categoria</label>
+                <select id="categoria_id"><option value="">Carregando...</option></select>
+              </div>
+              <div class="campo">
+                <label>Condição</label>
+                <select id="condicao">
+                  <option value="novo">Novo</option>
+                  <option value="seminovo">Seminovo</option>
+                  <option value="usado">Usado</option>
+                  <option value="outro">Outro</option>
+                </select>
+              </div>
+            </div>
+
+            <button type="submit" class="btn btn--grande" id="btn-salvar" style="width:100%;">Salvar produto</button>
+          </div>
+        </div>
+      </form>
+    </main>
+  </div>
+
+  <script type="module">
+    const params = new URLSearchParams(location.search);
+    const idEdicao = params.get('id');
+    const editando = !!idEdicao;
+
+    let supabase, session, perfil;
+    let imagensExistentes = []; // do banco: { id, url, principal, storage_path, ordem }
+    let arquivosNovos = [];     // File objects locais
+
+    const $ = id => document.getElementById(id);
+
+    function erroFatal(msg) {
+      document.body.innerHTML = `<div class="erro"><strong>❌ Erro</strong>\n\n${msg}</div>`;
+    }
+
+    // -------------------------------------------------------------
+    // Upload: eventos
+    // -------------------------------------------------------------
+    $('upload-area').onclick = () => $('input-files').click();
+    $('upload-area').ondragover = (e) => { e.preventDefault(); $('upload-area').classList.add('drag'); };
+    $('upload-area').ondragleave = () => $('upload-area').classList.remove('drag');
+    $('upload-area').ondrop = (e) => {
+      e.preventDefault();
+      $('upload-area').classList.remove('drag');
+      addArquivos(Array.from(e.dataTransfer.files || []));
+    };
+    $('input-files').onchange = (e) => {
+      addArquivos(Array.from(e.target.files || []));
+      e.target.value = '';
+    };
+
+    function addArquivos(files) {
+      const imgs = files.filter(f => f.type.startsWith('image/'));
+      if (!imgs.length) return;
+      arquivosNovos = arquivosNovos.concat(imgs);
+      renderizarImagens();
+    }
+
+    function renderizarImagens() {
+      const grid = $('imagens');
+
+      const existentesHTML = imagensExistentes.map(img => `
+        <div class="img-card ${img.principal ? 'principal' : ''}">
+          <img src="${img.url}" alt="" />
+          ${img.principal ? '<span class="img-card__sinal">PRINCIPAL</span>' : ''}
+          <button type="button" class="img-card__btn" data-rm-exist="${img.id}" title="Remover">×</button>
+          ${!img.principal ? `<button type="button" class="img-card__acao" data-set-principal="${img.id}">Tornar principal</button>` : ''}
+        </div>
+      `).join('');
+
+      const novasHTML = arquivosNovos.map((file, i) => `
+        <div class="img-card">
+          <img src="${URL.createObjectURL(file)}" alt="" />
+          <button type="button" class="img-card__btn" data-rm-nova="${i}" title="Remover">×</button>
+          <span class="img-card__sinal" style="background:#f59e0b;">NOVA</span>
+        </div>
+      `).join('');
+
+      grid.innerHTML = existentesHTML + novasHTML;
+
+      grid.querySelectorAll('[data-rm-exist]').forEach(b => {
+        b.onclick = () => {
+          imagensExistentes = imagensExistentes.filter(x => x.id !== b.dataset.rmExist);
+          renderizarImagens();
+        };
+      });
+      grid.querySelectorAll('[data-rm-nova]').forEach(b => {
+        b.onclick = () => {
+          arquivosNovos.splice(Number(b.dataset.rmNova), 1);
+          renderizarImagens();
+        };
+      });
+      grid.querySelectorAll('[data-set-principal]').forEach(b => {
+        b.onclick = () => {
+          const id = b.dataset.setPrincipal;
+          imagensExistentes = imagensExistentes.map(x => ({ ...x, principal: x.id === id }));
+          renderizarImagens();
+        };
+      });
+    }
+
+    // -------------------------------------------------------------
+    // Salvar
+    // -------------------------------------------------------------
+    async function salvar() {
+      const nome = $('nome').value.trim();
+      const preco = Number($('preco').value);
+
+      if (!nome) { alert('Informe o nome do produto.'); return; }
+      if (!preco || preco <= 0) { alert('Informe um preço válido.'); return; }
+
+      const btn = $('btn-salvar');
+      const btnTopo = $('btn-salvar-topo');
+      btn.disabled = true; btnTopo.disabled = true;
+      btn.textContent = 'Salvando...';
+
+      try {
+        // Coleta
+        const caracTexto = $('caracteristicas').value.trim();
+        const caracteristicas = caracTexto
+          ? caracTexto.split('\n').map(l => l.trim()).filter(Boolean) : [];
+
+        const espTexto = $('especificacoes').value.trim();
+        const especificacoes = {};
+        if (espTexto) {
+          espTexto.split('\n').forEach(l => {
+            const [k, ...rest] = l.split(':');
+            if (k && rest.length) especificacoes[k.trim()] = rest.join(':').trim();
+          });
+        }
+
+        const payload = {
+          nome,
+          descricao_curta: $('descricao_curta').value.trim() || null,
+          descricao: $('descricao').value.trim() || null,
+          marca: $('marca').value.trim() || null,
+          modelo: $('modelo').value.trim() || null,
+          sku: $('sku').value.trim() || null,
+          preco,
+          preco_promocional: $('preco_promocional').value ? Number($('preco_promocional').value) : null,
+          estoque: Number($('estoque').value) || 0,
+          status: $('status').value,
+          condicao: $('condicao').value,
+          destaque: $('destaque').checked,
+          categoria_id: $('categoria_id').value || null,
+          caracteristicas,
+          especificacoes,
+          slug: slugify(nome) + '-' + Date.now().toString(36)
+        };
+
+        let produtoId = idEdicao;
+
+        // Insert/Update produto
+        if (editando) {
+          const { error } = await supabase.from('products').update(payload).eq('id', idEdicao);
+          if (error) throw error;
+        } else {
+          const { data, error } = await supabase.from('products').insert(payload).select('id').single();
+          if (error) throw error;
+          produtoId = data.id;
+        }
+
+        // Remove imagens que foram excluídas da lista
+        if (editando) {
+          const { data: dbImgs } = await supabase
+            .from('product_images')
+            .select('id, storage_path')
+            .eq('product_id', produtoId);
+
+          const manter = imagensExistentes.map(x => x.id);
+          const remover = (dbImgs || []).filter(x => !manter.includes(x.id));
+
+          for (const r of remover) {
+            if (r.storage_path) {
+              await supabase.storage.from('products').remove([r.storage_path]).catch(() => {});
+            }
+            await supabase.from('product_images').delete().eq('id', r.id);
+          }
+        }
+
+        // Upload de novas imagens
+        if (arquivosNovos.length) {
+          const st = $('status-upload');
+          st.innerHTML = `<div class="status-upload status-upload--info">Enviando imagens...</div>`;
+
+          for (let i = 0; i < arquivosNovos.length; i++) {
+            const file = arquivosNovos[i];
+            const ext = (file.name.split('.').pop() || 'jpg').toLowerCase();
+            const path = `${produtoId}/${Date.now()}-${i}.${ext}`;
+
+            const { error: upErr } = await supabase.storage
+              .from('products')
+              .upload(path, file, { cacheControl: '3600', upsert: false });
+
+            if (upErr) {
+              console.error('Erro upload:', upErr);
+              continue;
+            }
+
+            const { data: urlData } = supabase.storage.from('products').getPublicUrl(path);
+
+            await supabase.from('product_images').insert({
+              product_id: produtoId,
+              url: urlData.publicUrl,
+              storage_path: path,
+              principal: false,
+              ordem: i
+            });
+          }
+        }
+
+        // Definir imagem principal
+        const principal = imagensExistentes.find(x => x.principal);
+        if (principal) {
+          await supabase.from('product_images').update({ principal: false }).eq('product_id', produtoId);
+          await supabase.from('product_images').update({ principal: true }).eq('id', principal.id);
+        } else if (!editando && arquivosNovos.length) {
+          // Se é novo e não marcou nenhuma, marca a primeira nova como principal
+          const { data: primeiras } = await supabase
+            .from('product_images')
+            .select('id')
+            .eq('product_id', produtoId)
+            .order('created_at', { ascending: true })
+            .limit(1);
+          if (primeiras?.[0]) {
+            await supabase.from('product_images').update({ principal: true }).eq('id', primeiras[0].id);
+          }
+        }
+
+        $('status-upload').innerHTML = `<div class="status-upload status-upload--ok">✅ Produto salvo com sucesso!</div>`;
+        btn.textContent = 'Salvo!';
+
+        setTimeout(() => { location.href = './produtos.html'; }, 1000);
+
+      } catch (e) {
+        console.error(e);
+        $('status-upload').innerHTML = `<div class="status-upload status-upload--err">❌ ${e.message}</div>`;
+        btn.disabled = false; btnTopo.disabled = false;
+        btn.textContent = 'Salvar produto';
+      }
+    }
+
+    $('form').onsubmit = (e) => { e.preventDefault(); salvar(); };
+    $('btn-salvar-topo').onclick = (e) => { e.preventDefault(); salvar(); };
+
+    function slugify(s) {
+      return s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+        .replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+    }
+
+    // -------------------------------------------------------------
+    // Inicialização
+    // -------------------------------------------------------------
+    (async () => {
+      try {
+        ({ supabase } = await import('../assets/js/supabase.js'));
+
+        const r = await supabase.auth.getSession();
+        session = r.data?.session;
+        if (!session) { location.href = '../login.html'; return; }
+
+        const p = await supabase.from('profiles').select('role').eq('id', session.user.id).maybeSingle();
+        perfil = p.data;
+        if (!perfil || perfil.role !== 'admin') { erroFatal('Acesso restrito.'); return; }
+
+        // Categorias
+        const cats = await supabase.from('categories').select('id, nome').eq('ativo', true).order('nome');
+        const sel = $('categoria_id');
+        sel.innerHTML = `<option value="">Sem categoria</option>` +
+          (cats.data || []).map(c => `<option value="${c.id}">${escapeHtml(c.nome)}</option>`).join('');
+
+        // Edição: carrega produto
+        if (editando) {
+          $('titulo').textContent = 'Editar produto';
+          const { data: p, error } = await supabase
+            .from('products')
+            .select('*, product_images ( id, url, principal, ordem, storage_path )')
+            .eq('id', idEdicao)
+            .maybeSingle();
+
+          if (error || !p) { erroFatal('Produto não encontrado.'); return; }
+
+          $('nome').value = p.nome || '';
+          $('descricao_curta').value = p.descricao_curta || '';
+          $('descricao').value = p.descricao || '';
+          $('marca').value = p.marca || '';
+          $('modelo').value = p.modelo || '';
+          $('sku').value = p.sku || '';
+          $('preco').value = p.preco ?? '';
+          $('preco_promocional').value = p.preco_promocional ?? '';
+          $('estoque').value = p.estoque ?? 0;
+          $('status').value = p.status || 'disponivel';
+          $('condicao').value = p.condicao || 'novo';
+          $('destaque').checked = !!p.destaque;
+          if (p.categoria_id) $('categoria_id').value = p.categoria_id;
+
+          if (Array.isArray(p.caracteristicas) && p.caracteristicas.length)
+            $('caracteristicas').value = p.caracteristicas.join('\n');
+
+          if (p.especificacoes && typeof p.especificacoes === 'object')
+            $('especificacoes').value = Object.entries(p.especificacoes).map(([k,v]) => `${k}: ${v}`).join('\n');
+
+          imagensExistentes = (p.product_images || []).slice().sort((a,b) => {
+            if (a.principal && !b.principal) return -1;
+            if (!a.principal && b.principal) return 1;
+            return (a.ordem || 0) - (b.ordem || 0);
+          });
+          renderizarImagens();
+        }
+
+        $('carregando').style.display = 'none';
+        $('form').style.display = 'block';
+
+      } catch (e) {
+        console.error(e);
+        erroFatal(e.message);
+      }
+    })();
+
+    function escapeHtml(s) {
+      if (s == null) return '';
+      return String(s).replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]));
+    }
+  </script>
+</body>
+</html>
