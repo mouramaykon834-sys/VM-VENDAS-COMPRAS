@@ -1,0 +1,342 @@
+/* =============================================================
+   ADMIN — VM VENDAS E COMPRAS
+   =============================================================
+   Estilos exclusivos do painel administrativo.
+   ============================================================= */
+
+.admin-layout {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  min-height: 100vh;
+  background: var(--cor-fundo-suave);
+}
+
+/* -------------------------------------------------------------
+   SIDEBAR
+   ------------------------------------------------------------- */
+.admin-sidebar {
+  background: var(--cor-secundaria);
+  color: #cbd5e1;
+  padding: var(--esp-4) 0;
+  display: flex;
+  flex-direction: column;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+}
+
+.admin-sidebar__logo {
+  display: flex;
+  align-items: center;
+  gap: var(--esp-2);
+  padding: 0 var(--esp-4) var(--esp-5);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  margin-bottom: var(--esp-4);
+  color: #fff;
+  font-weight: var(--peso-bold);
+  font-size: var(--texto-base);
+  text-decoration: none;
+}
+.admin-sidebar__logo:hover { text-decoration: none; color: #fff; }
+
+.admin-sidebar__logo-badge {
+  background: var(--cor-principal);
+  color: #fff;
+  padding: 2px 8px;
+  border-radius: var(--raio-sm);
+  font-size: 10px;
+  font-weight: var(--peso-bold);
+  letter-spacing: 0.5px;
+}
+
+.admin-sidebar__secao {
+  padding: var(--esp-4) var(--esp-4) var(--esp-2);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #64748b;
+  font-weight: var(--peso-semibold);
+}
+
+.admin-sidebar__lista {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 0 var(--esp-2);
+}
+
+.admin-sidebar__item {
+  display: flex;
+  align-items: center;
+  gap: var(--esp-3);
+  padding: 10px var(--esp-3);
+  border-radius: var(--raio-md);
+  color: #cbd5e1;
+  font-size: var(--texto-sm);
+  font-weight: var(--peso-medio);
+  text-decoration: none;
+  transition: all var(--transicao-rapida);
+}
+.admin-sidebar__item:hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: #fff;
+  text-decoration: none;
+}
+.admin-sidebar__item.ativo {
+  background: var(--cor-principal);
+  color: #fff;
+}
+.admin-sidebar__item.ativo:hover {
+  background: var(--cor-principal);
+  color: #fff;
+}
+
+.admin-sidebar__badge {
+  margin-left: auto;
+  background: var(--cor-erro);
+  color: #fff;
+  font-size: 10px;
+  padding: 2px 6px;
+  border-radius: var(--raio-full);
+  font-weight: var(--peso-bold);
+}
+
+.admin-sidebar__rodape {
+  margin-top: auto;
+  padding: var(--esp-4);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  font-size: var(--texto-xs);
+}
+.admin-sidebar__rodape a {
+  color: #94a3b8;
+  display: block;
+  padding: 4px 0;
+}
+.admin-sidebar__rodape a:hover { color: #fff; text-decoration: none; }
+
+/* -------------------------------------------------------------
+   ÁREA PRINCIPAL
+   ------------------------------------------------------------- */
+.admin-main {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.admin-topbar {
+  background: #fff;
+  border-bottom: 1px solid var(--cor-borda);
+  padding: var(--esp-3) var(--esp-6);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--esp-4);
+  position: sticky;
+  top: 0;
+  z-index: var(--z-sticky);
+  height: 60px;
+}
+
+.admin-topbar__titulo {
+  font-size: var(--texto-lg);
+  font-weight: var(--peso-semibold);
+}
+
+.admin-topbar__acoes {
+  display: flex;
+  gap: var(--esp-2);
+  align-items: center;
+}
+
+.admin-topbar__menu-btn {
+  display: none;
+  padding: var(--esp-2);
+  border-radius: var(--raio-md);
+  color: var(--cor-texto);
+}
+
+.admin-conteudo {
+  padding: var(--esp-6);
+  flex: 1;
+}
+
+.admin-pagina-titulo {
+  font-size: var(--texto-2xl);
+  margin-bottom: var(--esp-2);
+}
+.admin-pagina-sub {
+  color: var(--cor-texto-suave);
+  font-size: var(--texto-sm);
+  margin-bottom: var(--esp-6);
+}
+
+/* -------------------------------------------------------------
+   CARDS DO DASHBOARD
+   ------------------------------------------------------------- */
+.admin-cards {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--esp-4);
+  margin-bottom: var(--esp-8);
+}
+
+.admin-card {
+  background: #fff;
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio-card);
+  padding: var(--esp-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--esp-2);
+}
+
+.admin-card__rotulo {
+  font-size: var(--texto-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--cor-texto-suave);
+  font-weight: var(--peso-semibold);
+}
+.admin-card__valor {
+  font-size: var(--texto-3xl);
+  font-weight: var(--peso-bold);
+  color: var(--cor-secundaria);
+  line-height: 1.1;
+}
+.admin-card__nota {
+  font-size: var(--texto-xs);
+  color: var(--cor-texto-suave);
+}
+.admin-card__icone {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--raio-md);
+  background: var(--cor-fundo-suave);
+  color: var(--cor-principal);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: var(--esp-2);
+}
+
+.admin-card--destaque {
+  background: linear-gradient(135deg, var(--cor-principal), #0284c7);
+  color: #fff;
+  border-color: transparent;
+}
+.admin-card--destaque .admin-card__rotulo,
+.admin-card--destaque .admin-card__valor,
+.admin-card--destaque .admin-card__nota { color: #fff; }
+.admin-card--destaque .admin-card__icone {
+  background: rgba(255, 255, 255, 0.2);
+  color: #fff;
+}
+
+/* -------------------------------------------------------------
+   SEÇÕES (últimos pedidos, últimas propostas, etc)
+   ------------------------------------------------------------- */
+.admin-secao {
+  background: #fff;
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio-card);
+  margin-bottom: var(--esp-6);
+  overflow: hidden;
+}
+.admin-secao__cabecalho {
+  padding: var(--esp-4) var(--esp-5);
+  border-bottom: 1px solid var(--cor-borda);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--esp-3);
+}
+.admin-secao__titulo {
+  font-size: var(--texto-base);
+  font-weight: var(--peso-semibold);
+}
+.admin-secao__corpo { padding: var(--esp-2) 0; }
+
+.admin-lista-vazia {
+  text-align: center;
+  color: var(--cor-texto-suave);
+  font-size: var(--texto-sm);
+  padding: var(--esp-6);
+}
+
+/* -------------------------------------------------------------
+   TABELAS DO ADMIN
+   ------------------------------------------------------------- */
+.admin-tabela {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--texto-sm);
+}
+.admin-tabela th {
+  text-align: left;
+  font-weight: var(--peso-semibold);
+  color: var(--cor-texto-suave);
+  font-size: var(--texto-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: var(--esp-3) var(--esp-4);
+  border-bottom: 1px solid var(--cor-borda);
+  background: var(--cor-fundo-suave);
+}
+.admin-tabela td {
+  padding: var(--esp-3) var(--esp-4);
+  border-bottom: 1px solid var(--cor-borda);
+  vertical-align: middle;
+}
+.admin-tabela tbody tr:hover {
+  background: var(--cor-fundo-suave);
+}
+.admin-tabela__acoes {
+  display: flex;
+  gap: var(--esp-2);
+  justify-content: flex-end;
+}
+.admin-tabela__miniatura {
+  width: 40px;
+  height: 40px;
+  object-fit: cover;
+  border-radius: var(--raio-sm);
+  background: var(--cor-fundo-suave);
+}
+
+/* -------------------------------------------------------------
+   RESPONSIVIDADE
+   ------------------------------------------------------------- */
+@media (max-width: 1024px) {
+  .admin-cards { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 768px) {
+  .admin-layout {
+    grid-template-columns: 1fr;
+  }
+  .admin-sidebar {
+    position: fixed;
+    top: 0;
+    left: -260px;
+    width: 260px;
+    z-index: var(--z-overlay);
+    transition: left var(--transicao-normal);
+    height: 100vh;
+  }
+  .admin-sidebar.aberta { left: 0; }
+  .admin-topbar__menu-btn { display: flex; }
+  .admin-conteudo { padding: var(--esp-4); }
+  .admin-cards { grid-template-columns: 1fr; }
+  .admin-topbar { padding: var(--esp-3) var(--esp-4); }
+
+  /* Overlay escuro quando sidebar aberta */
+  .admin-sidebar-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.5);
+    z-index: calc(var(--z-overlay) - 1);
+  }
+  .admin-sidebar-overlay.ativa { display: block; }
+}
