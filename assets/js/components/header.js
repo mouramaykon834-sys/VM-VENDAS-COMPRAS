@@ -78,20 +78,22 @@ export async function renderHeader(ativo) {
     let user = null;
     try {
       const r = await comTimeout(supabase.auth.getUser(), 4000);
-      user = r && r.data ? r.data.user : null;
+      user = (r && r.data) ? r.data.user : null;
     } catch (e) { user = null; }
 
     if (!user) return;
 
-    document.getElementById('header-conta').href = './perfil.html';
-    document.getElementById('header-conta-texto').textContent = 'Minha conta';
+    const contaLink = document.getElementById('header-conta');
+    const contaTexto = document.getElementById('header-conta-texto');
+    if (contaLink) contaLink.href = './perfil.html';
+    if (contaTexto) contaTexto.textContent = 'Minha conta';
 
     try {
       const f = await comTimeout(
         supabase.from('favorites').select('*', { count: 'exact', head: true }).eq('user_id', user.id),
         3000
       );
-      atualizarBadge('badge-favoritos', (f && f.count) || 0);
+      atualizarBadge('badge-favoritos', (f && f.count) ? f.count : 0);
     } catch (e) {}
 
     try {
@@ -99,7 +101,7 @@ export async function renderHeader(ativo) {
         supabase.from('notifications').select('*', { count: 'exact', head: true }).eq('user_id', user.id).eq('lida', false),
         3000
       );
-      atualizarBadge('badge-notif', (n && n.count) || 0);
+      atualizarBadge('badge-notif', (n && n.count) ? n.count : 0);
     } catch (e) {}
 
     try {
@@ -107,7 +109,8 @@ export async function renderHeader(ativo) {
         supabase.from('profiles').select('role').eq('id', user.id).maybeSingle(),
         3000
       );
-      if (p && p.data && p.data.role === 'admin') {
+      const ehAdmin = (p && p.data && p.data.role === 'admin');
+      if (ehAdmin) {
         const slot = document.getElementById('header-admin-slot');
         if (slot) {
           slot.innerHTML = '<a href="./admin/" class="cabecalho__acao cabecalho__acao--admin" title="Painel"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l9 4v6c0 5-3.5 9.5-9 10-5.5-.5-9-5-9-10V6z"/></svg><span class="cabecalho__acao-texto">Admin</span></a>';
