@@ -3,238 +3,179 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Produtos — Minha Loja</title>
-  <link rel="stylesheet" href="./assets/css/tokens.css" />
-  <link rel="stylesheet" href="./assets/css/base.css" />
-  <link rel="stylesheet" href="./assets/css/layout.css" />
-  <link rel="stylesheet" href="./assets/css/components.css" />
-  <link rel="stylesheet" href="./assets/css/store.css" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Produtos — Admin</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: system-ui, -apple-system, sans-serif; background: #f8fafc; color: #0f172a; }
+    .layout { display: grid; grid-template-columns: 240px 1fr; min-height: 100vh; }
+    .sidebar { background: #0f172a; color: #cbd5e1; padding: 16px 0; }
+    .sidebar__logo { display: flex; align-items: center; gap: 8px; padding: 0 16px 20px; border-bottom: 1px solid rgba(255,255,255,.1); margin-bottom: 16px; color: #fff; font-weight: 700; font-size: 15px; }
+    .sidebar__badge { background: #0ea5e9; color: #fff; padding: 2px 8px; border-radius: 6px; font-size: 10px; font-weight: 700; }
+    .sidebar__secao { padding: 16px 16px 8px; font-size: 11px; text-transform: uppercase; letter-spacing: .5px; color: #64748b; font-weight: 600; }
+    .sidebar__lista { display: flex; flex-direction: column; gap: 2px; padding: 0 8px; }
+    .sidebar__item { padding: 10px 12px; border-radius: 8px; color: #cbd5e1; text-decoration: none; font-size: 14px; display: block; }
+    .sidebar__item:hover { background: rgba(255,255,255,.06); color: #fff; }
+    .sidebar__item.ativo { background: #0ea5e9; color: #fff; }
+    .main { display: flex; flex-direction: column; }
+    .topbar { background: #fff; border-bottom: 1px solid #e2e8f0; padding: 12px 24px; display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+    .topbar h1 { font-size: 18px; }
+    .topbar__acoes { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+    .topbar input[type=search] { padding: 8px 12px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 14px; width: 200px; }
+    .btn { padding: 8px 16px; border-radius: 8px; border: 1px solid #0ea5e9; background: #0ea5e9; color: #fff; font-weight: 600; font-size: 14px; cursor: pointer; text-decoration: none; display: inline-block; }
+    .btn:hover { filter: brightness(.94); }
+    .btn--fantasma { background: transparent; color: #0ea5e9; }
+    .btn--perigo { background: transparent; color: #dc2626; border-color: transparent; padding: 6px 10px; }
+    .btn--loja { padding: 8px 14px; border: 1px solid #0ea5e9; border-radius: 8px; color: #0ea5e9; text-decoration: none; font-size: 13px; font-weight: 600; }
+    .btn--loja:hover { background: #0ea5e9; color: #fff; }
+    .conteudo { padding: 24px; }
+    .vazio { background: #fff; padding: 60px 24px; text-align: center; border-radius: 12px; border: 1px solid #e2e8f0; color: #64748b; }
+    .tabela { width: 100%; background: #fff; border-collapse: collapse; border-radius: 12px; overflow: hidden; border: 1px solid #e2e8f0; }
+    .tabela th { text-align: left; padding: 12px 16px; background: #f8fafc; font-size: 12px; text-transform: uppercase; color: #64748b; }
+    .tabela td { padding: 12px 16px; border-top: 1px solid #e2e8f0; font-size: 14px; }
+    .tabela tr:hover td { background: #f8fafc; }
+    .miniatura { width: 44px; height: 44px; object-fit: cover; border-radius: 6px; background: #f1f5f9; display: block; }
+    .erro { padding: 20px; background: #fee2e2; color: #991b1b; border-radius: 8px; font-family: monospace; font-size: 13px; margin: 20px; }
+    .badge { padding: 3px 10px; border-radius: 9999px; font-size: 11px; font-weight: 600; display: inline-block; }
+    .badge--ok { background: #dcfce7; color: #166534; }
+    .badge--no { background: #fee2e2; color: #991b1b; }
+    @media (max-width: 900px) { .layout { grid-template-columns: 1fr; } }
+  </style>
 </head>
 <body>
-  <div id="header"></div>
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="sidebar__logo"><span>🏠</span><span>Minha Loja</span><span class="sidebar__badge">ADMIN</span></div>
+      <div class="sidebar__secao">Principal</div>
+      <nav class="sidebar__lista">
+        <a href="./index.html" class="sidebar__item">Dashboard</a>
+        <a href="./pedidos.html" class="sidebar__item">Pedidos</a>
+        <a href="./propostas.html" class="sidebar__item">Propostas</a>
+        <a href="./conversas.html" class="sidebar__item">Conversas</a>
+      </nav>
+      <div class="sidebar__secao">Catálogo</div>
+      <nav class="sidebar__lista">
+        <a href="./produtos.html" class="sidebar__item ativo">Produtos</a>
+        <a href="./categorias.html" class="sidebar__item">Categorias</a>
+        <a href="./produtos-destaque.html" class="sidebar__item">Destaques e promoções</a>
+      </nav>
+      <div class="sidebar__secao">Clientes</div>
+      <nav class="sidebar__lista">
+        <a href="./clientes.html" class="sidebar__item">Clientes</a>
+      </nav>
+      <div class="sidebar__secao">Configurações</div>
+      <nav class="sidebar__lista">
+        <a href="./empresa.html" class="sidebar__item">Dados da empresa</a>
+        <a href="./identidade.html" class="sidebar__item">Identidade visual</a>
+        <a href="./configuracoes.html" class="sidebar__item">Outras configurações</a>
+      </nav>
+    </aside>
 
-  <main class="conteudo">
-    <div class="container">
-      <div class="migalhas"><a href="./index.html">Início</a><span>Produtos</span></div>
-      <h1 class="pagina-titulo">Catálogo de produtos</h1>
-
-      <div class="catalogo">
-        <aside class="filtros">
-          <h2 class="filtros__titulo">Filtros</h2>
-          <form id="form-filtros">
-            <div class="filtros__bloco">
-              <div class="filtros__subtitulo">Buscar</div>
-              <input type="search" name="busca" placeholder="Nome ou descrição" />
-            </div>
-            <div class="filtros__bloco">
-              <div class="filtros__subtitulo">Categoria</div>
-              <div class="filtros__lista" id="filtro-categorias"><div class="spinner"></div></div>
-            </div>
-            <div class="filtros__bloco">
-              <div class="filtros__subtitulo">Condição</div>
-              <div class="filtros__lista">
-                <label class="checkbox"><input type="checkbox" name="condicao" value="novo" /><span>Novo</span></label>
-                <label class="checkbox"><input type="checkbox" name="condicao" value="seminovo" /><span>Seminovo</span></label>
-                <label class="checkbox"><input type="checkbox" name="condicao" value="usado" /><span>Usado</span></label>
-                <label class="checkbox"><input type="checkbox" name="condicao" value="outro" /><span>Outro</span></label>
-              </div>
-            </div>
-            <div class="filtros__bloco">
-              <div class="filtros__subtitulo">Faixa de preço</div>
-              <div class="campo-grupo">
-                <input type="number" name="precoMin" placeholder="Mín" min="0" step="0.01" />
-                <input type="number" name="precoMax" placeholder="Máx" min="0" step="0.01" />
-              </div>
-            </div>
-            <div class="filtros__bloco">
-              <div class="filtros__subtitulo">Disponibilidade</div>
-              <label class="checkbox"><input type="checkbox" name="soDisponiveis" value="1" /><span>Somente disponíveis</span></label>
-            </div>
-            <div class="filtros__bloco" style="border:none;padding-bottom:0;">
-              <button type="submit" class="btn btn--principal btn--bloco">Aplicar filtros</button>
-              <button type="button" id="btn-limpar" class="btn btn--fantasma btn--bloco mt-2">Limpar filtros</button>
-            </div>
-          </form>
-        </aside>
-
-        <section>
-          <div class="barra-resultados">
-            <div class="barra-resultados__info" id="info-resultados">Carregando produtos...</div>
-            <div class="flex gap-2">
-              <select id="ordenar" style="width:auto;">
-                <option value="recentes">Mais recentes</option>
-                <option value="menor-preco">Menor preço</option>
-                <option value="maior-preco">Maior preço</option>
-                <option value="relevancia">Mais relevantes</option>
-              </select>
-            </div>
-          </div>
-          <div id="lista-produtos" class="grid grid-3"></div>
-          <div id="paginacao" class="flex-centro gap-2 mt-8"></div>
-        </section>
+    <main class="main">
+      <header class="topbar">
+        <h1>Produtos</h1>
+        <div class="topbar__acoes">
+          <input type="search" id="busca" placeholder="Buscar produto..." />
+          <a href="../index.html" class="btn--loja">← Ver loja</a>
+          <a href="./produto-editar.html" class="btn">+ Novo produto</a>
+        </div>
+      </header>
+      <div class="conteudo" id="conteudo">
+        <div class="vazio">Carregando...</div>
       </div>
-    </div>
-  </main>
-
-  <div id="footer"></div>
+    </main>
+  </div>
 
   <script type="module">
-    import { renderHeader } from './assets/js/components/header.js';
-    import { renderFooter } from './assets/js/components/footer.js';
-    import { iniciarConfiguracoes } from './assets/js/services/settings.service.js';
-    import { listarProdutos, listarCategorias, rotuloDisponibilidade, rotuloCondicao } from './assets/js/services/products.service.js';
+    const conteudo = document.getElementById('conteudo');
+    const esc = s => s == null ? '' : String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
 
-    const estado = { filtros: {}, ordenar: 'recentes', pagina: 1, porPagina: 12 };
+    let supabase;
+    let todos = [];
 
-    const params = new URLSearchParams(location.search);
-    if (params.get('q')) estado.filtros.busca = params.get('q');
-    if (params.get('categoria')) estado.filtros.categoria = params.get('categoria');
-    if (params.get('condicao')) estado.filtros.condicao = params.get('condicao');
-    if (params.get('ordenar')) estado.ordenar = params.get('ordenar');
-
-    // 1) Config primeiro (aplica cores)
-    await iniciarConfiguracoes();
-
-    // 2) Header + footer
-    await renderHeader('produtos');
-    await renderFooter();
-
-    // 3) Conteúdo
-    await carregarCategorias();
-    preencherFiltros();
-    await carregarProdutos();
-
-    async function carregarCategorias() {
-      const el = document.getElementById('filtro-categorias');
+    (async () => {
       try {
-        const cats = await listarCategorias();
-        if (!cats.length) { el.innerHTML = '<span class="texto-xs texto-suave">Nenhuma categoria cadastrada.</span>'; return; }
-        el.innerHTML = cats.map(c => `<label class="checkbox"><input type="radio" name="categoria" value="${c.id}" /><span>${esc(c.nome)}</span></label>`).join('');
-        if (estado.filtros.categoria) {
-          const r = el.querySelector(`input[value="${estado.filtros.categoria}"]`);
-          if (r) r.checked = true;
-        }
-      } catch (e) {
-        el.innerHTML = '<span class="texto-xs texto-erro">Erro ao carregar categorias.</span>';
-      }
-    }
+        const mod = await import('../assets/js/supabase.js');
+        supabase = mod.supabase;
 
-    function preencherFiltros() {
-      const form = document.getElementById('form-filtros');
-      if (estado.filtros.busca) form.busca.value = estado.filtros.busca;
-      if (estado.filtros.condicao) {
-        const c = form.querySelector(`input[name="condicao"][value="${estado.filtros.condicao}"]`);
-        if (c) c.checked = true;
-      }
-      document.getElementById('ordenar').value = estado.ordenar;
-    }
+        const r = await supabase.auth.getSession();
+        const session = r.data ? r.data.session : null;
+        if (!session) { location.href = '../login.html'; return; }
 
-    async function carregarProdutos() {
-      const lista = document.getElementById('lista-produtos');
-      const info = document.getElementById('info-resultados');
-      const pag = document.getElementById('paginacao');
-      lista.innerHTML = `<div class="carregando" style="grid-column:1/-1;"><div class="spinner"></div></div>`;
-      pag.innerHTML = '';
-
-      try {
-        const { produtos, total, totalPaginas } = await listarProdutos({
-          filtros: estado.filtros, ordenar: estado.ordenar,
-          pagina: estado.pagina, porPagina: estado.porPagina
-        });
-
-        info.textContent = total === 0 ? 'Nenhum produto encontrado'
-          : `${total} produto${total > 1 ? 's' : ''} encontrado${total > 1 ? 's' : ''}`;
-
-        if (!produtos.length) {
-          lista.innerHTML = `<div class="estado-vazio" style="grid-column:1/-1;">
-            <div class="estado-vazio__titulo">Nenhum produto encontrado</div>
-            <p class="estado-vazio__descricao">Tente ajustar os filtros ou limpar a busca.</p>
-          </div>`;
+        const p = await supabase.from('profiles').select('role').eq('id', session.user.id).maybeSingle();
+        if (!p.data || p.data.role !== 'admin') {
+          conteudo.innerHTML = '<div class="erro">Acesso restrito a administradores</div>';
           return;
         }
 
-        lista.innerHTML = produtos.map(cardProduto).join('');
-        renderPaginacao(totalPaginas);
+        await carregar();
+
+        document.getElementById('busca').addEventListener('input', function() {
+          const q = this.value.trim().toLowerCase();
+          renderizar(todos.filter(function(x) {
+            return !q || (x.nome || '').toLowerCase().indexOf(q) !== -1;
+          }));
+        });
       } catch (e) {
-        console.error(e);
-        info.textContent = 'Erro ao carregar produtos';
-        lista.innerHTML = `<div class="alerta alerta--erro" style="grid-column:1/-1;">Não foi possível carregar os produtos.</div>`;
+        conteudo.innerHTML = '<div class="erro">Erro: ' + esc(e.message) + '</div>';
       }
+    })();
+
+    async function carregar() {
+      const r = await supabase
+        .from('products')
+        .select('id, nome, preco, preco_promocional, estoque, status, product_images ( url, principal, ordem )')
+        .order('created_at', { ascending: false });
+
+      if (r.error) {
+        conteudo.innerHTML = '<div class="erro">' + esc(r.error.message) + '</div>';
+        return;
+      }
+
+      todos = r.data || [];
+      renderizar(todos);
     }
 
-    function cardProduto(p) {
-      const disp = rotuloDisponibilidade(p);
-      const img = p.imagemPrincipal
-        ? `<img src="${p.imagemPrincipal}" alt="${esc(p.nome)}" loading="lazy" />`
-        : `<div class="produto-card__sem-imagem"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>`;
-      const preco = p.temPromo
-        ? `<div class="produto-card__preco-antigo">R$ ${p.preco.toFixed(2)}</div><div class="produto-card__preco produto-card__preco--promo">R$ ${p.precoPromocional.toFixed(2)}</div>`
-        : `<div class="produto-card__preco">R$ ${p.preco.toFixed(2)}</div>`;
-      return `
-        <article class="produto-card">
-          <a href="./produto.html?id=${p.id}" class="produto-card__imagem">
-            ${img}
-            <div class="produto-card__selos">
-              ${p.temPromo ? `<span class="badge badge--destaque">-${p.descontoPct}%</span>` : ''}
-              ${p.destaque ? `<span class="badge badge--principal">Destaque</span>` : ''}
-            </div>
-          </a>
-          <div class="produto-card__info">
-            <div class="produto-card__condicao">${rotuloCondicao(p.condicao)}</div>
-            <a href="./produto.html?id=${p.id}" class="produto-card__nome">${esc(p.nome)}</a>
-            ${preco}
-            <div><span class="badge badge--${disp.tipo}">${disp.texto}</span></div>
-            <div class="produto-card__acoes">
-              <a href="./produto.html?id=${p.id}" class="btn btn--principal btn--sm">Comprar</a>
-              <a href="./produto.html?id=${p.id}#proposta" class="btn btn--contorno btn--sm">Proposta</a>
-            </div>
-          </div>
-        </article>
-      `;
-    }
-
-    function renderPaginacao(total) {
-      const pag = document.getElementById('paginacao');
-      if (total <= 1) { pag.innerHTML = ''; return; }
-      let html = '';
-      for (let i = 1; i <= total; i++) {
-        html += `<button class="btn ${i === estado.pagina ? 'btn--principal' : 'btn--fantasma'} btn--sm" data-p="${i}">${i}</button>`;
+    function renderizar(lista) {
+      if (!lista.length) {
+        conteudo.innerHTML = '<div class="vazio"><div style="font-size:18px;font-weight:600;color:#0f172a;margin-bottom:8px;">Nenhum produto ainda</div><p style="margin-bottom:20px;">Clique em "+ Novo produto" para cadastrar o primeiro.</p><a href="./produto-editar.html" class="btn">Cadastrar primeiro produto</a></div>';
+        return;
       }
-      pag.innerHTML = html;
-      pag.querySelectorAll('[data-p]').forEach(b => {
-        b.onclick = () => { estado.pagina = Number(b.dataset.p); window.scrollTo({ top: 0, behavior: 'smooth' }); carregarProdutos(); };
+
+      conteudo.innerHTML =
+        '<table class="tabela">' +
+          '<thead><tr><th>Foto</th><th>Produto</th><th>Preço</th><th>Estoque</th><th>Status</th><th style="text-align:right;">Ações</th></tr></thead>' +
+          '<tbody>' +
+            lista.map(function(p) {
+              const imgs = (p.product_images || []).slice().sort(function(a, b) { return (b.principal ? 1 : 0) - (a.principal ? 1 : 0); });
+              const img = imgs[0] ? imgs[0].url : null;
+              const temPromo = p.preco_promocional != null && p.preco_promocional < p.preco;
+              return '<tr>' +
+                '<td>' + (img ? '<img src="' + img + '" class="miniatura" alt="" loading="lazy" />' : '<div class="miniatura"></div>') + '</td>' +
+                '<td><strong>' + esc(p.nome) + '</strong></td>' +
+                '<td>' +
+                  (temPromo
+                    ? '<div style="font-size:11px;color:#94a3b8;text-decoration:line-through;">R$ ' + Number(p.preco).toFixed(2) + '</div><strong style="color:#16a34a;">R$ ' + Number(p.preco_promocional).toFixed(2) + '</strong>'
+                    : '<strong>R$ ' + Number(p.preco).toFixed(2) + '</strong>') +
+                '</td>' +
+                '<td>' + (p.estoque || 0) + '</td>' +
+                '<td><span class="badge ' + (p.status === 'disponivel' ? 'badge--ok' : 'badge--no') + '">' + esc(p.status) + '</span></td>' +
+                '<td style="text-align:right;">' +
+                  '<a href="./produto-editar.html?id=' + p.id + '" class="btn btn--fantasma">Editar</a>' +
+                  '<button class="btn btn--perigo" data-del="' + p.id + '">Excluir</button>' +
+                '</td>' +
+              '</tr>';
+            }).join('') +
+          '</tbody>' +
+        '</table>';
+
+      conteudo.querySelectorAll('[data-del]').forEach(function(b) {
+        b.onclick = async function() {
+          if (!confirm('Excluir este produto?')) return;
+          await supabase.from('products').delete().eq('id', b.dataset.del);
+          carregar();
+        };
       });
-    }
-
-    document.getElementById('form-filtros').onsubmit = (e) => {
-      e.preventDefault();
-      const form = e.target;
-      const f = {};
-      if (form.busca.value.trim()) f.busca = form.busca.value.trim();
-      const cat = form.querySelector('input[name="categoria"]:checked'); if (cat) f.categoria = cat.value;
-      const cond = form.querySelector('input[name="condicao"]:checked'); if (cond) f.condicao = cond.value;
-      if (form.precoMin.value) f.precoMin = form.precoMin.value;
-      if (form.precoMax.value) f.precoMax = form.precoMax.value;
-      if (form.soDisponiveis.checked) f.disponivel = true;
-      estado.filtros = f;
-      estado.pagina = 1;
-      carregarProdutos();
-    };
-
-    document.getElementById('btn-limpar').onclick = () => {
-      document.getElementById('form-filtros').reset();
-      document.getElementById('filtro-categorias').querySelectorAll('input').forEach(i => i.checked = false);
-      estado.filtros = {}; estado.pagina = 1;
-      carregarProdutos();
-    };
-
-    document.getElementById('ordenar').onchange = (e) => {
-      estado.ordenar = e.target.value; estado.pagina = 1; carregarProdutos();
-    };
-
-    function esc(s) {
-      if (s == null) return '';
-      return String(s).replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]));
     }
   </script>
 </body>
