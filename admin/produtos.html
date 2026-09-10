@@ -22,6 +22,8 @@
     .topbar h1 { font-size: 18px; }
     .btn { padding: 8px 16px; border-radius: 8px; border: 1px solid #0ea5e9; background: #0ea5e9; color: #fff; font-weight: 600; font-size: 14px; cursor: pointer; text-decoration: none; display: inline-block; }
     .btn:hover { filter: brightness(.94); }
+    .btn--fantasma { background: transparent; color: #0ea5e9; }
+    .btn--perigo { background: transparent; color: #dc2626; border-color: transparent; padding: 6px 10px; }
     .conteudo { padding: 24px; }
     .vazio { background: #fff; padding: 60px 24px; text-align: center; border-radius: 12px; border: 1px solid #e2e8f0; color: #64748b; }
     .tabela { width: 100%; background: #fff; border-collapse: collapse; border-radius: 12px; overflow: hidden; border: 1px solid #e2e8f0; }
@@ -30,6 +32,9 @@
     .tabela tr:hover td { background: #f8fafc; }
     .miniatura { width: 40px; height: 40px; object-fit: cover; border-radius: 6px; background: #f1f5f9; display: block; }
     .erro { padding: 20px; background: #fee2e2; color: #991b1b; border-radius: 8px; font-family: monospace; font-size: 13px; white-space: pre-wrap; }
+    .badge { padding: 3px 10px; border-radius: 9999px; font-size: 11px; font-weight: 600; }
+    .badge--ok { background: #dcfce7; color: #166534; }
+    .badge--no { background: #fee2e2; color: #991b1b; }
   </style>
 </head>
 <body>
@@ -48,12 +53,17 @@
         <a href="./produtos.html" class="sidebar__item ativo">Produtos</a>
         <a href="./categorias.html" class="sidebar__item">Categorias</a>
       </nav>
+      <div class="sidebar__secao">Configurações</div>
+      <nav class="sidebar__lista">
+        <a href="./empresa.html" class="sidebar__item">Dados da empresa</a>
+        <a href="./identidade.html" class="sidebar__item">Identidade visual</a>
+      </nav>
     </aside>
 
     <main class="main">
       <header class="topbar">
         <h1>Produtos</h1>
-        <a href="../produto.html" target="_blank" class="btn">+ Novo produto (em breve)</a>
+        <a href="./produto-editar.html" class="btn">+ Novo produto</a>
       </header>
       <div class="conteudo" id="conteudo">
         <div class="vazio">Carregando...</div>
@@ -82,15 +92,11 @@
         if (!session) { window.location.href = '../login.html'; return; }
 
         const p = await supabase.from('profiles').select('role').eq('id', session.user.id).maybeSingle();
-        const perfil = p.data;
-        if (!perfil || perfil.role !== 'admin') {
-          erro('Acesso restrito.');
-          return;
-        }
+        if (!p.data || p.data.role !== 'admin') { erro('Acesso restrito.'); return; }
 
         const { data, error } = await supabase
           .from('products')
-          .select('id, nome, preco, estoque, status, product_images ( url, principal, ordem )')
+          .select('id, nome, preco, preco_promocional, estoque, status, product_images ( url, principal, ordem )')
           .order('created_at', { ascending: false });
 
         if (error) { erro(error.message); return; }
@@ -99,31 +105,49 @@
           conteudo.innerHTML = `
             <div class="vazio">
               <div style="font-size:18px;font-weight:600;color:#0f172a;margin-bottom:8px;">Nenhum produto ainda</div>
-              <p>Os produtos cadastrados aparecerão aqui.</p>
+              <p style="margin-bottom:20px;">Clique em "+ Novo produto" para cadastrar o primeiro.</p>
+              <a href="./produto-editar.html" class="btn">Cadastrar primeiro produto</a>
             </div>`;
           return;
         }
 
         conteudo.innerHTML = `
           <table class="tabela">
-            <thead><tr><th>Foto</th><th>Produto</th><th>Preço</th><th>Estoque</th><th>Status</th></tr></thead>
+            <thead><tr><th>Foto</th><th>Produto</th><th>Preço</th><th>Estoque</th><th>Status</th><th style="text-align:right;">Ações</th></tr></thead>
             <tbody>
               ${data.map(p => {
                 const imgs = (p.product_images || []).slice().sort((a,b) => (b.principal?1:0)-(a.principal?1:0));
                 const img = imgs[0]?.url;
+                const temPromo = p.preco_promocional != null;
                 return `
                   <tr>
                     <td>${img ? `<img src="${img}" class="miniatura" />` : `<div class="miniatura"></div>`}</td>
                     <td><strong>${escape(p.nome)}</strong></td>
-                    <td>R$ ${Number(p.preco || 0).toFixed(2)}</td>
+                    <td>${temPromo
+                      ? `<div style="font-size:11px;color:#94a3b8;text-decoration:line-through;">R$ ${Number(p.preco).toFixed(2)}</div>
+                         <strong style="color:#16a34a;">R$ ${Number(p.preco_promocional).toFixed(2)}</strong>`
+                      : `<strong>R$ ${Number(p.preco).toFixed(2)}</strong>`}</td>
                     <td>${p.estoque}</td>
-                    <td>${escape(p.status)}</td>
+                    <td><span class="badge ${p.status === 'disponivel' ? 'badge--ok' : 'badge--no'}">${escape(p.status)}</span></td>
+                    <td style="text-align:right;">
+                      <a href="./produto-editar.html?id=${p.id}" class="btn btn--fantasma">Editar</a>
+                      <button class="btn btn--perigo" data-del="${p.id}">Excluir</button>
+                    </td>
                   </tr>
                 `;
               }).join('')}
             </tbody>
           </table>
         `;
+
+        conteudo.querySelectorAll('[data-del]').forEach(b => {
+          b.onclick = async () => {
+            if (!confirm('Excluir este produto?')) return;
+            await supabase.from('products').delete().eq('id', b.dataset.del);
+            location.reload();
+          };
+        });
+
       } catch (e) {
         console.error(e);
         erro(e.message);
