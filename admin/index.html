@@ -17,7 +17,6 @@
 
   <main class="conteudo">
     <div class="container">
-
       <section class="banner-home" id="banner">
         <div class="banner-home__conteudo">
           <h1 class="banner-home__titulo" id="home-titulo">Bem-vindo à nossa loja</h1>
@@ -49,20 +48,17 @@
         </div>
         <div class="grid grid-4" id="lista-recentes"><div class="carregando" style="grid-column:1/-1;"><div class="spinner"></div></div></div>
       </section>
-
     </div>
   </main>
 
   <div id="footer"></div>
 
   <script type="module">
-    // 1) Header e footer — disparados em paralelo, não esperam um ao outro
     Promise.all([
       import('./assets/js/components/header.js').then(m => m.renderHeader('inicio')).catch(e => console.error('[header]', e)),
       import('./assets/js/components/footer.js').then(m => m.renderFooter()).catch(e => console.error('[footer]', e))
     ]);
 
-    // 2) Configurações visuais (banner, título) — em paralelo com o resto
     (async () => {
       try {
         const mod = await import('./assets/js/services/settings.service.js');
@@ -70,14 +66,13 @@
         const store = cfg.store || {};
         if (store.banner_home_url) {
           const b = document.getElementById('banner');
-          b.style.background = `linear-gradient(rgba(15,23,42,.4), rgba(15,23,42,.6)), url(${store.banner_home_url}) center/cover`;
+          b.style.background = 'linear-gradient(rgba(15,23,42,.4), rgba(15,23,42,.6)), url(' + store.banner_home_url + ') center/cover';
         }
         if (store.titulo_home) document.getElementById('home-titulo').textContent = store.titulo_home;
         if (store.subtitulo_home) document.getElementById('home-subtitulo').textContent = store.subtitulo_home;
-      } catch (e) { console.warn('[settings]', e); }
+      } catch (e) {}
     })();
 
-    // 3) Produtos
     (async () => {
       try {
         const mod = await import('./assets/js/services/products.service.js');
@@ -86,57 +81,52 @@
           carregarSecao('lista-ofertas', mod.listarOfertas, 'Nenhuma oferta no momento', mod),
           carregarSecao('lista-recentes', mod.listarRecentes, 'Nenhum produto cadastrado ainda', mod)
         ]);
-      } catch (e) { console.error('[produtos]', e); }
+      } catch (e) {}
     })();
 
     async function carregarSecao(id, fn, textoVazio, mod) {
       const el = document.getElementById(id);
       try {
-        // Timeout de 8s para não ficar em loop
         const produtos = await Promise.race([
           fn(8),
           new Promise((_, rej) => setTimeout(() => rej(new Error('timeout')), 8000))
         ]);
-        if (!produtos.length) {
-          el.innerHTML = `<div class="estado-vazio" style="grid-column:1/-1;"><div class="estado-vazio__titulo">${textoVazio}</div><p class="estado-vazio__descricao">Em breve novos produtos.</p></div>`;
+        if (!produtos || !produtos.length) {
+          el.innerHTML = '<div class="estado-vazio" style="grid-column:1/-1;"><div class="estado-vazio__titulo">' + textoVazio + '</div><p class="estado-vazio__descricao">Em breve novos produtos.</p></div>';
           return;
         }
         el.innerHTML = produtos.map(p => cardProduto(p, mod)).join('');
       } catch (e) {
-        console.error('[secao]', e);
-        el.innerHTML = `<div class="estado-vazio" style="grid-column:1/-1;"><div class="estado-vazio__titulo">${textoVazio}</div></div>`;
+        el.innerHTML = '<div class="estado-vazio" style="grid-column:1/-1;"><div class="estado-vazio__titulo">' + textoVazio + '</div></div>';
       }
     }
 
     function cardProduto(p, mod) {
       const disp = mod.rotuloDisponibilidade(p);
       const img = p.imagemPrincipal
-        ? `<img src="${p.imagemPrincipal}" alt="${esc(p.nome)}" loading="lazy" />`
-        : `<div class="produto-card__sem-imagem"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>`;
+        ? '<img src="' + p.imagemPrincipal + '" alt="" loading="lazy" />'
+        : '<div class="produto-card__sem-imagem"></div>';
       const preco = p.temPromo
-        ? `<div class="produto-card__preco-antigo">R$ ${p.preco.toFixed(2)}</div><div class="produto-card__preco produto-card__preco--promo">R$ ${p.precoPromocional.toFixed(2)}</div>`
-        : `<div class="produto-card__preco">R$ ${p.preco.toFixed(2)}</div>`;
-      return `
-        <article class="produto-card">
-          <a href="./produto.html?id=${p.id}" class="produto-card__imagem">
-            ${img}
-            <div class="produto-card__selos">
-              ${p.temPromo ? `<span class="badge badge--destaque">-${p.descontoPct}%</span>` : ''}
-              ${p.destaque ? `<span class="badge badge--principal">Destaque</span>` : ''}
-            </div>
-          </a>
-          <div class="produto-card__info">
-            <div class="produto-card__condicao">${mod.rotuloCondicao(p.condicao)}</div>
-            <a href="./produto.html?id=${p.id}" class="produto-card__nome">${esc(p.nome)}</a>
-            ${preco}
-            <div><span class="badge badge--${disp.tipo}">${disp.texto}</span></div>
-            <div class="produto-card__acoes">
-              <a href="./produto.html?id=${p.id}" class="btn btn--principal btn--sm">Comprar</a>
-              <a href="./produto.html?id=${p.id}#proposta" class="btn btn--contorno btn--sm">Proposta</a>
-            </div>
-          </div>
-        </article>
-      `;
+        ? '<div class="produto-card__preco-antigo">R$ ' + p.preco.toFixed(2) + '</div><div class="produto-card__preco produto-card__preco--promo">R$ ' + p.precoPromocional.toFixed(2) + '</div>'
+        : '<div class="produto-card__preco">R$ ' + p.preco.toFixed(2) + '</div>';
+      return '<article class="produto-card">' +
+        '<a href="./produto.html?id=' + p.id + '" class="produto-card__imagem">' + img +
+          '<div class="produto-card__selos">' +
+            (p.temPromo ? '<span class="badge badge--destaque">-' + p.descontoPct + '%</span>' : '') +
+            (p.destaque ? '<span class="badge badge--principal">Destaque</span>' : '') +
+          '</div>' +
+        '</a>' +
+        '<div class="produto-card__info">' +
+          '<div class="produto-card__condicao">' + mod.rotuloCondicao(p.condicao) + '</div>' +
+          '<a href="./produto.html?id=' + p.id + '" class="produto-card__nome">' + esc(p.nome) + '</a>' +
+          preco +
+          '<div><span class="badge badge--' + disp.tipo + '">' + disp.texto + '</span></div>' +
+          '<div class="produto-card__acoes">' +
+            '<a href="./produto.html?id=' + p.id + '" class="btn btn--principal btn--sm">Comprar</a>' +
+            '<a href="./produto.html?id=' + p.id + '#proposta" class="btn btn--contorno btn--sm">Proposta</a>' +
+          '</div>' +
+        '</div>' +
+      '</article>';
     }
 
     function esc(s) { return s == null ? '' : String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
