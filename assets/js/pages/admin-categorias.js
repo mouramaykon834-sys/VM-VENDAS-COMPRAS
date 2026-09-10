@@ -6,20 +6,22 @@ import { supabase } from '../supabase.js';
 import { requireAdmin } from '../core/guards.js';
 import { renderAdminSidebar } from '../components/admin-sidebar.js';
 
-await requireAdmin();
-await renderAdminSidebar('categorias');
-
-const elLista = document.getElementById('lista-categorias');
-
-await carregar();
+try {
+  await requireAdmin();
+  await renderAdminSidebar('categorias');
+  await carregar();
+} catch (e) {
+  console.error('[admin-categorias] Erro:', e);
+  mostrarErroNaTela(e);
+}
 
 document.getElementById('btn-nova-categoria')
-  .addEventListener('click', () => abrirModal());
+  ?.addEventListener('click', () => abrirModal());
 
 // -------------------------------------------------------------
-// LISTAR
-// -------------------------------------------------------------
 async function carregar() {
+  const elLista = document.getElementById('lista-categorias');
+
   const { data, error } = await supabase
     .from('categories')
     .select('*')
@@ -27,8 +29,7 @@ async function carregar() {
     .order('nome', { ascending: true });
 
   if (error) {
-    elLista.innerHTML = `<div class="alerta alerta--erro">Erro ao carregar categorias.</div>`;
-    console.error(error);
+    elLista.innerHTML = `<div class="alerta alerta--erro">Erro ao carregar categorias: ${escapeHtml(error.message)}</div>`;
     return;
   }
 
@@ -36,9 +37,7 @@ async function carregar() {
     elLista.innerHTML = `
       <div class="estado-vazio">
         <div class="estado-vazio__titulo">Nenhuma categoria cadastrada</div>
-        <p class="estado-vazio__descricao">
-          Clique em "Nova categoria" para criar a primeira.
-        </p>
+        <p class="estado-vazio__descricao">Clique em "Nova categoria" para criar a primeira.</p>
       </div>
     `;
     return;
@@ -50,7 +49,6 @@ async function carregar() {
         <thead>
           <tr>
             <th style="width:60px;">Ordem</th>
-            <th style="width:80px;">Imagem</th>
             <th>Nome</th>
             <th>Slug</th>
             <th style="width:100px;">Ativa</th>
@@ -61,15 +59,7 @@ async function carregar() {
           ${data.map(c => `
             <tr>
               <td>${c.ordem ?? 0}</td>
-              <td>
-                ${c.imagem_url
-                  ? `<img src="${c.imagem_url}" class="admin-tabela__miniatura" alt="" />`
-                  : `<div class="admin-tabela__miniatura"></div>`}
-              </td>
-              <td>
-                <strong>${escapeHtml(c.nome)}</strong>
-                ${c.descricao ? `<div class="texto-xs texto-suave">${escapeHtml(c.descricao.slice(0, 60))}</div>` : ''}
-              </td>
+              <td><strong>${escapeHtml(c.nome)}</strong></td>
               <td class="texto-suave">${escapeHtml(c.slug || '')}</td>
               <td>
                 ${c.ativo
@@ -79,7 +69,8 @@ async function carregar() {
               <td>
                 <div class="admin-tabela__acoes">
                   <button class="btn btn--fantasma btn--sm" data-editar="${c.id}">Editar</button>
-                  <button class="btn btn--fantasma btn--sm" data-excluir="${c.id}" style="color: var(--cor-erro);">Excluir</button>
+                  <button class="btn btn--fantasma btn--sm" data-excluir="${c.id}"
+                          style="color:var(--cor-erro);">Excluir</button>
                 </div>
               </td>
             </tr>
@@ -89,7 +80,6 @@ async function carregar() {
     </div>
   `;
 
-  // Eventos
   elLista.querySelectorAll('[data-editar]').forEach(b => {
     b.addEventListener('click', () => {
       const cat = data.find(x => x.id === b.dataset.editar);
@@ -100,17 +90,14 @@ async function carregar() {
   elLista.querySelectorAll('[data-excluir]').forEach(b => {
     b.addEventListener('click', async () => {
       const cat = data.find(x => x.id === b.dataset.excluir);
-      if (!confirm(`Excluir a categoria "${cat.nome}"? Produtos vinculados ficarão sem categoria.`)) return;
+      if (!confirm(`Excluir "${cat.nome}"?`)) return;
       const { error } = await supabase.from('categories').delete().eq('id', cat.id);
-      if (error) { toast('Erro ao excluir', error.message, 'erro'); return; }
-      toast('Categoria excluída', '', 'sucesso');
+      if (error) { alert('Erro ao excluir: ' + error.message); return; }
       carregar();
     });
   });
 }
 
-// -------------------------------------------------------------
-// MODAL CRIAR/EDITAR
 // -------------------------------------------------------------
 function abrirModal(cat = null) {
   const editando = !!cat;
@@ -121,10 +108,7 @@ function abrirModal(cat = null) {
       <div class="modal" style="max-width: 520px;">
         <div class="modal__cabecalho">
           <h2 class="modal__titulo">${editando ? 'Editar' : 'Nova'} categoria</h2>
-          <button class="modal__fechar" id="btn-fechar" aria-label="Fechar">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
-                 stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
-          </button>
+          <button class="modal__fechar" id="btn-fechar" aria-label="Fechar">×</button>
         </div>
         <form id="form-cat">
           <div class="modal__corpo">
@@ -133,7 +117,7 @@ function abrirModal(cat = null) {
               <input type="text" id="nome" required value="${escapeHtml(cat?.nome || '')}" />
             </div>
             <div class="campo">
-              <label for="descricao">Descrição (opcional)</label>
+              <label for="descricao">Descrição</label>
               <textarea id="descricao" rows="3">${escapeHtml(cat?.descricao || '')}</textarea>
             </div>
             <div class="campo-grupo" style="gap: var(--esp-3);">
@@ -173,13 +157,13 @@ function abrirModal(cat = null) {
     btn.disabled = true;
     btn.textContent = 'Salvando...';
 
-    const nome = document.getElementById('nome').value.trim();
-    const descricao = document.getElementById('descricao').value.trim();
-    const ordem = Number(document.getElementById('ordem').value) || 0;
-    const ativo = document.getElementById('ativo').value === 'true';
-
-    const slug = gerarSlug(nome);
-    const payload = { nome, descricao: descricao || null, ordem, ativo, slug };
+    const payload = {
+      nome: document.getElementById('nome').value.trim(),
+      descricao: document.getElementById('descricao').value.trim() || null,
+      ordem: Number(document.getElementById('ordem').value) || 0,
+      ativo: document.getElementById('ativo').value === 'true',
+      slug: gerarSlug(document.getElementById('nome').value.trim())
+    };
 
     let error;
     if (editando) {
@@ -189,15 +173,13 @@ function abrirModal(cat = null) {
     }
 
     if (error) {
-      console.error(error);
-      toast('Erro ao salvar', error.message, 'erro');
+      alert('Erro ao salvar: ' + error.message);
       btn.disabled = false;
       btn.textContent = editando ? 'Salvar' : 'Criar';
       return;
     }
 
     fecharModal();
-    toast(editando ? 'Categoria atualizada' : 'Categoria criada', '', 'sucesso');
     carregar();
   });
 }
@@ -208,9 +190,6 @@ function fecharModal() {
   el.innerHTML = '';
 }
 
-// -------------------------------------------------------------
-// Util
-// -------------------------------------------------------------
 function gerarSlug(s) {
   return s.toString().toLowerCase()
     .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
@@ -226,19 +205,13 @@ function escapeHtml(s) {
     .replaceAll("'", '&#39;');
 }
 
-function toast(titulo, msg = '', tipo = 'info') {
-  let area = document.querySelector('.toast-area');
-  if (!area) {
-    area = document.createElement('div');
-    area.className = 'toast-area';
-    document.body.appendChild(area);
-  }
-  const t = document.createElement('div');
-  t.className = `toast toast--${tipo}`;
-  t.innerHTML = `
-    <div class="toast__titulo">${escapeHtml(titulo)}</div>
-    ${msg ? `<div class="toast__msg">${escapeHtml(msg)}</div>` : ''}
-  `;
-  area.appendChild(t);
-  setTimeout(() => t.remove(), 4000);
+function mostrarErroNaTela(e) {
+  const main = document.querySelector('.admin-conteudo') || document.body;
+  const div = document.createElement('div');
+  div.className = 'alerta alerta--erro';
+  div.innerHTML = `<div>
+    <strong>Erro ao carregar</strong><br>
+    ${escapeHtml(e?.message || 'Erro desconhecido')}
+  </div>`;
+  main.prepend(div);
 }

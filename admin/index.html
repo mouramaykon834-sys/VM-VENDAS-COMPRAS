@@ -16,12 +16,10 @@
 <body>
 
   <div class="admin-layout">
-
     <aside id="admin-sidebar" class="admin-sidebar"></aside>
     <div id="admin-sidebar-overlay" class="admin-sidebar-overlay"></div>
 
     <main class="admin-main">
-
       <header class="admin-topbar">
         <button id="admin-menu-btn" class="admin-topbar__menu-btn" aria-label="Abrir menu">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
@@ -33,26 +31,16 @@
         </button>
         <h1 class="admin-topbar__titulo">Dashboard</h1>
         <div class="admin-topbar__acoes">
-          <a href="../index.html" target="_blank" class="btn btn--contorno btn--sm">
-            Ver loja
-          </a>
+          <a href="../index.html" class="btn btn--contorno btn--sm" target="_blank">Ver loja</a>
         </div>
       </header>
 
       <div class="admin-conteudo">
         <p class="admin-pagina-sub">
-          Visão geral da sua loja. Os números atualizam automaticamente conforme
-          você cadastra produtos, recebe pedidos e propostas.
+          Visão geral da sua loja. Os números atualizam automaticamente.
         </p>
 
-        <div id="admin-cards" class="admin-cards">
-          <div class="admin-card">
-            <div class="spinner"></div>
-          </div>
-          <div class="admin-card"><div class="spinner"></div></div>
-          <div class="admin-card"><div class="spinner"></div></div>
-          <div class="admin-card"><div class="spinner"></div></div>
-        </div>
+        <div id="admin-cards" class="admin-cards"></div>
 
         <section class="admin-secao">
           <div class="admin-secao__cabecalho">
@@ -83,7 +71,6 @@
             <div class="admin-lista-vazia">Carregando...</div>
           </div>
         </section>
-
       </div>
     </main>
   </div>

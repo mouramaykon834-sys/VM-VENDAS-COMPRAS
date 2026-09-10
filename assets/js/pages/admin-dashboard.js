@@ -7,28 +7,24 @@ import { requireAdmin } from '../core/guards.js';
 import { renderAdminSidebar } from '../components/admin-sidebar.js';
 
 // -------------------------------------------------------------
-// 1. Protege a rota — só admin entra
+// Inicialização protegida — mostra o erro no Console se algo falhar
 // -------------------------------------------------------------
-await requireAdmin();
+try {
+  await requireAdmin();
+  await renderAdminSidebar('dashboard');
+  await carregarCards();
+  await carregarUltimosPedidos();
+  await carregarUltimasPropostas();
+  await carregarUltimasConversas();
+} catch (e) {
+  console.error('[admin-dashboard] Erro:', e);
+  mostrarErroNaTela(e);
+}
 
-// -------------------------------------------------------------
-// 2. Renderiza o menu lateral
-// -------------------------------------------------------------
-await renderAdminSidebar('dashboard');
-
-// -------------------------------------------------------------
-// 3. Carrega os números do dashboard
-// -------------------------------------------------------------
-await carregarCards();
-await carregarUltimosPedidos();
-await carregarUltimasPropostas();
-await carregarUltimasConversas();
-
-// -------------------------------------------------------------
-// CARDS DE RESUMO
 // -------------------------------------------------------------
 async function carregarCards() {
   const el = document.getElementById('admin-cards');
+  if (!el) return;
 
   const [
     totalProdutos,
@@ -49,23 +45,28 @@ async function carregarCards() {
   ]);
 
   el.innerHTML = `
-    ${card('Produtos', totalProdutos, `${produtosDisponiveis} disponíveis`, 'caixa')}
-    ${card('Pedidos', totalPedidos, `${pedidosAbertos} aguardando`, 'carrinho')}
-    ${card('Propostas', totalPropostas, `${propostasAbertas} em análise`, 'proposta')}
-    ${card('Clientes', totalClientes, 'cadastrados', 'user')}
+    ${cardHTML('Produtos', totalProdutos, `${produtosDisponiveis} disponíveis`, 'caixa')}
+    ${cardHTML('Pedidos', totalPedidos, `${pedidosAbertos} aguardando`, 'carrinho')}
+    ${cardHTML('Propostas', totalPropostas, `${propostasAbertas} em análise`, 'proposta')}
+    ${cardHTML('Clientes', totalClientes, 'cadastrados', 'user')}
   `;
 }
 
 async function contar(tabela, filtro = null) {
-  let q = supabase.from(tabela).select('*', { count: 'exact', head: true });
-  if (filtro) {
-    Object.entries(filtro).forEach(([k, v]) => { q = q.eq(k, v); });
+  try {
+    let q = supabase.from(tabela).select('*', { count: 'exact', head: true });
+    if (filtro) {
+      Object.entries(filtro).forEach(([k, v]) => { q = q.eq(k, v); });
+    }
+    const { count } = await q;
+    return count || 0;
+  } catch (e) {
+    console.warn('[admin-dashboard] Erro ao contar', tabela, e);
+    return 0;
   }
-  const { count } = await q;
-  return count || 0;
 }
 
-function card(rotulo, valor, nota, icone) {
+function cardHTML(rotulo, valor, nota, icone) {
   return `
     <div class="admin-card">
       <div class="admin-card__icone">${svgIcone(icone)}</div>
@@ -77,17 +78,13 @@ function card(rotulo, valor, nota, icone) {
 }
 
 // -------------------------------------------------------------
-// ÚLTIMOS PEDIDOS
-// -------------------------------------------------------------
 async function carregarUltimosPedidos() {
   const el = document.getElementById('admin-ultimos-pedidos');
+  if (!el) return;
 
   const { data, error } = await supabase
     .from('orders')
-    .select(`
-      id, numero, status, total, created_at,
-      profiles:user_id ( nome )
-    `)
+    .select('id, numero, status, total, created_at, user_id')
     .order('created_at', { ascending: false })
     .limit(5);
 
@@ -99,19 +96,12 @@ async function carregarUltimosPedidos() {
   el.innerHTML = `
     <table class="admin-tabela">
       <thead>
-        <tr>
-          <th>Pedido</th>
-          <th>Cliente</th>
-          <th>Status</th>
-          <th>Total</th>
-          <th>Data</th>
-        </tr>
+        <tr><th>Pedido</th><th>Status</th><th>Total</th><th>Data</th></tr>
       </thead>
       <tbody>
         ${data.map(p => `
           <tr>
             <td><a href="./pedido.html?id=${p.id}"><strong>${escapeHtml(p.numero || '-')}</strong></a></td>
-            <td>${escapeHtml(p.profiles?.nome || '-')}</td>
             <td><span class="badge badge--info">${traduzStatusPedido(p.status)}</span></td>
             <td>R$ ${Number(p.total || 0).toFixed(2)}</td>
             <td class="texto-suave">${formatarData(p.created_at)}</td>
@@ -122,19 +112,13 @@ async function carregarUltimosPedidos() {
   `;
 }
 
-// -------------------------------------------------------------
-// ÚLTIMAS PROPOSTAS
-// -------------------------------------------------------------
 async function carregarUltimasPropostas() {
   const el = document.getElementById('admin-ultimas-propostas');
+  if (!el) return;
 
   const { data, error } = await supabase
     .from('proposals')
-    .select(`
-      id, numero, valor_proposta, status, created_at,
-      profiles:user_id ( nome ),
-      products:product_id ( nome )
-    `)
+    .select('id, numero, valor_proposta, status, created_at')
     .order('created_at', { ascending: false })
     .limit(5);
 
@@ -146,21 +130,12 @@ async function carregarUltimasPropostas() {
   el.innerHTML = `
     <table class="admin-tabela">
       <thead>
-        <tr>
-          <th>Número</th>
-          <th>Cliente</th>
-          <th>Produto</th>
-          <th>Valor</th>
-          <th>Status</th>
-          <th>Data</th>
-        </tr>
+        <tr><th>Número</th><th>Valor</th><th>Status</th><th>Data</th></tr>
       </thead>
       <tbody>
         ${data.map(p => `
           <tr>
             <td><a href="./proposta.html?id=${p.id}"><strong>${escapeHtml(p.numero || '-')}</strong></a></td>
-            <td>${escapeHtml(p.profiles?.nome || '-')}</td>
-            <td>${escapeHtml(p.products?.nome || '-')}</td>
             <td>R$ ${Number(p.valor_proposta || 0).toFixed(2)}</td>
             <td><span class="badge badge--alerta">${traduzStatusProposta(p.status)}</span></td>
             <td class="texto-suave">${formatarData(p.created_at)}</td>
@@ -171,18 +146,13 @@ async function carregarUltimasPropostas() {
   `;
 }
 
-// -------------------------------------------------------------
-// ÚLTIMAS CONVERSAS
-// -------------------------------------------------------------
 async function carregarUltimasConversas() {
   const el = document.getElementById('admin-ultimas-conversas');
+  if (!el) return;
 
   const { data, error } = await supabase
     .from('chats')
-    .select(`
-      id, assunto, ultima_msg, ultima_msg_at, nao_lidas_admin,
-      profiles:user_id ( nome )
-    `)
+    .select('id, assunto, ultima_msg, ultima_msg_at, nao_lidas_admin')
     .order('ultima_msg_at', { ascending: false, nullsFirst: false })
     .limit(5);
 
@@ -194,24 +164,13 @@ async function carregarUltimasConversas() {
   el.innerHTML = `
     <table class="admin-tabela">
       <thead>
-        <tr>
-          <th>Cliente</th>
-          <th>Assunto</th>
-          <th>Última mensagem</th>
-          <th>Quando</th>
-        </tr>
+        <tr><th>Assunto</th><th>Última mensagem</th><th>Quando</th></tr>
       </thead>
       <tbody>
         ${data.map(c => `
           <tr>
-            <td>
-              <a href="./conversa.html?id=${c.id}">
-                <strong>${escapeHtml(c.profiles?.nome || 'Cliente')}</strong>
-                ${c.nao_lidas_admin > 0 ? `<span class="admin-sidebar__badge">${c.nao_lidas_admin}</span>` : ''}
-              </a>
-            </td>
-            <td>${escapeHtml(c.assunto || '-')}</td>
-            <td class="texto-suave">${escapeHtml((c.ultima_msg || '').slice(0, 60))}${(c.ultima_msg || '').length > 60 ? '…' : ''}</td>
+            <td><a href="./conversa.html?id=${c.id}"><strong>${escapeHtml(c.assunto || '-')}</strong></a></td>
+            <td class="texto-suave">${escapeHtml((c.ultima_msg || '').slice(0, 60))}</td>
             <td class="texto-suave">${c.ultima_msg_at ? formatarData(c.ultima_msg_at) : '-'}</td>
           </tr>
         `).join('')}
@@ -221,37 +180,26 @@ async function carregarUltimasConversas() {
 }
 
 // -------------------------------------------------------------
-// Utilidades
-// -------------------------------------------------------------
 function formatarData(iso) {
   if (!iso) return '-';
-  const d = new Date(iso);
-  return d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+  return new Date(iso).toLocaleDateString('pt-BR', {
+    day: '2-digit', month: '2-digit', year: 'numeric'
+  });
 }
 
 function traduzStatusPedido(s) {
   const map = {
-    aguardando: 'Aguardando',
-    recebido: 'Recebido',
-    em_analise: 'Em análise',
-    confirmado: 'Confirmado',
-    em_preparacao: 'Em preparação',
-    enviado: 'Enviado',
-    concluido: 'Concluído',
-    cancelado: 'Cancelado'
+    aguardando: 'Aguardando', recebido: 'Recebido', em_analise: 'Em análise',
+    confirmado: 'Confirmado', em_preparacao: 'Em preparação',
+    enviado: 'Enviado', concluido: 'Concluído', cancelado: 'Cancelado'
   };
   return map[s] || s;
 }
 
 function traduzStatusProposta(s) {
   const map = {
-    enviada: 'Enviada',
-    em_analise: 'Em análise',
-    contraproposta: 'Contraproposta',
-    aceita: 'Aceita',
-    recusada: 'Recusada',
-    cancelada: 'Cancelada',
-    concluida: 'Concluída'
+    enviada: 'Enviada', em_analise: 'Em análise', contraproposta: 'Contraproposta',
+    aceita: 'Aceita', recusada: 'Recusada', cancelada: 'Cancelada', concluida: 'Concluída'
   };
   return map[s] || s;
 }
@@ -273,4 +221,17 @@ function svgIcone(nome) {
     case 'user': return `<svg ${base}><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>`;
     default: return '';
   }
+}
+
+// -------------------------------------------------------------
+function mostrarErroNaTela(e) {
+  const main = document.querySelector('.admin-conteudo') || document.body;
+  const div = document.createElement('div');
+  div.className = 'alerta alerta--erro';
+  div.innerHTML = `<div>
+    <strong>Erro ao carregar o painel</strong><br>
+    ${escapeHtml(e?.message || 'Erro desconhecido')}<br>
+    <small>Abra o Console (F12) para mais detalhes.</small>
+  </div>`;
+  main.prepend(div);
 }
