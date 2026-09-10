@@ -1,18 +1,15 @@
 // =============================================================
-// COMPONENTE: HEADER — VM VENDAS E COMPRAS
-// =============================================================
-// Renderiza IMEDIATAMENTE sem esperar Supabase. Depois carrega
-// contadores e status de admin em background.
+// HEADER — VM VENDAS E COMPRAS
 // =============================================================
 
 import { supabase } from '../supabase.js';
 import { carregarConfiguracoes } from '../services/settings.service.js';
 
-export async function renderHeader(ativo = '') {
+export async function renderHeader(ativo) {
+  ativo = ativo || '';
   const el = document.getElementById('header');
   if (!el) return;
 
-  // 1) RENDERIZA PRIMEIRO — sem esperar nada
   el.innerHTML = `
     <header class="cabecalho">
       <div class="container cabecalho__interno">
@@ -23,7 +20,7 @@ export async function renderHeader(ativo = '') {
           <input type="search" name="q" placeholder="O que você procura?" aria-label="Buscar produtos">
         </form>
 
-        <nav class="cabecalho__acoes" aria-label="Ações do usuário" id="header-acoes">
+        <nav class="cabecalho__acoes" aria-label="Ações do usuário">
           <a href="./favoritos.html" class="cabecalho__acao" title="Favoritos">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
             <span class="cabecalho__acao-texto">Favoritos</span>
@@ -53,76 +50,76 @@ export async function renderHeader(ativo = '') {
     </header>
   `;
 
-  // 2) Busca
   const formBusca = document.getElementById('form-busca');
   if (formBusca) {
-    formBusca.addEventListener('submit', (e) => {
+    formBusca.addEventListener('submit', function(e) {
       e.preventDefault();
       const q = formBusca.querySelector('input[name="q"]').value.trim();
-      window.location.href = `./produtos.html${q ? `?q=${encodeURIComponent(q)}` : ''}`;
+      window.location.href = './produtos.html' + (q ? '?q=' + encodeURIComponent(q) : '');
     });
   }
 
-  // 3) Aplica logo e nome (do cache)
   try {
-    const cfg = await Promise.race([
-      carregarConfiguracoes(),
-      new Promise((_, rej) => setTimeout(() => rej(new Error('timeout')), 3000))
-    ]);
+    const cfg = await comTimeout(carregarConfiguracoes(), 3000);
     const visual = cfg.visual || {};
     const company = cfg.company || {};
     const nomeLoja = company.nome_fantasia || company.nome_empresa || 'Minha Loja';
-
     const logoEl = document.getElementById('header-logo');
     if (visual.logo_url) {
-      logoEl.innerHTML = `<img src="${visual.logo_url}" alt="${escapar(nomeLoja)}" loading="eager" onerror="this.style.display='none'" />`;
+      logoEl.innerHTML = '<img src="' + visual.logo_url + '" alt="' + escapar(nomeLoja) + '" loading="eager" />';
     } else {
       document.getElementById('header-logo-nome').textContent = nomeLoja;
     }
-  } catch (_) { /* mantém "Minha Loja" */ }
+  } catch (e) { console.warn('[header] logo:', e); }
 
-  // 4) Em background: contadores, admin, conta
-  (async () => {
-    const carrinho = contarCarrinhoLocal();
-    atualizarBadge('badge-carrinho', carrinho);
+  atualizarBadge('badge-carrinho', contarCarrinhoLocal());
 
+  (async function() {
     let user = null;
     try {
-      const r = await Promise.race([
-        supabase.auth.getUser(),
-        new Promise((_, rej) => setTimeout(() => rej(new Error('timeout')), 4000))
-      ]);
-      user = r?.data?.user || null;
-    } catch (_) { user = null; }
+      const r = await comTimeout(supabase.auth.getUser(), 4000);
+      user = r && r.data ? r.data.user : null;
+    } catch (e) { user = null; }
 
-    // Conta (link do header)
-    const contaLink = document.getElementById('header-conta');
-    const contaTexto = document.getElementById('header-conta-texto');
-    if (user) {
-      contaLink.href = './perfil.html';
-      contaTexto.textContent = 'Minha conta';
-    }
+    if (!user) return;
 
-    if (user) {
-      // Roda em paralelo, com timeout individual — não trava nada
-      Promise.allSettled([
-        contarFavoritos(user.id).then(c => atualizarBadge('badge-favoritos', c)),
-        contarNotificacoes(user.id).then(c => atualizarBadge('badge-notif', c)),
-        verificarAdmin(user.id).then(ehAdmin => {
-          if (ehAdmin) {
-            const slot = document.getElementById('header-admin-slot');
-            if (slot) {
-              slot.innerHTML = `
-                <a href="./admin/" class="cabecalho__acao cabecalho__acao--admin" title="Painel administrativo">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l9 4v6c0 5-3.5 9.5-9 10-5.5-.5-9-5-9-10V6z"/></svg>
-                  <span class="cabecalho__acao-texto">Admin</span>
-                </a>`;
-            }
-          }
-        })
-      ]);
-    }
+    document.getElementById('header-conta').href = './perfil.html';
+    document.getElementById('header-conta-texto').textContent = 'Minha conta';
+
+    try {
+      const f = await comTimeout(
+        supabase.from('favorites').select('*', { count: 'exact', head: true }).eq('user_id', user.id),
+        3000
+      );
+      atualizarBadge('badge-favoritos', (f && f.count) || 0);
+    } catch (e) {}
+
+    try {
+      const n = await comTimeout(
+        supabase.from('notifications').select('*', { count: 'exact', head: true }).eq('user_id', user.id).eq('lida', false),
+        3000
+      );
+      atualizarBadge('badge-notif', (n && n.count) || 0);
+    } catch (e) {}
+
+    try {
+      const p = await comTimeout(
+        supabase.from('profiles').select('role').eq('id', user.id).maybeSingle(),
+        3000
+      );
+      if (p && p.data && p.data.role === 'admin') {
+        const slot = document.getElementById('header-admin-slot');
+        if (slot) {
+          slot.innerHTML = '<a href="./admin/" class="cabecalho__acao cabecalho__acao--admin" title="Painel"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l9 4v6c0 5-3.5 9.5-9 10-5.5-.5-9-5-9-10V6z"/></svg><span class="cabecalho__acao-texto">Admin</span></a>';
+        }
+      }
+    } catch (e) {}
   })();
+}
+
+function comTimeout(p, ms) {
+  ms = ms || 5000;
+  return Promise.race([p, new Promise(function(_, rej) { setTimeout(function() { rej(new Error('timeout')); }, ms); })]);
 }
 
 function atualizarBadge(id, valor) {
@@ -135,41 +132,13 @@ function atualizarBadge(id, valor) {
 function contarCarrinhoLocal() {
   try {
     const itens = JSON.parse(localStorage.getItem('carrinho') || '[]');
-    return itens.reduce((s, i) => s + (i.quantidade || 0), 0);
-  } catch { return 0; }
-}
-
-async function contarFavoritos(userId) {
-  try {
-    const r = await Promise.race([
-      supabase.from('favorites').select('*', { count: 'exact', head: true }).eq('user_id', userId),
-      new Promise((_, rej) => setTimeout(() => rej(new Error('timeout')), 3000))
-    ]);
-    return r?.count || 0;
-  } catch { return 0; }
-}
-
-async function contarNotificacoes(userId) {
-  try {
-    const r = await Promise.race([
-      supabase.from('notifications').select('*', { count: 'exact', head: true }).eq('user_id', userId).eq('lida', false),
-      new Promise((_, rej) => setTimeout(() => rej(new Error('timeout')), 3000))
-    ]);
-    return r?.count || 0;
-  } catch { return 0; }
-}
-
-async function verificarAdmin(userId) {
-  try {
-    const r = await Promise.race([
-      supabase.from('profiles').select('role').eq('id', userId).maybeSingle(),
-      new Promise((_, rej) => setTimeout(() => rej(new Error('timeout')), 3000))
-    ]);
-    return r?.data?.role === 'admin';
-  } catch { return false; }
+    return itens.reduce(function(s, i) { return s + (i.quantidade || 0); }, 0);
+  } catch (e) { return 0; }
 }
 
 function escapar(s) {
   if (s == null) return '';
-  return String(s).replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]));
+  return String(s).replace(/[&<>"']/g, function(m) {
+    return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m];
+  });
 }
