@@ -1,0 +1,140 @@
+/* =============================================================
+   DESIGN TOKENS — VM VENDAS E COMPRAS
+   =============================================================
+   Este arquivo centraliza todas as variáveis visuais do sistema.
+   Nenhuma cor, espaçamento ou fonte deve ser escrita "na mão"
+   em outros arquivos — sempre usar var(--nome-da-variavel).
+
+   Os valores abaixo são apenas os PADRÕES. Quando o painel
+   administrativo estiver funcionando, o JavaScript vai
+   sobrescrever estas variáveis dinamicamente com os valores
+   salvos em `visual_settings` no Supabase.
+   ============================================================= */
+
+:root {
+  /* -----------------------------------------------------------
+     CORES DA MARCA
+     ----------------------------------------------------------- */
+  --cor-principal:    #0ea5e9;   /* azul principal da loja */
+  --cor-secundaria:   #0f172a;   /* cor escura de apoio */
+  --cor-destaque:     #f59e0b;   /* cor de destaque / ofertas */
+
+  /* -----------------------------------------------------------
+     CORES DE FUNDO E TEXTO
+     ----------------------------------------------------------- */
+  --cor-fundo:        #ffffff;
+  --cor-fundo-suave:  #f8fafc;   /* fundo levemente cinza */
+  --cor-texto:        #0f172a;
+  --cor-texto-suave:  #64748b;
+  --cor-borda:        #e2e8f0;
+
+  /* -----------------------------------------------------------
+     CORES SEMÂNTICAS (estado)
+     ----------------------------------------------------------- */
+  --cor-sucesso:      #16a34a;
+  --cor-alerta:       #f59e0b;
+  --cor-erro:         #dc2626;
+  --cor-info:         #0ea5e9;
+
+  /* -----------------------------------------------------------
+     TIPOGRAFIA
+     ----------------------------------------------------------- */
+  --fonte-principal: system-ui, -apple-system, "Segoe UI", Roboto,
+                     "Helvetica Neue", Arial, sans-serif;
+  --fonte-titulo:    var(--fonte-principal);
+  --fonte-mono:      ui-monospace, "SF Mono", Menlo, Monaco,
+                     "Cascadia Code", Consolas, monospace;
+
+  --texto-xs:   12px;
+  --texto-sm:   14px;
+  --texto-base: 16px;
+  --texto-lg:   18px;
+  --texto-xl:   20px;
+  --texto-2xl:  24px;
+  --texto-3xl:  30px;
+  --texto-4xl:  36px;
+
+  --peso-normal:   400;
+  --peso-medio:    500;
+  --peso-semibold: 600;
+  --peso-bold:     700;
+
+  --linha-apertada: 1.25;
+  --linha-normal:   1.5;
+  --linha-solta:    1.75;
+
+  /* -----------------------------------------------------------
+     ESPAÇAMENTOS (escala de 4px)
+     ----------------------------------------------------------- */
+  --esp-1:  4px;
+  --esp-2:  8px;
+  --esp-3:  12px;
+  --esp-4:  16px;
+  --esp-5:  20px;
+  --esp-6:  24px;
+  --esp-8:  32px;
+  --esp-10: 40px;
+  --esp-12: 48px;
+  --esp-16: 64px;
+
+  /* -----------------------------------------------------------
+     RAIOS (cantos arredondados)
+     ----------------------------------------------------------- */
+  --raio-sm:   6px;
+  --raio-md:   8px;
+  --raio-lg:   12px;
+  --raio-xl:   16px;
+  --raio-2xl:  20px;
+  --raio-full: 9999px;
+
+  --raio-botao: var(--raio-md);
+  --raio-card:  var(--raio-lg);
+  --raio-input: var(--raio-md);
+
+  /* -----------------------------------------------------------
+     SOMBRAS
+     ----------------------------------------------------------- */
+  --sombra-sm: 0 1px 2px rgba(15, 23, 42, 0.05);
+  --sombra-md: 0 4px 12px rgba(15, 23, 42, 0.08);
+  --sombra-lg: 0 10px 30px rgba(15, 23, 42, 0.10);
+  --sombra-xl: 0 20px 40px rgba(15, 23, 42, 0.12);
+
+  /* -----------------------------------------------------------
+     TRANSIÇÕES
+     ----------------------------------------------------------- */
+  --transicao-rapida:  120ms ease;
+  --transicao-normal:  200ms ease;
+  --transicao-lenta:   320ms ease;
+
+  /* -----------------------------------------------------------
+     LAYOUT
+     ----------------------------------------------------------- */
+  --largura-maxima:     1280px;
+  --largura-conteudo:   1080px;
+  --altura-header:      64px;
+  --altura-header-mob:  56px;
+
+  /* -----------------------------------------------------------
+     Z-INDEX (camadas)
+     ----------------------------------------------------------- */
+  --z-base:      1;
+  --z-dropdown:  100;
+  --z-sticky:    200;
+  --z-overlay:   900;
+  --z-modal:     1000;
+  --z-toast:     1100;
+
+  /* -----------------------------------------------------------
+     DENSIDADE (espaçamento interno de componentes)
+     ----------------------------------------------------------- */
+  --pad-card:   var(--esp-4);
+  --pad-input:  10px 14px;
+  --pad-botao:  10px 16px;
+  --pad-botao-sm: 6px 12px;
+  --pad-botao-lg: 14px 22px;
+
+  /* -----------------------------------------------------------
+     FOCO (acessibilidade)
+     ----------------------------------------------------------- */
+  --anel-foco: 0 0 0 3px rgba(14, 165, 233, 0.35);
+}
