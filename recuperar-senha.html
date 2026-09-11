@@ -10,11 +10,15 @@
   <link rel="stylesheet" href="./assets/css/components.css" />
   <link rel="stylesheet" href="./assets/css/store.css" />
   <style>
-    .tela-auth { min-height: calc(100vh - var(--altura-header)); display: flex; align-items: center; justify-content: center; padding: var(--esp-6) var(--esp-4); }
-    .cartao-auth { width: 100%; max-width: 420px; background: #fff; border: 1px solid var(--cor-borda); border-radius: var(--raio-xl); padding: var(--esp-8); box-shadow: var(--sombra-md); }
-    .cartao-auth h1 { font-size: var(--texto-2xl); margin-bottom: var(--esp-2); text-align: center; }
-    .cartao-auth p.sub { color: var(--cor-texto-suave); text-align: center; margin-bottom: var(--esp-6); font-size: var(--texto-sm); }
-    .cartao-auth__rodape { margin-top: var(--esp-5); padding-top: var(--esp-5); border-top: 1px solid var(--cor-borda); text-align: center; font-size: var(--texto-sm); color: var(--cor-texto-suave); }
+    .tela-auth { min-height: calc(100vh - var(--altura-header)); display: flex; align-items: center; justify-content: center; padding: 24px 16px; }
+    .cartao-auth { width: 100%; max-width: 420px; background: #fff; border: 1px solid var(--cor-borda); border-radius: 16px; padding: 32px; box-shadow: var(--sombra-md); }
+    .cartao-auth h1 { font-size: 24px; margin-bottom: 8px; text-align: center; }
+    .cartao-auth p.sub { color: var(--cor-texto-suave); text-align: center; margin-bottom: 24px; font-size: 14px; }
+    .cartao-auth__rodape { margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--cor-borda); text-align: center; font-size: 14px; color: var(--cor-texto-suave); }
+    .erro-msg { background: #fee2e2; color: #991b1b; padding: 12px 16px; border-radius: 8px; font-size: 14px; margin-bottom: 16px; display: none; }
+    .erro-msg.visivel { display: block; }
+    .ok-msg { background: #dcfce7; color: #166534; padding: 12px 16px; border-radius: 8px; font-size: 14px; margin-bottom: 16px; display: none; }
+    .ok-msg.visivel { display: block; }
   </style>
 </head>
 <body>
@@ -24,15 +28,17 @@
       <h1>Recuperar senha</h1>
       <p class="sub">Enviaremos um link de redefinição para seu e-mail.</p>
 
-      <div id="msg"></div>
+      <div id="erro" class="erro-msg"></div>
+      <div id="ok" class="ok-msg"></div>
 
-      <form id="form-recuperar" novalidate>
+      <form id="form" novalidate>
         <div class="campo">
           <label for="email">E-mail cadastrado</label>
           <input type="email" id="email" required />
         </div>
-        <button type="submit" class="btn btn--principal btn--bloco btn--lg" id="btn-enviar">
-          Enviar link de recuperação
+
+        <button type="submit" class="btn btn--principal btn--bloco btn--lg" id="btn">
+          Enviar link
         </button>
       </form>
 
@@ -44,38 +50,41 @@
   <div id="footer"></div>
 
   <script type="module">
-    import { renderHeader } from './assets/js/components/header.js';
-    import { renderFooter } from './assets/js/components/footer.js';
-    import { iniciarConfiguracoes } from './assets/js/services/settings.service.js';
-    import { supabase } from './assets/js/supabase.js';
+    (async () => {
+      try {
+        const { renderHeader } = await import('./assets/js/components/header.js');
+        const { renderFooter } = await import('./assets/js/components/footer.js');
+        await renderHeader();
+        await renderFooter();
+      } catch (e) {}
+    })();
 
-    await iniciarConfiguracoes();
-    await renderHeader();
-    await renderFooter();
-
-    const form = document.getElementById('form-recuperar');
-    const btn = document.getElementById('btn-enviar');
-    const msg = document.getElementById('msg');
-    const esc = s => s == null ? '' : String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
-
-    form.onsubmit = async (e) => {
+    document.getElementById('form').onsubmit = async function(e) {
       e.preventDefault();
-      const email = document.getElementById('email').value.trim();
-      if (!email) { msg.innerHTML = '<div class="alerta alerta--erro">Informe seu e-mail.</div>'; return; }
 
-      btn.disabled = true; btn.textContent = 'Enviando...';
+      const email = document.getElementById('email').value.trim();
+      const btn = document.getElementById('btn');
+      const erro = document.getElementById('erro');
+      const ok = document.getElementById('ok');
+
+      erro.classList.remove('visivel');
+      ok.classList.remove('visivel');
+
+      btn.disabled = true;
+      btn.textContent = 'Enviando...';
 
       try {
-        const redirectTo = `${location.origin}${location.pathname.replace('recuperar-senha.html', 'perfil.html')}`;
-        const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo });
-        if (error) throw error;
+        const { enviarEmailRecuperacao } = await import('./assets/js/services/auth.service.js');
+        await enviarEmailRecuperacao(email);
 
-        msg.innerHTML = '<div class="alerta alerta--sucesso">✅ Se o e-mail estiver cadastrado, você receberá o link em alguns minutos. Verifique também a caixa de spam.</div>';
+        document.getElementById('ok').textContent = 'Se o e-mail estiver cadastrado, você receberá o link em alguns minutos. Verifique também a caixa de spam.';
+        document.getElementById('ok').classList.add('visivel');
         btn.textContent = 'E-mail enviado';
       } catch (err) {
-        console.error(err);
-        msg.innerHTML = `<div class="alerta alerta--erro">${esc(err.message)}</div>`;
-        btn.disabled = false; btn.textContent = 'Enviar link de recuperação';
+        document.getElementById('erro').textContent = err.message || 'Erro ao enviar.';
+        document.getElementById('erro').classList.add('visivel');
+        btn.disabled = false;
+        btn.textContent = 'Enviar link';
       }
     };
   </script>
