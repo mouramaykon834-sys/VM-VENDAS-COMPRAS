@@ -1,13 +1,10 @@
 /* =============================================================
    LAYOUT — VM VENDAS E COMPRAS
-   =============================================================
-   Estrutura visual: header, footer, grids e responsividade.
-   Depende de tokens.css e base.css.
    ============================================================= */
 
-/* -------------------------------------------------------------
+/* =============================================================
    HEADER
-   ------------------------------------------------------------- */
+   ============================================================= */
 .cabecalho {
   position: sticky;
   top: 0;
@@ -20,14 +17,14 @@
 .cabecalho__interno {
   display: flex;
   align-items: center;
-  gap: var(--esp-4);
+  gap: 16px;
   height: 100%;
 }
 
 .cabecalho__logo {
   display: flex;
   align-items: center;
-  gap: var(--esp-2);
+  gap: 8px;
   font-size: var(--texto-lg);
   font-weight: var(--peso-bold);
   color: var(--cor-secundaria);
@@ -36,11 +33,6 @@
 }
 .cabecalho__logo:hover { text-decoration: none; color: var(--cor-principal); }
 
-.cabecalho__logo-img {
-  height: 36px;
-  width: auto;
-}
-
 .cabecalho__busca {
   flex: 1;
   max-width: 520px;
@@ -48,7 +40,7 @@
 }
 
 .cabecalho__busca input {
-  padding-left: 40px;
+  padding-left: 42px;
   background: var(--cor-fundo-suave);
   border-color: transparent;
 }
@@ -58,7 +50,7 @@
 }
 .cabecalho__busca-icone {
   position: absolute;
-  left: 12px;
+  left: 14px;
   top: 50%;
   transform: translateY(-50%);
   color: var(--cor-texto-suave);
@@ -68,28 +60,30 @@
 .cabecalho__acoes {
   display: flex;
   align-items: center;
-  gap: var(--esp-2);
+  gap: 6px;
   margin-left: auto;
 }
 
 .cabecalho__acao {
   display: flex;
   align-items: center;
-  gap: var(--esp-2);
-  padding: var(--esp-2) var(--esp-3);
+  gap: 6px;
+  padding: 8px 12px;
   border-radius: var(--raio-md);
   color: var(--cor-texto);
-  font-size: var(--texto-sm);
+  font-size: 14px;
   font-weight: var(--peso-medio);
   position: relative;
   text-decoration: none;
-  transition: background var(--transicao-rapida);
+  transition: background var(--transicao-rapida), color var(--transicao-rapida);
+  -webkit-tap-highlight-color: transparent;
 }
 .cabecalho__acao:hover {
   background: var(--cor-fundo-suave);
   color: var(--cor-principal);
   text-decoration: none;
 }
+.cabecalho__acao:active { background: var(--cor-fundo-suave); }
 
 .cabecalho__badge {
   position: absolute;
@@ -109,159 +103,127 @@
   line-height: 1;
 }
 
-/* Navegação por categorias (barra abaixo do header) */
-.nav-categorias {
-  background: #fff;
-  border-bottom: 1px solid var(--cor-borda);
-  overflow-x: auto;
-  scrollbar-width: none;
-}
-.nav-categorias::-webkit-scrollbar { display: none; }
-
-.nav-categorias__lista {
-  display: flex;
-  gap: var(--esp-2);
-  padding: var(--esp-2) 0;
-  white-space: nowrap;
-}
-
-.nav-categorias__item {
-  padding: var(--esp-2) var(--esp-3);
-  border-radius: var(--raio-full);
-  font-size: var(--texto-sm);
-  font-weight: var(--peso-medio);
-  color: var(--cor-texto-suave);
-  text-decoration: none;
-  transition: all var(--transicao-rapida);
-}
-.nav-categorias__item:hover,
-.nav-categorias__item.ativo {
-  background: var(--cor-fundo-suave);
-  color: var(--cor-principal);
-  text-decoration: none;
-}
-
-/* Menu hambúrguer (mobile) */
-.cabecalho__menu-btn {
-  display: none;
-  padding: var(--esp-2);
-  color: var(--cor-texto);
-}
-
-/* -------------------------------------------------------------
-   CONTEÚDO PRINCIPAL
-   ------------------------------------------------------------- */
+/* =============================================================
+   CONTEÚDO
+   ============================================================= */
 .conteudo {
   min-height: calc(100vh - var(--altura-header) - 300px);
-  padding: var(--esp-6) 0;
+  padding: 24px 0;
 }
 
 .pagina-titulo {
   font-size: var(--texto-2xl);
-  margin-bottom: var(--esp-6);
+  margin-bottom: 24px;
 }
 
 .migalhas {
   display: flex;
-  gap: var(--esp-2);
-  font-size: var(--texto-sm);
+  gap: 8px;
+  font-size: 14px;
   color: var(--cor-texto-suave);
-  margin-bottom: var(--esp-4);
+  margin-bottom: 16px;
   flex-wrap: wrap;
 }
 .migalhas a { color: var(--cor-texto-suave); }
 .migalhas span + span::before {
   content: "/";
-  margin-right: var(--esp-2);
+  margin-right: 8px;
   color: var(--cor-borda);
 }
 
-/* -------------------------------------------------------------
+/* =============================================================
    RODAPÉ
-   ------------------------------------------------------------- */
+   ============================================================= */
 .rodape {
   background: var(--cor-secundaria);
   color: #cbd5e1;
-  padding: var(--esp-12) 0 var(--esp-6);
-  margin-top: var(--esp-12);
-  font-size: var(--texto-sm);
+  padding: 48px 0 24px;
+  margin-top: 48px;
+  font-size: 14px;
 }
 
 .rodape__grid {
   display: grid;
   grid-template-columns: 2fr 1fr 1fr 1fr;
-  gap: var(--esp-8);
-  margin-bottom: var(--esp-8);
+  gap: 32px;
+  margin-bottom: 32px;
 }
 
 .rodape__titulo {
   color: #fff;
-  font-size: var(--texto-base);
+  font-size: 16px;
   font-weight: var(--peso-semibold);
-  margin-bottom: var(--esp-3);
+  margin-bottom: 12px;
 }
 
 .rodape__lista a {
   display: block;
   color: #cbd5e1;
-  padding: var(--esp-1) 0;
+  padding: 4px 0;
   text-decoration: none;
   transition: color var(--transicao-rapida);
 }
-.rodape__lista a:hover {
-  color: #fff;
-  text-decoration: none;
-}
+.rodape__lista a:hover { color: #fff; text-decoration: none; }
 
 .rodape__base {
   border-top: 1px solid rgba(255, 255, 255, 0.1);
-  padding-top: var(--esp-4);
+  padding-top: 16px;
   display: flex;
   justify-content: space-between;
   align-items: center;
   flex-wrap: wrap;
-  gap: var(--esp-3);
+  gap: 12px;
   color: #94a3b8;
-  font-size: var(--texto-xs);
+  font-size: 12px;
 }
 
-/* -------------------------------------------------------------
+/* =============================================================
    GRID GENÉRICO
-   ------------------------------------------------------------- */
-.grid {
-  display: grid;
-  gap: var(--esp-4);
-}
+   ============================================================= */
+.grid { display: grid; gap: 16px; }
 .grid-2 { grid-template-columns: repeat(2, 1fr); }
 .grid-3 { grid-template-columns: repeat(3, 1fr); }
 .grid-4 { grid-template-columns: repeat(4, 1fr); }
 
-/* -------------------------------------------------------------
+/* =============================================================
    RESPONSIVIDADE
-   ------------------------------------------------------------- */
+   ============================================================= */
 @media (max-width: 1024px) {
   .rodape__grid { grid-template-columns: 1fr 1fr; }
   .grid-4 { grid-template-columns: repeat(2, 1fr); }
   .grid-3 { grid-template-columns: repeat(2, 1fr); }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 900px) {
   .cabecalho { height: var(--altura-header-mob); }
   .cabecalho__busca { display: none; }
-  .cabecalho__menu-btn { display: flex; }
   .cabecalho__acao-texto { display: none; }
+  .cabecalho__acao { padding: 10px; }
   .grid-3, .grid-4 { grid-template-columns: repeat(2, 1fr); }
 }
 
-@media (max-width: 560px) {
-  .rodape__grid { grid-template-columns: 1fr; }
+@media (max-width: 640px) {
+  .rodape__grid { grid-template-columns: 1fr; gap: 24px; }
   .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
-  .conteudo { padding: var(--esp-4) 0; }
+  .conteudo { padding: 16px 0; }
+  .pagina-titulo { font-size: var(--texto-xl); margin-bottom: 16px; }
+
+  /* Header mobile reorganizado */
+  .cabecalho { height: 56px; }
+  .cabecalho__logo { font-size: var(--texto-base); }
+
+  /* Ações em linha única, mas pequenas */
+  .cabecalho__acoes { gap: 2px; }
+  .cabecalho__acao { padding: 8px; }
+
+  /* Rodapé mais compacto */
+  .rodape { padding: 32px 0 16px; margin-top: 32px; }
+  .rodape__base { font-size: 11px; text-align: center; justify-content: center; }
 }
 
-/* -------------------------------------------------------------
-   NAVEGAÇÃO INFERIOR (mobile)
-   ------------------------------------------------------------- */
+/* =============================================================
+   NAV INFERIOR (mobile)
+   ============================================================= */
 .nav-inferior {
   display: none;
   position: fixed;
@@ -271,7 +233,7 @@
   z-index: var(--z-sticky);
   background: #fff;
   border-top: 1px solid var(--cor-borda);
-  padding: var(--esp-2) 0 max(var(--esp-2), env(safe-area-inset-bottom));
+  padding: 8px 0 max(8px, env(safe-area-inset-bottom));
 }
 .nav-inferior__lista {
   display: flex;
@@ -283,10 +245,11 @@
   flex-direction: column;
   align-items: center;
   gap: 2px;
-  padding: var(--esp-1) var(--esp-2);
+  padding: 4px 8px;
   font-size: 11px;
   color: var(--cor-texto-suave);
   text-decoration: none;
+  -webkit-tap-highlight-color: transparent;
 }
 .nav-inferior__item.ativo,
 .nav-inferior__item:hover {
@@ -294,7 +257,7 @@
   text-decoration: none;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 900px) {
   .nav-inferior { display: block; }
   body { padding-bottom: 72px; }
 }
