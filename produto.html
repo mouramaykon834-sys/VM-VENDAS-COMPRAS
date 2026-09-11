@@ -129,8 +129,20 @@
       document.getElementById('btn-chat').onclick = async function() {
         const { supabase } = await import('./assets/js/supabase.js');
         const r = await supabase.auth.getUser();
-        if (!r.data || !r.data.user) { mostrarAviso('Faça login', 'Você precisa estar logado para conversar.', 'Fazer login', './login.html'); return; }
-        mostrarAviso('Chat interno', 'A funcionalidade de chat estará disponível em breve. Use o WhatsApp para contato imediato.', 'Abrir WhatsApp', '#');
+        if (!r.data || !r.data.user) {
+          mostrarAviso('Faça login', 'Você precisa estar logado para conversar com a loja.', 'Fazer login', './login.html');
+          return;
+        }
+        try {
+          const { abrirConversa } = await import('./assets/js/services/chat.service.js');
+          const chatId = await abrirConversa({
+            product_id: p.id,
+            assunto: 'Interesse em: ' + p.nome
+          });
+          location.href = './conversa.html?id=' + chatId;
+        } catch (e) {
+          alert('Erro ao abrir chat: ' + e.message);
+        }
       };
 
       document.getElementById('btn-whatsapp').onclick = async function() {
