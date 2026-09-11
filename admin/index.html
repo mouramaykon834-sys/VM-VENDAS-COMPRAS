@@ -5,139 +5,435 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="robots" content="noindex, nofollow" />
   <title>Dashboard — Admin</title>
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: system-ui, -apple-system, sans-serif; background: #f8fafc; color: #0f172a; }
-    .layout { display: grid; grid-template-columns: 240px 1fr; min-height: 100vh; }
-    .sidebar { background: #0f172a; color: #cbd5e1; padding: 16px 0; }
-    .sidebar__logo { display: flex; align-items: center; gap: 8px; padding: 0 16px 20px; border-bottom: 1px solid rgba(255,255,255,.1); margin-bottom: 16px; color: #fff; font-weight: 700; font-size: 15px; }
-    .sidebar__badge { background: #0ea5e9; color: #fff; padding: 2px 8px; border-radius: 6px; font-size: 10px; font-weight: 700; }
-    .sidebar__secao { padding: 16px 16px 8px; font-size: 11px; text-transform: uppercase; letter-spacing: .5px; color: #64748b; font-weight: 600; }
-    .sidebar__lista { display: flex; flex-direction: column; gap: 2px; padding: 0 8px; }
-    .sidebar__item { padding: 10px 12px; border-radius: 8px; color: #cbd5e1; text-decoration: none; font-size: 14px; display: block; }
-    .sidebar__item:hover { background: rgba(255,255,255,.06); color: #fff; }
-    .sidebar__item.ativo { background: #0ea5e9; color: #fff; }
-    .main { display: flex; flex-direction: column; }
-    .topbar { background: #fff; border-bottom: 1px solid #e2e8f0; padding: 12px 24px; display: flex; justify-content: space-between; align-items: center; gap: 12px; }
-    .topbar h1 { font-size: 18px; }
-    .btn-loja { padding: 8px 14px; border: 1px solid #0ea5e9; border-radius: 8px; color: #0ea5e9; text-decoration: none; font-size: 13px; font-weight: 600; }
-    .btn-loja:hover { background: #0ea5e9; color: #fff; }
-    .conteudo { padding: 24px; }
-    .cards { display: grid; grid-template-columns: repeat(4,1fr); gap: 16px; margin-bottom: 32px; }
-    .card { background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; }
-    .card__rotulo { font-size: 12px; text-transform: uppercase; color: #64748b; font-weight: 600; margin-bottom: 8px; }
-    .card__valor { font-size: 30px; font-weight: 700; line-height: 1; }
-    .secao { background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; margin-bottom: 16px; }
-    .secao__titulo { padding: 16px 20px; border-bottom: 1px solid #e2e8f0; font-size: 15px; font-weight: 600; }
-    .secao__vazio { padding: 24px; text-align: center; color: #94a3b8; font-size: 14px; }
-    .erro { padding: 20px; background: #fee2e2; color: #991b1b; border-radius: 8px; margin: 20px; font-family: monospace; }
-    @media (max-width: 900px) { .layout { grid-template-columns: 1fr; } .cards { grid-template-columns: 1fr 1fr; } }
-  </style>
+
+  <link rel="stylesheet" href="../assets/css/tokens.css" />
+  <link rel="stylesheet" href="../assets/css/base.css" />
+  <link rel="stylesheet" href="../assets/css/layout.css" />
+  <link rel="stylesheet" href="../assets/css/components.css" />
+  <link rel="stylesheet" href="../assets/css/admin.css" />
 </head>
 <body>
-  <div class="layout">
-    <aside class="sidebar">
-      <div class="sidebar__logo"><span>🏠</span><span>Minha Loja</span><span class="sidebar__badge">ADMIN</span></div>
-      <div class="sidebar__secao">Principal</div>
-      <nav class="sidebar__lista">
-        <a href="./index.html" class="sidebar__item ativo">Dashboard</a>
-        <a href="./pedidos.html" class="sidebar__item">Pedidos</a>
-        <a href="./propostas.html" class="sidebar__item">Propostas</a>
-        <a href="./conversas.html" class="sidebar__item">Conversas</a>
-      </nav>
-      <div class="sidebar__secao">Vendas</div>
-      <nav class="sidebar__lista">
-        <a href="./orcamentos.html" class="sidebar__item">Orçamentos</a>
-      </nav>
-      <div class="sidebar__secao">Financeiro</div>
-      <nav class="sidebar__lista">
-        <a href="./financeiro.html" class="sidebar__item">Visão geral</a>
-        <a href="./contas-receber.html" class="sidebar__item">Contas a receber</a>
-        <a href="./contas-pagar.html" class="sidebar__item">Contas a pagar</a>
-        <a href="./fluxo-caixa.html" class="sidebar__item">Fluxo de caixa</a>
-      </nav>
-      <div class="sidebar__secao">Catálogo</div>
-      <nav class="sidebar__lista">
-        <a href="./produtos.html" class="sidebar__item">Produtos</a>
-        <a href="./categorias.html" class="sidebar__item">Categorias</a>
-        <a href="./produtos-destaque.html" class="sidebar__item">Destaques e promoções</a>
-      </nav>
-      <div class="sidebar__secao">Estoque</div>
-      <nav class="sidebar__lista">
-        <a href="./estoque.html" class="sidebar__item">Visão geral</a>
-        <a href="./estoque-movimentar.html" class="sidebar__item">Movimentar</a>
-        <a href="./estoque-historico.html" class="sidebar__item">Histórico</a>
-        <a href="./estoque-alertas.html" class="sidebar__item">Alertas</a>
-      </nav>
-      <div class="sidebar__secao">Compras</div>
-      <nav class="sidebar__lista">
-        <a href="./fornecedores.html" class="sidebar__item">Fornecedores</a>
-        <a href="./compras.html" class="sidebar__item">Compras</a>
-      </nav>
-      <div class="sidebar__secao">Clientes</div>
-      <nav class="sidebar__lista">
-        <a href="./clientes.html" class="sidebar__item">Clientes</a>
-      </nav>
-      <div class="sidebar__secao">Sistema</div>
-      <nav class="sidebar__lista">
-        <a href="./auditoria.html" class="sidebar__item">Auditoria</a>
-      </nav>
-      <div class="sidebar__secao">Configurações</div>
-      <nav class="sidebar__lista">
-        <a href="./empresa.html" class="sidebar__item">Dados da empresa</a>
-        <a href="./identidade.html" class="sidebar__item">Identidade visual</a>
-        <a href="./configuracoes.html" class="sidebar__item">Outras configurações</a>
-      </nav>
-    </aside>
-    <main class="main">
-      <header class="topbar">
-        <h1>Dashboard</h1>
-        <a href="../index.html" class="btn-loja">← Ver loja</a>
+
+  <div class="admin-layout">
+    <aside class="admin-sidebar" id="admin-sidebar"></aside>
+    <div class="admin-sidebar-overlay" id="admin-sidebar-overlay"></div>
+
+    <main class="admin-main">
+      <header class="admin-topbar">
+        <button id="admin-menu-btn" class="admin-topbar__menu-btn" aria-label="Abrir menu">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </button>
+        <h1 class="admin-topbar__titulo">Dashboard</h1>
+        <div class="admin-topbar__acoes">
+          <select id="filtro-periodo" style="padding:8px 12px;border:1px solid #e2e8f0;border-radius:8px;font-size:14px;">
+            <option value="hoje">Hoje</option>
+            <option value="7dias">Últimos 7 dias</option>
+            <option value="mes" selected>Este mês</option>
+            <option value="mes_anterior">Mês anterior</option>
+            <option value="personalizado">Personalizado</option>
+          </select>
+          <a href="../index.html" class="btn btn--contorno btn--sm" target="_blank">Ver loja</a>
+        </div>
       </header>
-      <div class="conteudo">
-        <div id="conteudo"><div class="secao__vazio">Carregando...</div></div>
+
+      <div class="admin-conteudo">
+        <div id="filtro-custom" style="display:none;margin-bottom:20px;background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:16px;">
+          <div style="display:flex;gap:12px;align-items:end;flex-wrap:wrap;">
+            <div><label style="display:block;font-size:12px;font-weight:600;color:#64748b;margin-bottom:4px;">De</label><input type="date" id="dataInicio" style="padding:8px 12px;border:1px solid #e2e8f0;border-radius:8px;" /></div>
+            <div><label style="display:block;font-size:12px;font-weight:600;color:#64748b;margin-bottom:4px;">Até</label><input type="date" id="dataFim" style="padding:8px 12px;border:1px solid #e2e8f0;border-radius:8px;" /></div>
+            <button class="btn btn--principal btn--sm" id="btn-aplicar-filtro">Aplicar</button>
+          </div>
+        </div>
+
+        <div id="conteudo"><div class="carregando"><div class="spinner spinner--lg"></div></div></div>
       </div>
     </main>
   </div>
 
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
   <script type="module">
     const el = document.getElementById('conteudo');
-    const erro = (msg) => el.innerHTML = '<div class="erro">❌ ' + msg + '</div>';
+    const esc = s => s == null ? '' : String(s).replace(/[&<>"']/g, function(m) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]; });
+
+    let supabase;
+    let periodo = 'mes';
+    let chartVendas = null;
+    let chartVendasCompras = null;
+    let chartEntradasSaidas = null;
+    let chartTopProdutos = null;
 
     (async () => {
       try {
-        const { supabase } = await import('../assets/js/supabase.js');
+        const mod = await import('../assets/js/supabase.js');
+        supabase = mod.supabase;
+
         const r = await supabase.auth.getSession();
-        const session = r.data ? r.data.session : null;
-        if (!session) { location.href = '../login.html'; return; }
+        if (!r.data || !r.data.session) { location.href = '../login.html'; return; }
 
-        const p = await supabase.from('profiles').select('role, nome').eq('id', session.user.id).maybeSingle();
-        if (!p.data) { erro('Perfil não encontrado'); return; }
+        const p = await supabase.from('profiles').select('role').eq('id', r.data.session.user.id).maybeSingle();
+        if (!p.data) { el.innerHTML = '<div class="erro">Perfil não encontrado</div>'; return; }
 
-        const contar = async (tabela) => {
-          const r = await supabase.from(tabela).select('*', { count: 'exact', head: true });
-          return r.count || 0;
+        await renderMenu();
+        await carregar();
+
+        document.getElementById('filtro-periodo').onchange = function(e) {
+          periodo = e.target.value;
+          document.getElementById('filtro-custom').style.display = periodo === 'personalizado' ? 'block' : 'none';
+          if (periodo !== 'personalizado') carregar();
         };
 
-        const resultados = await Promise.all([
-          contar('products'), contar('orders'), contar('proposals'), contar('profiles')
+        document.getElementById('btn-aplicar-filtro').onclick = carregar;
+      } catch (e) {
+        el.innerHTML = '<div style="padding:20px;background:#fee2e2;color:#991b1b;border-radius:8px;">Erro: ' + esc(e.message) + '</div>';
+      }
+    })();
+
+    async function renderMenu() {
+      const menuHTML =
+        '<a href="../index.html" class="admin-sidebar__logo"><span>🏠</span><span>Minha Loja</span><span class="admin-sidebar__logo-badge">ADMIN</span></a>' +
+        '<div class="admin-sidebar__secao">Principal</div>' +
+        '<nav class="admin-sidebar__lista">' +
+          '<a href="./index.html" class="admin-sidebar__item ativo">Dashboard</a>' +
+          '<a href="./pedidos.html" class="admin-sidebar__item">Pedidos</a>' +
+          '<a href="./propostas.html" class="admin-sidebar__item">Propostas</a>' +
+          '<a href="./conversas.html" class="admin-sidebar__item">Conversas</a>' +
+        '</nav>' +
+        '<div class="admin-sidebar__secao">Vendas</div>' +
+        '<nav class="admin-sidebar__lista">' +
+          '<a href="./orcamentos.html" class="admin-sidebar__item">Orçamentos</a>' +
+        '</nav>' +
+        '<div class="admin-sidebar__secao">Financeiro</div>' +
+        '<nav class="admin-sidebar__lista">' +
+          '<a href="./financeiro.html" class="admin-sidebar__item">Visão geral</a>' +
+          '<a href="./contas-receber.html" class="admin-sidebar__item">Contas a receber</a>' +
+          '<a href="./contas-pagar.html" class="admin-sidebar__item">Contas a pagar</a>' +
+          '<a href="./fluxo-caixa.html" class="admin-sidebar__item">Fluxo de caixa</a>' +
+        '</nav>' +
+        '<div class="admin-sidebar__secao">Relatórios</div>' +
+        '<nav class="admin-sidebar__lista">' +
+          '<a href="./relatorios.html" class="admin-sidebar__item">Todos os relatórios</a>' +
+        '</nav>' +
+        '<div class="admin-sidebar__secao">Catálogo</div>' +
+        '<nav class="admin-sidebar__lista">' +
+          '<a href="./produtos.html" class="admin-sidebar__item">Produtos</a>' +
+          '<a href="./categorias.html" class="admin-sidebar__item">Categorias</a>' +
+          '<a href="./produtos-destaque.html" class="admin-sidebar__item">Destaques e promoções</a>' +
+        '</nav>' +
+        '<div class="admin-sidebar__secao">Estoque</div>' +
+        '<nav class="admin-sidebar__lista">' +
+          '<a href="./estoque.html" class="admin-sidebar__item">Visão geral</a>' +
+          '<a href="./estoque-movimentar.html" class="admin-sidebar__item">Movimentar</a>' +
+          '<a href="./estoque-historico.html" class="admin-sidebar__item">Histórico</a>' +
+          '<a href="./estoque-alertas.html" class="admin-sidebar__item">Alertas</a>' +
+        '</nav>' +
+        '<div class="admin-sidebar__secao">Compras</div>' +
+        '<nav class="admin-sidebar__lista">' +
+          '<a href="./fornecedores.html" class="admin-sidebar__item">Fornecedores</a>' +
+          '<a href="./compras.html" class="admin-sidebar__item">Compras</a>' +
+        '</nav>' +
+        '<div class="admin-sidebar__secao">Clientes</div>' +
+        '<nav class="admin-sidebar__lista">' +
+          '<a href="./clientes.html" class="admin-sidebar__item">Clientes</a>' +
+        '</nav>' +
+        '<div class="admin-sidebar__secao">Sistema</div>' +
+        '<nav class="admin-sidebar__lista">' +
+          '<a href="./auditoria.html" class="admin-sidebar__item">Auditoria</a>' +
+        '</nav>' +
+        '<div class="admin-sidebar__secao">Configurações</div>' +
+        '<nav class="admin-sidebar__lista">' +
+          '<a href="./empresa.html" class="admin-sidebar__item">Dados da empresa</a>' +
+          '<a href="./identidade.html" class="admin-sidebar__item">Identidade visual</a>' +
+          '<a href="./configuracoes.html" class="admin-sidebar__item">Outras configurações</a>' +
+        '</nav>' +
+        '<div class="admin-sidebar__rodape">' +
+          '<a href="../index.html">← Ver loja</a>' +
+        '</div>';
+
+      document.getElementById('admin-sidebar').innerHTML = menuHTML;
+
+      const btn = document.getElementById('admin-menu-btn');
+      const sidebar = document.getElementById('admin-sidebar');
+      const overlay = document.getElementById('admin-sidebar-overlay');
+      if (btn) {
+        btn.onclick = function() {
+          sidebar.classList.toggle('aberta');
+          overlay.classList.toggle('ativa');
+        };
+        overlay.onclick = function() {
+          sidebar.classList.remove('aberta');
+          overlay.classList.remove('ativa');
+        };
+      }
+    }
+
+    function calcularDatas() {
+      const hoje = new Date();
+      const inicio = new Date();
+      let fim = new Date();
+
+      if (periodo === 'hoje') {
+        return {
+          inicio: hoje.toISOString().slice(0, 10),
+          fim: hoje.toISOString().slice(0, 10)
+        };
+      }
+
+      if (periodo === '7dias') {
+        inicio.setDate(inicio.getDate() - 6);
+        return {
+          inicio: inicio.toISOString().slice(0, 10),
+          fim: hoje.toISOString().slice(0, 10)
+        };
+      }
+
+      if (periodo === 'mes') {
+        inicio.setDate(1);
+        return {
+          inicio: inicio.toISOString().slice(0, 10),
+          fim: hoje.toISOString().slice(0, 10)
+        };
+      }
+
+      if (periodo === 'mes_anterior') {
+        inicio.setMonth(inicio.getMonth() - 1);
+        inicio.setDate(1);
+        fim = new Date(inicio.getFullYear(), inicio.getMonth() + 1, 0);
+        return {
+          inicio: inicio.toISOString().slice(0, 10),
+          fim: fim.toISOString().slice(0, 10)
+        };
+      }
+
+      // Personalizado
+      return {
+        inicio: document.getElementById('dataInicio').value || null,
+        fim: document.getElementById('dataFim').value || null
+      };
+    }
+
+    async function carregar() {
+      el.innerHTML = '<div class="carregando" style="padding:60px;"><div class="spinner spinner--lg"></div></div>';
+
+      try {
+        const mod = await import('../assets/js/services/reports.service.js');
+        const datas = calcularDatas();
+
+        const [kpis, evolucao, vendasCompras, entradasSaidas, topProdutos] = await Promise.all([
+          mod.kpisDashboard(datas),
+          mod.evolucaoVendas(datas),
+          mod.vendasXCompras({ meses: 6 }),
+          mod.entradasXSaidas({ meses: 6 }),
+          mod.produtosMaisVendidos({ limite: 8 })
         ]);
 
         el.innerHTML =
-          '<div class="cards">' +
-            '<div class="card"><div class="card__rotulo">Produtos</div><div class="card__valor">' + resultados[0] + '</div></div>' +
-            '<div class="card"><div class="card__rotulo">Pedidos</div><div class="card__valor">' + resultados[1] + '</div></div>' +
-            '<div class="card"><div class="card__rotulo">Propostas</div><div class="card__valor">' + resultados[2] + '</div></div>' +
-            '<div class="card"><div class="card__rotulo">Clientes</div><div class="card__valor">' + resultados[3] + '</div></div>' +
+          // KPIs principais
+          '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:24px;">' +
+            kpiCard('💰 Faturamento', 'R$ ' + kpis.faturamento.toFixed(2), '#0ea5e9') +
+            kpiCard('🛒 Vendas', kpis.vendas, '#0ea5e9') +
+            kpiCard('📊 Ticket médio', 'R$ ' + kpis.ticketMedio.toFixed(2), '#0ea5e9') +
+            kpiCard('📋 Orçamentos pendentes', kpis.orcamentosPendentes, '#f59e0b') +
           '</div>' +
-          '<div class="secao"><div class="secao__titulo">Últimos pedidos</div><div class="secao__vazio">Nenhum pedido ainda.</div></div>' +
-          '<div class="secao"><div class="secao__titulo">Últimas propostas</div><div class="secao__vazio">Nenhuma proposta ainda.</div></div>' +
-          '<div class="secao"><div class="secao__titulo">Últimas conversas</div><div class="secao__vazio">Nenhuma conversa ainda.</div></div>' +
-          '<div style="margin-top:24px;padding:12px;background:#dcfce7;color:#166534;border-radius:8px;text-align:center;font-size:13px;">✅ Logado como <strong>' + session.user.email + '</strong></div>';
+
+          // KPIs secundários
+          '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:24px;">' +
+            kpiCard('🛍️ Compras', 'R$ ' + kpis.totalCompras.toFixed(2), '#f97316') +
+            kpiCard('📥 A receber', 'R$ ' + kpis.contasReceber.toFixed(2), '#16a34a') +
+            kpiCard('📤 A pagar', 'R$ ' + kpis.contasPagar.toFixed(2), '#dc2626') +
+            kpiCard('📦 Valor em estoque', 'R$ ' + kpis.valorEstoque.toFixed(2), '#8b5cf6') +
+          '</div>' +
+
+          // Lucro
+          '<div style="background:' + (kpis.lucroBruto >= 0 ? '#f0fdf4' : '#fef2f2') + ';border:1px solid ' + (kpis.lucroBruto >= 0 ? '#86efac' : '#fca5a5') + ';border-radius:12px;padding:20px;margin-bottom:24px;">' +
+            '<div style="font-size:12px;text-transform:uppercase;color:#64748b;font-weight:600;margin-bottom:8px;">Lucro bruto estimado</div>' +
+            '<div style="font-size:32px;font-weight:700;color:' + (kpis.lucroBruto >= 0 ? '#16a34a' : '#dc2626') + ';">R$ ' + kpis.lucroBruto.toFixed(2) + '</div>' +
+          '</div>' +
+
+          // Gráficos
+          '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(400px,1fr));gap:16px;margin-bottom:24px;">' +
+            '<div class="card"><h3 style="font-size:16px;margin-bottom:16px;">📈 Evolução das vendas</h3><canvas id="chart-vendas"></canvas></div>' +
+            '<div class="card"><h3 style="font-size:16px;margin-bottom:16px;">📊 Vendas x Compras</h3><canvas id="chart-vc"></canvas></div>' +
+            '<div class="card"><h3 style="font-size:16px;margin-bottom:16px;">💸 Entradas x Saídas</h3><canvas id="chart-es"></canvas></div>' +
+            '<div class="card"><h3 style="font-size:16px;margin-bottom:16px;">🏆 Produtos mais vendidos</h3><canvas id="chart-top"></canvas></div>' +
+          '</div>' +
+
+          // Produtos mais vendidos lista
+          (topProdutos.length
+            ? '<div class="card" style="padding:20px;">' +
+                '<h3 style="font-size:16px;margin-bottom:16px;">🏆 Top produtos</h3>' +
+                topProdutos.map(function(p) {
+                  return '<div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #e2e8f0;">' +
+                    '<div><strong>' + esc(p.nome) + '</strong></div>' +
+                    '<div style="color:#64748b;">' + p.quantidade + ' un · R$ ' + p.total.toFixed(2) + '</div>' +
+                  '</div>';
+                }).join('') +
+              '</div>'
+            : '') +
+
+          '<div style="margin-top:24px;padding:12px;background:#dcfce7;color:#166534;border-radius:8px;text-align:center;font-size:13px;">✅ Logado</div>';
+
+        // Renderiza gráficos
+        setTimeout(function() {
+          renderizarGraficos(evolucao, vendasCompras, entradasSaidas, topProdutos);
+        }, 100);
+
       } catch (e) {
-        erro(e.message);
+        console.error(e);
+        el.innerHTML = '<div style="padding:20px;background:#fee2e2;color:#991b1b;border-radius:8px;">Erro: ' + esc(e.message) + '</div>';
       }
-    })();
+    }
+
+    function kpiCard(rotulo, valor, cor) {
+      return '<div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:20px;">' +
+        '<div style="font-size:12px;text-transform:uppercase;color:#64748b;font-weight:600;margin-bottom:8px;">' + rotulo + '</div>' +
+        '<div style="font-size:24px;font-weight:700;color:' + cor + ';line-height:1.1;">' + valor + '</div>' +
+      '</div>';
+    }
+
+    function renderizarGraficos(evolucao, vendasCompras, entradasSaidas, topProdutos) {
+      if (typeof Chart === 'undefined') return;
+
+      const azul = '#0ea5e9';
+      const laranja = '#f97316';
+      const verde = '#16a34a';
+      const vermelho = '#dc2626';
+      const roxo = '#8b5cf6';
+
+      // 1) Evolução das vendas
+      if (chartVendas) chartVendas.destroy();
+      chartVendas = new Chart(document.getElementById('chart-vendas'), {
+        type: 'line',
+        data: {
+          labels: evolucao.map(function(e) { return new Date(e.dia + 'T12:00:00').toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }); }),
+          datasets: [{
+            label: 'Vendas (R$)',
+            data: evolucao.map(function(e) { return e.valor; }),
+            borderColor: azul,
+            backgroundColor: 'rgba(14,165,233,0.1)',
+            tension: 0.3,
+            fill: true,
+            pointBackgroundColor: azul,
+            pointRadius: 4
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false }
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              ticks: {
+                callback: function(v) { return 'R$ ' + v.toFixed(0); }
+              }
+            }
+          }
+        }
+      });
+
+      // 2) Vendas x Compras
+      if (chartVendasCompras) chartVendasCompras.destroy();
+      chartVendasCompras = new Chart(document.getElementById('chart-vc'), {
+        type: 'bar',
+        data: {
+          labels: vendasCompras.map(function(v) { return v.mes; }),
+          datasets: [
+            {
+              label: 'Vendas',
+              data: vendasCompras.map(function(v) { return v.vendas; }),
+              backgroundColor: azul,
+              borderRadius: 6
+            },
+            {
+              label: 'Compras',
+              data: vendasCompras.map(function(v) { return v.compras; }),
+              backgroundColor: laranja,
+              borderRadius: 6
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { position: 'bottom' }
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              ticks: {
+                callback: function(v) { return 'R$ ' + v.toFixed(0); }
+              }
+            }
+          }
+        }
+      });
+
+      // 3) Entradas x Saídas
+      if (chartEntradasSaidas) chartEntradasSaidas.destroy();
+      chartEntradasSaidas = new Chart(document.getElementById('chart-es'), {
+        type: 'line',
+        data: {
+          labels: entradasSaidas.map(function(v) { return v.mes; }),
+          datasets: [
+            {
+              label: 'Entradas',
+              data: entradasSaidas.map(function(v) { return v.entradas; }),
+              borderColor: verde,
+              backgroundColor: 'rgba(22,163,74,0.1)',
+              tension: 0.3,
+              fill: true
+            },
+            {
+              label: 'Saídas',
+              data: entradasSaidas.map(function(v) { return v.saidas; }),
+              borderColor: vermelho,
+              backgroundColor: 'rgba(220,38,38,0.1)',
+              tension: 0.3,
+              fill: true
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { position: 'bottom' }
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              ticks: {
+                callback: function(v) { return 'R$ ' + v.toFixed(0); }
+              }
+            }
+          }
+        }
+      });
+
+      // 4) Top produtos
+      if (chartTopProdutos) chartTopProdutos.destroy();
+      chartTopProdutos = new Chart(document.getElementById('chart-top'), {
+        type: 'doughnut',
+        data: {
+          labels: topProdutos.map(function(p) { return p.nome.substring(0, 20); }),
+          datasets: [{
+            data: topProdutos.map(function(p) { return p.quantidade; }),
+            backgroundColor: [azul, laranja, verde, roxo, vermelho, '#eab308', '#06b6d4', '#ec4899']
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { position: 'bottom', labels: { font: { size: 11 } } }
+          }
+        }
+      });
+    }
   </script>
 </body>
 </html>
