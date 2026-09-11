@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Mensagens de contato — Admin</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: system-ui, -apple-system, sans-serif; background: #f8fafc; color: #0f172a; }
+    .layout { display: grid; grid-template-columns: 240px 1fr; min-height: 100vh; }
+    .sidebar { background: #0f172a; color: #cbd5e1; padding: 16px 0; height: 100vh; overflow-y: auto; position: sticky; top: 0; }
+    .sidebar__logo { display: flex; align-items: center; gap: 8px; padding: 0 16px 20px; border-bottom: 1px solid rgba(255,255,255,.1); margin-bottom: 16px; color: #fff; font-weight: 700; font-size: 15px; text-decoration: none; }
+    .sidebar__badge { background: #0ea5e9; color: #fff; padding: 2px 8px; border-radius: 6px; font-size: 10px; font-weight: 700; }
+    .sidebar__secao { padding: 16px 16px 8px; font-size: 11px; text-transform: uppercase; letter-spacing: .5px; color: #64748b; font-weight: 600; }
+    .sidebar__lista { display: flex; flex-direction: column; gap: 2px; padding: 0 8px; }
+    .sidebar__item { padding: 10px 12px; border-radius: 8px; color: #cbd5e1; text-decoration: none; font-size: 14px; display: block; }
+    .sidebar__item:hover { background: rgba(255,255,255,.06); color: #fff; }
+    .sidebar__item.ativo { background: #0ea5e9; color: #fff; }
+    .main { display: flex; flex-direction: column; }
+    .topbar { background: #fff; border-bottom: 1px solid #e2e8f0; padding: 12px 24px; display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; position: sticky; top: 0; z-index: 50; }
+    .topbar h1 { font-size: 18px; }
+    .topbar select { padding: 8px 12px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 14px; }
+    .btn { padding: 8px 16px; border-radius: 8px; border: 1px solid #0ea5e9; background: #0ea5e9; color: #fff; font-weight: 600; font-size: 14px; cursor: pointer; text-decoration: none; display: inline-block; }
+    .btn:hover { filter: brightness(.94); }
+    .btn--fantasma { background: transparent; color: #0ea5e9; }
+    .btn--perigo { background: transparent; color: #dc2626; border-color: transparent; }
+    .btn--loja { padding: 8px 14px; border: 1px solid #0ea5e9; border-radius: 8px; color: #0ea5e9; text-decoration: none; font-size: 13px; font-weight: 600; }
+    .btn--loja:hover { background: #0ea5e9; color: #fff; }
+    .conteudo { padding: 24px; }
+    .msg-card { background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; margin-bottom: 12px; transition: all .15s; }
+    .msg-card.nao-lida { border-left: 4px solid #0ea5e9; background: #f0f9ff; }
+    .msg-card__cabecalho { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 8px; flex-wrap: wrap; }
+    .msg-card__nome { font-size: 15px; font-weight: 600; color: #0f172a; }
+    .msg-card__contatos { font-size: 12px; color: #64748b; margin-top: 4px; }
+    .msg-card__data { font-size: 12px; color: #94a3b8; white-space: nowrap; }
+    .msg-card__assunto { display: inline-block; font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 9999px; background: #f1f5f9; color: #475569; margin-bottom: 12px; }
+    .msg-card__corpo { font-size: 14px; line-height: 1.6; color: #0f172a; white-space: pre-line; margin-bottom: 16px; padding: 12px; background: #fff; border-radius: 8px; border: 1px solid #e2e8f0; }
+    .msg-card__acoes { display: flex; gap: 8px; flex-wrap: wrap; }
+    .vazio { background: #fff; padding: 60px 24px; text-align: center; border-radius: 12px; border: 1px solid #e2e8f0; color: #64748b; }
+    .erro { padding: 20px; background: #fee2e2; color: #991b1b; border-radius: 8px; font-family: monospace; font-size: 13px; }
+    @media (max-width: 900px) { .layout { grid-template-columns: 1fr; } .sidebar { position: static; height: auto; } }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <a href="../index.html" class="sidebar__logo"><span>🏠</span><span>Minha Loja</span><span class="sidebar__badge">ADMIN</span></a>
+      <div class="sidebar__secao">Principal</div>
+      <nav class="sidebar__lista">
+        <a href="./index.html" class="sidebar__item">Dashboard</a>
+        <a href="./pedidos.html" class="sidebar__item">Pedidos</a>
+        <a href="./propostas.html" class="sidebar__item">Propostas</a>
+        <a href="./conversas.html" class="sidebar__item">Conversas</a>
+        <a href="./mensagens.html" class="sidebar__item ativo">Mensagens</a>
+      </nav>
+      <div class="sidebar__secao">Catálogo</div>
+      <nav class="sidebar__lista">
+        <a href="./produtos.html" class="sidebar__item">Produtos</a>
+        <a href="./categorias.html" class="sidebar__item">Categorias</a>
+      </nav>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <h1>Mensagens de contato</h1>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <select id="filtro-status">
+            <option value="">Todas</option>
+            <option value="nao-lidas">Não lidas</option>
+            <option value="lidas">Lidas</option>
+          </select>
+          <a href="../index.html" class="btn--loja">← Ver loja</a>
+        </div>
+      </header>
+      <div class="conteudo" id="conteudo"><div class="vazio">Carregando...</div></div>
+    </main>
+  </div>
+
+  <script type="module">
+    const el = document.getElementById('conteudo');
+    const esc = s => s == null ? '' : String(s).replace(/[&<>"']/g, function(m) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]; });
+
+    let supabase;
+    let mensagens = [];
+
+    (async () => {
+      try {
+        const mod = await import('../assets/js/supabase.js');
+        supabase = mod.supabase;
+
+        const r = await supabase.auth.getSession();
+        if (!r.data || !r.data.session) { location.href = '../login.html'; return; }
+
+        const p = await supabase.from('profiles').select('role').eq('id', r.data.session.user.id).maybeSingle();
+        if (!p.data || p.data.role !== 'admin') {
+          el.innerHTML = '<div class="erro">Acesso restrito a administradores.</div>';
+          return;
+        }
+
+        document.getElementById('filtro-status').onchange = renderizar;
+        await carregar();
+      } catch (e) {
+        el.innerHTML = '<div class="erro">Erro: ' + esc(e.message) + '</div>';
+      }
+    })();
+
+    async function carregar() {
+      el.innerHTML = '<div class="vazio">Carregando...</div>';
+      try {
+        const r = await supabase
+          .from('contact_messages')
+          .select('*')
+          .order('created_at', { ascending: false });
+
+        if (r.error) throw r.error;
+        mensagens = r.data || [];
+        renderizar();
+      } catch (e) {
+        el.innerHTML = '<div class="erro">Erro: ' + esc(e.message) + '</div>';
+      }
+    }
+
+    function renderizar() {
+      const filtro = document.getElementById('filtro-status').value;
+      let lista = mensagens;
+
+      if (filtro === 'nao-lidas') lista = mensagens.filter(function(m) { return !m.lida; });
+      if (filtro === 'lidas') lista = mensagens.filter(function(m) { return m.lida; });
+
+      if (!lista.length) {
+        el.innerHTML = '<div class="vazio"><div style="font-size:18px;font-weight:600;color:#0f172a;margin-bottom:8px;">Nenhuma mensagem</div><p>Nenhuma mensagem de contato recebida ainda.</p></div>';
+        return;
+      }
+
+      el.innerHTML = lista.map(function(m) {
+        const whatsLink = m.whatsapp || m.telefone
+          ? 'https://wa.me/55' + (m.whatsapp || m.telefone).replace(/\D/g, '')
+          : null;
+
+        return '<div class="msg-card ' + (m.lida ? '' : 'nao-lida') + '">' +
+          '<div class="msg-card__cabecalho">' +
+            '<div>' +
+              '<div class="msg-card__nome">' + esc(m.nome) + '</div>' +
+              '<div class="msg-card__contatos">' +
+                '📧 <a href="mailto:' + esc(m.email) + '">' + esc(m.email) + '</a>' +
+                (m.telefone ? ' &middot; 📞 ' + esc(m.telefone) : '') +
+                (m.whatsapp ? ' &middot; 💬 ' + esc(m.whatsapp) : '') +
+              '</div>' +
+            '</div>' +
+            '<div class="msg-card__data">' + new Date(m.created_at).toLocaleString('pt-BR') + '</div>' +
+          '</div>' +
+          (m.assunto ? '<span class="msg-card__assunto">' + esc(m.assunto) + '</span>' : '') +
+          '<div class="msg-card__corpo">' + esc(m.mensagem) + '</div>' +
+          '<div class="msg-card__acoes">' +
+            (!m.lida
+              ? '<button class="btn" style="padding:6px 12px;font-size:13px;" data-marcar="' + m.id + '">Marcar como lida</button>'
+              : '<button class="btn btn--fantasma" style="padding:6px 12px;font-size:13px;" data-nao-lida="' + m.id + '">Marcar como não lida</button>') +
+            '<a href="mailto:' + esc(m.email) + '?subject=Re: ' + encodeURIComponent(m.assunto || 'Sua mensagem') + '" class="btn btn--fantasma" style="padding:6px 12px;font-size:13px;">📧 Responder por e-mail</a>' +
+            (whatsLink ? '<a href="' + whatsLink + '" target="_blank" rel="noopener" class="btn btn--fantasma" style="padding:6px 12px;font-size:13px;">💬 WhatsApp</a>' : '') +
+            '<button class="btn btn--perigo" style="padding:6px 12px;font-size:13px;" data-excluir="' + m.id + '">Excluir</button>' +
+          '</div>' +
+        '</div>';
+      }).join('');
+
+      el.querySelectorAll('[data-marcar]').forEach(function(b) {
+        b.onclick = async function() {
+          await supabase.from('contact_messages').update({ lida: true }).eq('id', b.dataset.marcar);
+          carregar();
+        };
+      });
+
+      el.querySelectorAll('[data-nao-lida]').forEach(function(b) {
+        b.onclick = async function() {
+          await supabase.from('contact_messages').update({ lida: false }).eq('id', b.dataset.naoLida);
+          carregar();
+        };
+      });
+
+      el.querySelectorAll('[data-excluir]').forEach(function(b) {
+        b.onclick = async function() {
+          if (!confirm('Excluir esta mensagem?')) return;
+          await supabase.from('contact_messages').delete().eq('id', b.dataset.excluir);
+          carregar();
+        };
+      });
+    }
+  </script>
+</body>
+</html>
