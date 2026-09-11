@@ -9,6 +9,9 @@
   <link rel="stylesheet" href="./assets/css/layout.css" />
   <link rel="stylesheet" href="./assets/css/components.css" />
   <link rel="stylesheet" href="./assets/css/store.css" />
+  <style>
+    #galeria-principal img { cursor: zoom-in; }
+  </style>
 </head>
 <body>
   <div id="header"></div>
@@ -28,6 +31,8 @@
         await renderFooter();
       } catch (e) {}
     })();
+
+    let imagensUrls = [];
 
     (async () => {
       const params = new URLSearchParams(location.search);
@@ -53,6 +58,12 @@
       const cond = mod.rotuloCondicao(p.condicao);
       const imagens = (p.imagens && p.imagens.length) ? p.imagens : [{ url: null }];
 
+      // Prepara array de URLs para a galeria
+      imagensUrls = imagens.map(function(img) { return img.url; }).filter(function(u) { return u; });
+      if (p.imagemPrincipal && imagensUrls.indexOf(p.imagemPrincipal) === -1) {
+        imagensUrls.unshift(p.imagemPrincipal);
+      }
+
       const img = p.imagemPrincipal
         ? '<img src="' + p.imagemPrincipal + '" alt="" />'
         : '<div class="produto-card__sem-imagem"></div>';
@@ -63,7 +74,7 @@
 
       const miniaturas = imagens.length > 1
         ? '<div class="galeria__miniaturas" id="galeria-miniaturas">' + imagens.map(function(img, i) {
-            return '<button class="galeria__miniatura ' + (i === 0 ? 'ativa' : '') + '" data-img="' + (img.url || '') + '">' + (img.url ? '<img src="' + img.url + '" alt="" loading="lazy" />' : '') + '</button>';
+            return '<button class="galeria__miniatura ' + (i === 0 ? 'ativa' : '') + '" data-img="' + (img.url || '') + '" data-idx="' + i + '">' + (img.url ? '<img src="' + img.url + '" alt="" loading="lazy" />' : '') + '</button>';
           }).join('') + '</div>'
         : '';
 
@@ -100,16 +111,38 @@
           '</div>' +
         '</div>';
 
+      // =====================================================
+      // GALERIA — clique na principal ou na miniatura abre fullscreen
+      // =====================================================
+      const principal = document.getElementById('galeria-principal');
+      if (principal) {
+        principal.onclick = function() {
+          if (!imagensUrls.length) return;
+          abrirGaleriaFull(0);
+        };
+      }
+
       document.querySelectorAll('.galeria__miniatura').forEach(function(btn) {
         btn.onclick = function() {
           const url = btn.dataset.img;
+          const idx = Number(btn.dataset.idx) || 0;
           if (!url) return;
+
+          // Atualiza a principal
           document.getElementById('galeria-principal').innerHTML = '<img src="' + url + '" alt="" />';
           document.querySelectorAll('.galeria__miniatura').forEach(function(b) { b.classList.remove('ativa'); });
           btn.classList.add('ativa');
+
+          // Re-liga o clique da principal para abrir no índice correto
+          document.getElementById('galeria-principal').onclick = function() {
+            abrirGaleriaFull(idx);
+          };
         };
       });
 
+      // =====================================================
+      // BOTÕES DE AÇÃO
+      // =====================================================
       document.getElementById('btn-comprar').onclick = function() {
         const c = JSON.parse(localStorage.getItem('carrinho') || '[]');
         const idx = c.findIndex(function(i) { return i.id === p.id; });
@@ -152,6 +185,18 @@
           if (!link) { mostrarAviso('WhatsApp não configurado', 'O administrador ainda não cadastrou o WhatsApp da loja.', 'Fechar', '#'); }
         } catch (e) { mostrarAviso('Erro', 'Não foi possível abrir o WhatsApp.', 'Fechar', '#'); }
       };
+    }
+
+    // =====================================================
+    // GALERIA FULLSCREEN — usa o componente galeria.js
+    // =====================================================
+    async function abrirGaleriaFull(indice) {
+      try {
+        const { abrirGaleria } = await import('./assets/js/components/galeria.js');
+        abrirGaleria(imagensUrls, indice);
+      } catch (e) {
+        console.error('Erro ao abrir galeria:', e);
+      }
     }
 
     function abrirModalProposta(p) {
