@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Orçamentos — Admin</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: system-ui, -apple-system, sans-serif; background: #f8fafc; color: #0f172a; }
+    .layout { display: grid; grid-template-columns: 240px 1fr; min-height: 100vh; }
+    .sidebar { background: #0f172a; color: #cbd5e1; padding: 16px 0; }
+    .sidebar__logo { display: flex; align-items: center; gap: 8px; padding: 0 16px 20px; border-bottom: 1px solid rgba(255,255,255,.1); margin-bottom: 16px; color: #fff; font-weight: 700; font-size: 15px; }
+    .sidebar__badge { background: #0ea5e9; color: #fff; padding: 2px 8px; border-radius: 6px; font-size: 10px; font-weight: 700; }
+    .sidebar__secao { padding: 16px 16px 8px; font-size: 11px; text-transform: uppercase; letter-spacing: .5px; color: #64748b; font-weight: 600; }
+    .sidebar__lista { display: flex; flex-direction: column; gap: 2px; padding: 0 8px; }
+    .sidebar__item { padding: 10px 12px; border-radius: 8px; color: #cbd5e1; text-decoration: none; font-size: 14px; display: block; }
+    .sidebar__item:hover { background: rgba(255,255,255,.06); color: #fff; }
+    .sidebar__item.ativo { background: #0ea5e9; color: #fff; }
+    .main { display: flex; flex-direction: column; }
+    .topbar { background: #fff; border-bottom: 1px solid #e2e8f0; padding: 12px 24px; display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+    .topbar h1 { font-size: 18px; }
+    .topbar__acoes { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+    .topbar select { padding: 8px 12px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 14px; }
+    .btn { padding: 8px 16px; border-radius: 8px; border: 1px solid #0ea5e9; background: #0ea5e9; color: #fff; font-weight: 600; font-size: 14px; cursor: pointer; text-decoration: none; display: inline-block; }
+    .btn:hover { filter: brightness(.94); }
+    .btn--loja { padding: 8px 14px; border: 1px solid #0ea5e9; border-radius: 8px; color: #0ea5e9; text-decoration: none; font-size: 13px; font-weight: 600; }
+    .btn--loja:hover { background: #0ea5e9; color: #fff; }
+    .conteudo { padding: 24px; }
+    .tabela { width: 100%; background: #fff; border-collapse: collapse; border-radius: 12px; overflow: hidden; border: 1px solid #e2e8f0; }
+    .tabela th { text-align: left; padding: 12px 16px; background: #f8fafc; font-size: 12px; text-transform: uppercase; color: #64748b; font-weight: 600; }
+    .tabela td { padding: 12px 16px; border-top: 1px solid #e2e8f0; font-size: 14px; }
+    .tabela tr:hover td { background: #f8fafc; }
+    .badge { padding: 3px 10px; border-radius: 9999px; font-size: 11px; font-weight: 600; display: inline-block; }
+    .badge--neutro { background: #f1f5f9; color: #475569; }
+    .badge--info { background: #dbeafe; color: #1e40af; }
+    .badge--alerta { background: #fef3c7; color: #92400e; }
+    .badge--sucesso { background: #dcfce7; color: #166534; }
+    .badge--erro { background: #fee2e2; color: #991b1b; }
+    .vazio { background: #fff; padding: 60px 24px; text-align: center; border-radius: 12px; border: 1px solid #e2e8f0; color: #64748b; }
+    .erro { padding: 20px; background: #fee2e2; color: #991b1b; border-radius: 8px; margin: 20px; font-family: monospace; }
+    @media (max-width: 900px) { .layout { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="sidebar__logo"><span>🏠</span><span>Minha Loja</span><span class="sidebar__badge">ADMIN</span></div>
+      <div class="sidebar__secao">Principal</div>
+      <nav class="sidebar__lista">
+        <a href="./index.html" class="sidebar__item">Dashboard</a>
+        <a href="./pedidos.html" class="sidebar__item">Pedidos</a>
+        <a href="./propostas.html" class="sidebar__item">Propostas</a>
+        <a href="./conversas.html" class="sidebar__item">Conversas</a>
+      </nav>
+      <div class="sidebar__secao">Vendas</div>
+      <nav class="sidebar__lista">
+        <a href="./orcamentos.html" class="sidebar__item ativo">Orçamentos</a>
+      </nav>
+      <div class="sidebar__secao">Catálogo</div>
+      <nav class="sidebar__lista">
+        <a href="./produtos.html" class="sidebar__item">Produtos</a>
+        <a href="./categorias.html" class="sidebar__item">Categorias</a>
+      </nav>
+      <div class="sidebar__secao">Estoque</div>
+      <nav class="sidebar__lista">
+        <a href="./estoque.html" class="sidebar__item">Visão geral</a>
+        <a href="./estoque-movimentar.html" class="sidebar__item">Movimentar</a>
+        <a href="./estoque-historico.html" class="sidebar__item">Histórico</a>
+        <a href="./estoque-alertas.html" class="sidebar__item">Alertas</a>
+      </nav>
+      <div class="sidebar__secao">Compras</div>
+      <nav class="sidebar__lista">
+        <a href="./fornecedores.html" class="sidebar__item">Fornecedores</a>
+        <a href="./compras.html" class="sidebar__item">Compras</a>
+      </nav>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <h1>Orçamentos</h1>
+        <div class="topbar__acoes">
+          <select id="filtro-status">
+            <option value="">Todos</option>
+            <option value="rascunho">Rascunho</option>
+            <option value="enviado">Enviado</option>
+            <option value="aguardando">Aguardando</option>
+            <option value="aprovado">Aprovado</option>
+            <option value="rejeitado">Rejeitado</option>
+            <option value="expirado">Expirado</option>
+            <option value="cancelado">Cancelado</option>
+            <option value="convertido">Convertido em venda</option>
+          </select>
+          <a href="./orcamento-editar.html" class="btn">+ Novo orçamento</a>
+          <a href="../index.html" class="btn--loja">← Ver loja</a>
+        </div>
+      </header>
+      <div class="conteudo" id="conteudo"><div class="vazio">Carregando...</div></div>
+    </main>
+  </div>
+
+  <script type="module">
+    const el = document.getElementById('conteudo');
+    const esc = s => s == null ? '' : String(s).replace(/[&<>"']/g, function(m) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]; });
+
+    let supabase;
+
+    (async () => {
+      try {
+        const mod = await import('../assets/js/supabase.js');
+        supabase = mod.supabase;
+
+        const r = await supabase.auth.getSession();
+        if (!r.data || !r.data.session) { location.href = '../login.html'; return; }
+
+        await carregar();
+        document.getElementById('filtro-status').onchange = carregar;
+      } catch (e) {
+        el.innerHTML = '<div class="erro">Erro: ' + esc(e.message) + '</div>';
+      }
+    })();
+
+    async function carregar() {
+      el.innerHTML = '<div class="vazio">Carregando...</div>';
+      try {
+        const status = document.getElementById('filtro-status').value;
+        const mod = await import('../assets/js/services/quotes.service.js');
+        const lista = await mod.listarOrcamentos({ status: status || null });
+
+        if (!lista.length) {
+          el.innerHTML = '<div class="vazio"><div style="font-size:18px;font-weight:600;color:#0f172a;margin-bottom:8px;">Nenhum orçamento</div><p style="margin-bottom:20px;">Clique em "+ Novo orçamento" para criar.</p><a href="./orcamento-editar.html" class="btn">Novo orçamento</a></div>';
+          return;
+        }
+
+        el.innerHTML =
+          '<table class="tabela">' +
+            '<thead><tr><th>Número</th><th>Cliente</th><th>Validade</th><th>Total</th><th>Status</th><th></th></tr></thead>' +
+            '<tbody>' +
+              lista.map(function(o) {
+                const st = mod.rotuloStatus(o.status);
+                return '<tr>' +
+                  '<td><strong>' + esc(o.numero) + '</strong></td>' +
+                  '<td>' + esc(o.cliente_nome) + '</td>' +
+                  '<td>' + (o.validade ? new Date(o.validade).toLocaleDateString('pt-BR') : '—') + '</td>' +
+                  '<td><strong>R$ ' + Number(o.total).toFixed(2) + '</strong></td>' +
+                  '<td><span class="badge badge--' + st.tipo + '">' + st.texto + '</span></td>' +
+                  '<td style="text-align:right;"><a href="./orcamento.html?id=' + o.id + '" class="btn" style="padding:6px 10px;font-size:13px;">Ver</a></td>' +
+                '</tr>';
+              }).join('') +
+            '</tbody>' +
+          '</table>';
+      } catch (e) {
+        el.innerHTML = '<div class="erro">Erro: ' + esc(e.message) + '</div>';
+      }
+    }
+  </script>
+</body>
+</html>
