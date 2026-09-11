@@ -11,6 +11,24 @@
   <link rel="stylesheet" href="./assets/css/store.css" />
   <style>
     #galeria-principal img { cursor: zoom-in; }
+    .btn-fav {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 14px 20px;
+      border-radius: 8px;
+      background: #fff;
+      border: 1px solid var(--cor-borda);
+      color: var(--cor-texto);
+      font-weight: 600;
+      font-size: 15px;
+      cursor: pointer;
+      transition: all .15s;
+    }
+    .btn-fav:hover { border-color: var(--cor-erro); color: var(--cor-erro); }
+    .btn-fav.ativo { background: #fee2e2; border-color: var(--cor-erro); color: var(--cor-erro); }
+    .btn-fav__coracao { font-size: 20px; line-height: 1; }
   </style>
 </head>
 <body>
@@ -52,17 +70,23 @@
       }
     })();
 
-    function renderProduto(p, mod) {
+    async function renderProduto(p, mod) {
       document.title = p.nome + ' — Minha Loja';
       const disp = mod.rotuloDisponibilidade(p);
       const cond = mod.rotuloCondicao(p.condicao);
       const imagens = (p.imagens && p.imagens.length) ? p.imagens : [{ url: null }];
 
-      // Prepara array de URLs para a galeria
       imagensUrls = imagens.map(function(img) { return img.url; }).filter(function(u) { return u; });
       if (p.imagemPrincipal && imagensUrls.indexOf(p.imagemPrincipal) === -1) {
         imagensUrls.unshift(p.imagemPrincipal);
       }
+
+      // Verifica se é favorito
+      let favoritoAtivo = false;
+      try {
+        const { ehFavorito } = await import('./assets/js/components/cart-widget.js');
+        favoritoAtivo = await ehFavorito(p.id);
+      } catch (e) {}
 
       const img = p.imagemPrincipal
         ? '<img src="' + p.imagemPrincipal + '" alt="" />'
@@ -98,13 +122,19 @@
               '<div class="produto__parcelas">Em até <strong>3x</strong> de R$ ' + (p.precoFinal / 3).toFixed(2) + ' sem juros</div>' +
             '</div>' +
             '<div class="produto__acoes">' +
-              '<button class="btn btn--principal btn--lg btn--bloco" id="btn-comprar">🛒 Comprar agora</button>' +
+              '<div class="produto__acoes-linha">' +
+                '<button class="btn btn--principal btn--lg" id="btn-comprar" style="flex:2;">🛒 Comprar agora</button>' +
+                '<button class="btn btn--contorno btn--lg" id="btn-carrinho" style="flex:1;" title="Adicionar ao carrinho">+ Carrinho</button>' +
+              '</div>' +
               '<div class="produto__acoes-linha">' +
                 '<button class="btn btn--contorno" id="btn-proposta">Fazer proposta</button>' +
                 '<button class="btn btn--contorno" id="btn-chat">Conversar</button>' +
               '</div>' +
               '<div class="produto__acoes-linha">' +
                 '<button class="btn-whatsapp" id="btn-whatsapp">Falar no WhatsApp</button>' +
+                '<button class="btn-fav ' + (favoritoAtivo ? 'ativo' : '') + '" id="btn-favorito" title="Favoritar">' +
+                  '<span class="btn-fav__coracao" id="btn-fav-icone">' + (favoritoAtivo ? '❤' : '🤍') + '</span>' +
+                '</button>' +
               '</div>' +
             '</div>' +
             (p.descricao ? '<div><h3 class="mb-2">Descrição</h3><p class="produto__descricao">' + esc(p.descricao) + '</p></div>' : '') +
@@ -112,7 +142,7 @@
         '</div>';
 
       // =====================================================
-      // GALERIA — clique na principal ou na miniatura abre fullscreen
+      // GALERIA
       // =====================================================
       const principal = document.getElementById('galeria-principal');
       if (principal) {
@@ -127,13 +157,9 @@
           const url = btn.dataset.img;
           const idx = Number(btn.dataset.idx) || 0;
           if (!url) return;
-
-          // Atualiza a principal
           document.getElementById('galeria-principal').innerHTML = '<img src="' + url + '" alt="" />';
           document.querySelectorAll('.galeria__miniatura').forEach(function(b) { b.classList.remove('ativa'); });
           btn.classList.add('ativa');
-
-          // Re-liga o clique da principal para abrir no índice correto
           document.getElementById('galeria-principal').onclick = function() {
             abrirGaleriaFull(idx);
           };
@@ -141,8 +167,10 @@
       });
 
       // =====================================================
-      // BOTÕES DE AÇÃO
+      // BOTÕES
       // =====================================================
+
+      // COMPRAR AGORA (adiciona + redireciona)
       document.getElementById('btn-comprar').onclick = function() {
         const c = JSON.parse(localStorage.getItem('carrinho') || '[]');
         const idx = c.findIndex(function(i) { return i.id === p.id; });
@@ -152,6 +180,46 @@
         location.href = './carrinho.html';
       };
 
+      // ADICIONAR AO CARRINHO (sem redirect)
+      document.getElementById('btn-carrinho').onclick = async function() {
+        try {
+          const { adicionarAoCarrinho } = await import('./assets/js/components/cart-widget.js');
+          adicionarAoCarrinho(p, 1);
+        } catch (e) {
+          alert('Erro ao adicionar: ' + e.message);
+        }
+      };
+
+      // FAVORITAR
+      document.getElementById('btn-favorito').onclick = async function() {
+        try {
+          const { supabase } = await import('./assets/js/supabase.js');
+          const r = await supabase.auth.getUser();
+          if (!r.data || !r.data.user) {
+            mostrarAviso('Faça login', 'Você precisa estar logado para favoritar.', 'Fazer login', './login.html');
+            return;
+          }
+
+          const { alternarFavorito, toast } = await import('./assets/js/components/cart-widget.js');
+          const marcado = await alternarFavorito(p.id);
+
+          const btn = document.getElementById('btn-favorito');
+          const icone = document.getElementById('btn-fav-icone');
+          if (marcado) {
+            btn.classList.add('ativo');
+            icone.textContent = '❤';
+            toast('Adicionado aos favoritos', p.nome, 'sucesso');
+          } else {
+            btn.classList.remove('ativo');
+            icone.textContent = '🤍';
+            toast('Removido dos favoritos', p.nome, 'info');
+          }
+        } catch (e) {
+          alert('Erro: ' + e.message);
+        }
+      };
+
+      // PROPOSTA
       document.getElementById('btn-proposta').onclick = async function() {
         const { supabase } = await import('./assets/js/supabase.js');
         const r = await supabase.auth.getUser();
@@ -159,6 +227,7 @@
         abrirModalProposta(p);
       };
 
+      // CHAT
       document.getElementById('btn-chat').onclick = async function() {
         const { supabase } = await import('./assets/js/supabase.js');
         const r = await supabase.auth.getUser();
@@ -178,6 +247,7 @@
         }
       };
 
+      // WHATSAPP
       document.getElementById('btn-whatsapp').onclick = async function() {
         try {
           const { abrirWhatsapp } = await import('./assets/js/services/whatsapp.service.js');
@@ -187,9 +257,6 @@
       };
     }
 
-    // =====================================================
-    // GALERIA FULLSCREEN — usa o componente galeria.js
-    // =====================================================
     async function abrirGaleriaFull(indice) {
       try {
         const { abrirGaleria } = await import('./assets/js/components/galeria.js');
