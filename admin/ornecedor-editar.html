@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Editar fornecedor — Admin</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: system-ui, -apple-system, sans-serif; background: #f8fafc; color: #0f172a; }
+    .layout { display: grid; grid-template-columns: 240px 1fr; min-height: 100vh; }
+    .sidebar { background: #0f172a; color: #cbd5e1; padding: 16px 0; }
+    .sidebar__logo { display: flex; align-items: center; gap: 8px; padding: 0 16px 20px; border-bottom: 1px solid rgba(255,255,255,.1); margin-bottom: 16px; color: #fff; font-weight: 700; font-size: 15px; }
+    .sidebar__badge { background: #0ea5e9; color: #fff; padding: 2px 8px; border-radius: 6px; font-size: 10px; font-weight: 700; }
+    .sidebar__secao { padding: 16px 16px 8px; font-size: 11px; text-transform: uppercase; letter-spacing: .5px; color: #64748b; font-weight: 600; }
+    .sidebar__lista { display: flex; flex-direction: column; gap: 2px; padding: 0 8px; }
+    .sidebar__item { padding: 10px 12px; border-radius: 8px; color: #cbd5e1; text-decoration: none; font-size: 14px; display: block; }
+    .sidebar__item:hover { background: rgba(255,255,255,.06); color: #fff; }
+    .sidebar__item.ativo { background: #0ea5e9; color: #fff; }
+    .main { display: flex; flex-direction: column; }
+    .topbar { background: #fff; border-bottom: 1px solid #e2e8f0; padding: 12px 24px; display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+    .topbar h1 { font-size: 18px; }
+    .btn { padding: 10px 18px; border-radius: 8px; border: 1px solid #0ea5e9; background: #0ea5e9; color: #fff; font-weight: 600; font-size: 14px; cursor: pointer; text-decoration: none; display: inline-block; }
+    .btn:hover { filter: brightness(.94); }
+    .btn--fantasma { background: transparent; color: #0ea5e9; }
+    .btn--loja { padding: 8px 14px; border: 1px solid #0ea5e9; border-radius: 8px; color: #0ea5e9; text-decoration: none; font-size: 13px; font-weight: 600; }
+    .btn--loja:hover { background: #0ea5e9; color: #fff; }
+    .conteudo { padding: 24px; max-width: 900px; }
+    .bloco { background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 24px; margin-bottom: 16px; }
+    .bloco h2 { font-size: 15px; margin-bottom: 16px; padding-bottom: 10px; border-bottom: 1px solid #e2e8f0; }
+    .campo { margin-bottom: 14px; }
+    .campo label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 5px; }
+    .campo input, .campo textarea, .campo select { width: 100%; padding: 9px 12px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 14px; font-family: inherit; }
+    .linha-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .linha-3 { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 12px; }
+    .status { padding: 12px 16px; border-radius: 8px; font-size: 14px; margin-top: 12px; display: none; }
+    .status.visivel { display: block; }
+    .status--ok { background: #dcfce7; color: #166534; }
+    .status--err { background: #fee2e2; color: #991b1b; }
+    .erro { padding: 20px; background: #fee2e2; color: #991b1b; border-radius: 8px; margin: 20px; font-family: monospace; }
+    @media (max-width: 900px) { .layout { grid-template-columns: 1fr; } .linha-2, .linha-3 { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="sidebar__logo"><span>🏠</span><span>Minha Loja</span><span class="sidebar__badge">ADMIN</span></div>
+      <div class="sidebar__secao">Principal</div>
+      <nav class="sidebar__lista">
+        <a href="./index.html" class="sidebar__item">Dashboard</a>
+        <a href="./pedidos.html" class="sidebar__item">Pedidos</a>
+        <a href="./propostas.html" class="sidebar__item">Propostas</a>
+        <a href="./conversas.html" class="sidebar__item">Conversas</a>
+      </nav>
+      <div class="sidebar__secao">Compras</div>
+      <nav class="sidebar__lista">
+        <a href="./fornecedores.html" class="sidebar__item ativo">Fornecedores</a>
+        <a href="./compras.html" class="sidebar__item">Compras</a>
+      </nav>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <h1 id="titulo">Novo fornecedor</h1>
+        <div style="display:flex;gap:8px;">
+          <a href="./fornecedores.html" class="btn btn--fantasma">← Voltar</a>
+          <button class="btn" id="btn-salvar-topo">Salvar</button>
+        </div>
+      </header>
+
+      <div id="carregando" style="padding:40px;text-align:center;color:#64748b;">
+        <div style="width:32px;height:32px;border:3px solid #e2e8f0;border-top-color:#0ea5e9;border-radius:50%;margin:0 auto 12px;animation:spin .7s linear infinite;"></div>
+        Carregando...
+        <style>@keyframes spin{to{transform:rotate(360deg)}}</style>
+      </div>
+
+      <form class="conteudo" id="form" style="display:none;">
+        <div class="bloco">
+          <h2>Dados principais</h2>
+          <div class="campo"><label>Nome (como você chama) *</label><input type="text" id="nome" required /></div>
+          <div class="linha-2">
+            <div class="campo"><label>Razão social</label><input type="text" id="razao_social" /></div>
+            <div class="campo"><label>CNPJ</label><input type="text" id="cnpj" placeholder="00.000.000/0000-00" /></div>
+          </div>
+          <div class="campo"><label>Inscrição Estadual</label><input type="text" id="ie" /></div>
+        </div>
+
+        <div class="bloco">
+          <h2>Contato</h2>
+          <div class="linha-2">
+            <div class="campo"><label>Telefone</label><input type="tel" id="telefone" /></div>
+            <div class="campo"><label>WhatsApp</label><input type="tel" id="whatsapp" /></div>
+          </div>
+          <div class="campo"><label>E-mail</label><input type="email" id="email" /></div>
+        </div>
+
+        <div class="bloco">
+          <h2>Endereço</h2>
+          <div class="campo"><label>Endereço</label><input type="text" id="endereco" /></div>
+          <div class="linha-3">
+            <div class="campo"><label>Cidade</label><input type="text" id="cidade" /></div>
+            <div class="campo"><label>Estado</label><input type="text" id="estado" maxlength="2" placeholder="SP" /></div>
+            <div class="campo"><label>CEP</label><input type="text" id="cep" /></div>
+          </div>
+        </div>
+
+        <div class="bloco">
+          <h2>Dados bancários (opcional)</h2>
+          <div class="linha-3">
+            <div class="campo"><label>Banco</label><input type="text" id="banco" /></div>
+            <div class="campo"><label>Agência</label><input type="text" id="agencia" /></div>
+            <div class="campo"><label>Conta</label><input type="text" id="conta" /></div>
+          </div>
+        </div>
+
+        <div class="bloco">
+          <h2>Observações</h2>
+          <div class="campo"><textarea id="observacoes" rows="3"></textarea></div>
+        </div>
+
+        <button type="submit" class="btn" id="btn-salvar" style="width:100%;padding:14px;font-size:15px;">Salvar fornecedor</button>
+        <div class="status" id="status"></div>
+      </form>
+    </main>
+  </div>
+
+  <script type="module">
+    const params = new URLSearchParams(location.search);
+    const idEdicao = params.get('id');
+    const editando = !!idEdicao;
+    const $ = id => document.getElementById(id);
+    const esc = s => s == null ? '' : String(s).replace(/[&<>"']/g, function(m) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]; });
+
+    let supabase;
+
+    (async () => {
+      try {
+        const mod = await import('../assets/js/supabase.js');
+        supabase = mod.supabase;
+
+        const r = await supabase.auth.getSession();
+        if (!r.data || !r.data.session) { location.href = '../login.html'; return; }
+
+        if (editando) {
+          $('titulo').textContent = 'Editar fornecedor';
+          const mod2 = await import('../assets/js/services/suppliers.service.js');
+          const f = await mod2.buscarFornecedor(idEdicao);
+          if (!f) { document.body.innerHTML = '<div class="erro">Fornecedor não encontrado.</div>'; return; }
+          ['nome','razao_social','cnpj','ie','telefone','whatsapp','email','endereco','cidade','estado','cep','banco','agencia','conta','observacoes']
+            .forEach(function(k) { if (f[k]) $(k).value = f[k]; });
+        }
+
+        $('carregando').style.display = 'none';
+        $('form').style.display = 'block';
+
+        $('form').onsubmit = async function(e) {
+          e.preventDefault();
+          const btn = $('btn-salvar');
+          const btnTopo = $('btn-salvar-topo');
+          btn.disabled = true; btnTopo.disabled = true;
+          btn.textContent = 'Salvando...';
+
+          const dados = {};
+          ['nome','razao_social','cnpj','ie','telefone','whatsapp','email','endereco','cidade','estado','cep','banco','agencia','conta','observacoes']
+            .forEach(function(k) { dados[k] = $(k).value; });
+
+          if (!dados.nome.trim()) {
+            mostrarStatus('Informe o nome.', 'err');
+            btn.disabled = false; btnTopo.disabled = false; btn.textContent = 'Salvar fornecedor';
+            return;
+          }
+
+          try {
+            const mod2 = await import('../assets/js/services/suppliers.service.js');
+            await mod2.salvarFornecedor(dados, idEdicao);
+            mostrarStatus('✅ Fornecedor salvo!', 'ok');
+            setTimeout(function() { location.href = './fornecedores.html'; }, 800);
+          } catch (e) {
+            mostrarStatus('❌ ' + e.message, 'err');
+            btn.disabled = false; btnTopo.disabled = false; btn.textContent = 'Salvar fornecedor';
+          }
+        };
+
+        $('btn-salvar-topo').onclick = function(e) {
+          e.preventDefault();
+          $('form').dispatchEvent(new Event('submit', { cancelable: true }));
+        };
+      } catch (e) {
+        document.body.innerHTML = '<div class="erro">Erro: ' + esc(e.message) + '</div>';
+      }
+    })();
+
+    function mostrarStatus(msg, tipo) {
+      const st = $('status');
+      st.textContent = msg;
+      st.className = 'status visivel status--' + tipo;
+    }
+  </script>
+</body>
+</html>
