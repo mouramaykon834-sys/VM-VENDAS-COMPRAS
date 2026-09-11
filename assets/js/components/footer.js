@@ -3,12 +3,16 @@
 // =============================================================
 
 import { supabase } from '../supabase.js';
+import { inicializarVoltarTopo } from './voltar-topo.js';
 
 let cacheEmpresa = null;
 
 export async function renderFooter() {
   const el = document.getElementById('footer');
   if (!el) return;
+
+  // Ativa o botão voltar ao topo (independe do footer)
+  inicializarVoltarTopo();
 
   let empresa = {};
   try {
