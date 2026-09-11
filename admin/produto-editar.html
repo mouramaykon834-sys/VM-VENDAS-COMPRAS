@@ -38,6 +38,8 @@
     .campo input:focus, .campo textarea:focus, .campo select:focus { outline: none; border-color: #0ea5e9; }
     .campo textarea { resize: vertical; min-height: 80px; }
     .campo__dica { display: block; font-size: 12px; color: #94a3b8; margin-top: 3px; }
+    .campo__dica-sintaxe { display: block; font-size: 12px; color: #0ea5e9; background: #f0f9ff; border: 1px solid #bae6fd; border-radius: 8px; padding: 10px 12px; margin-top: 8px; line-height: 1.5; }
+    .campo__dica-sintaxe code { background: #fff; padding: 2px 6px; border-radius: 4px; font-family: ui-monospace, monospace; font-size: 11px; color: #0369a1; }
     .linha-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
     .upload-area { border: 2px dashed #e2e8f0; border-radius: 10px; padding: 24px; text-align: center; color: #64748b; cursor: pointer; transition: all .15s; }
     .upload-area:hover { border-color: #0ea5e9; background: #f0f9ff; }
@@ -55,18 +57,7 @@
     .status-upload--info { background: #dbeafe; color: #1e40af; }
     .status-upload--ok { background: #dcfce7; color: #166534; }
     .status-upload--err { background: #fee2e2; color: #991b1b; }
-
-    .exibicao-check {
-      display: flex;
-      align-items: flex-start;
-      gap: 10px;
-      padding: 12px;
-      border: 1px solid #e2e8f0;
-      border-radius: 8px;
-      margin-bottom: 8px;
-      cursor: pointer;
-      transition: all .15s;
-    }
+    .exibicao-check { display: flex; align-items: flex-start; gap: 10px; padding: 12px; border: 1px solid #e2e8f0; border-radius: 8px; margin-bottom: 8px; cursor: pointer; transition: all .15s; }
     .exibicao-check:hover { border-color: #0ea5e9; background: #f0f9ff; }
     .exibicao-check input { margin-top: 2px; width: 18px; height: 18px; accent-color: #0ea5e9; }
     .exibicao-check__info { flex: 1; }
@@ -96,22 +87,6 @@
       <nav class="sidebar__lista">
         <a href="./estoque.html" class="sidebar__item">Visão geral</a>
         <a href="./estoque-movimentar.html" class="sidebar__item">Movimentar</a>
-        <a href="./estoque-historico.html" class="sidebar__item">Histórico</a>
-        <a href="./estoque-alertas.html" class="sidebar__item">Alertas</a>
-      </nav>
-      <div class="sidebar__secao">Clientes</div>
-      <nav class="sidebar__lista">
-        <a href="./clientes.html" class="sidebar__item">Clientes</a>
-      </nav>
-      <div class="sidebar__secao">Sistema</div>
-      <nav class="sidebar__lista">
-        <a href="./auditoria.html" class="sidebar__item">Auditoria</a>
-      </nav>
-      <div class="sidebar__secao">Configurações</div>
-      <nav class="sidebar__lista">
-        <a href="./empresa.html" class="sidebar__item">Dados da empresa</a>
-        <a href="./identidade.html" class="sidebar__item">Identidade visual</a>
-        <a href="./configuracoes.html" class="sidebar__item">Outras configurações</a>
       </nav>
     </aside>
 
@@ -146,7 +121,12 @@
               </div>
               <div class="campo">
                 <label>Descrição completa</label>
-                <textarea id="descricao" rows="6"></textarea>
+                <textarea id="descricao" rows="6" placeholder="Descreva o produto..."></textarea>
+                <div class="campo__dica-sintaxe">
+                  💡 <strong>Dica:</strong> você pode linkar outros produtos na descrição usando:<br>
+                  <code>[produto:Nome do Produto]</code> ou <code>[produto:ID-do-produto]</code><br>
+                  Eles aparecerão como links que mostram a <strong>foto e o preço</strong> ao passar o mouse.
+                </div>
               </div>
             </div>
 
@@ -187,7 +167,7 @@
           <div>
             <div class="bloco">
               <h2>📍 Onde este produto aparece</h2>
-              <p style="font-size:12px;color:#64748b;margin-bottom:12px;">Escolha em quais seções da página inicial ele será exibido.</p>
+              <p style="font-size:12px;color:#64748b;margin-bottom:12px;">Escolha em quais seções da home ele aparece.</p>
 
               <label class="exibicao-check">
                 <input type="checkbox" id="exibir_destaque" />
@@ -201,7 +181,7 @@
                 <input type="checkbox" id="exibir_oferta" />
                 <div class="exibicao-check__info">
                   <div class="exibicao-check__titulo">🔥 Ofertas</div>
-                  <div class="exibicao-check__desc">Requer preço promocional (abaixo)</div>
+                  <div class="exibicao-check__desc">Requer preço promocional</div>
                 </div>
               </label>
 
@@ -209,7 +189,7 @@
                 <input type="checkbox" id="exibir_novidade" checked />
                 <div class="exibicao-check__info">
                   <div class="exibicao-check__titulo">🆕 Novidades</div>
-                  <div class="exibicao-check__desc">Aparece em "Novidades" (padrão)</div>
+                  <div class="exibicao-check__desc">Aparece em Novidades</div>
                 </div>
               </label>
             </div>
@@ -467,7 +447,6 @@
         const p = await supabase.from('profiles').select('role').eq('id', session.user.id).maybeSingle();
         if (!p.data) { erroFatal('Acesso restrito.'); return; }
 
-        // Categorias
         const cats = await supabase.from('categories').select('id, nome').eq('ativo', true).order('nome');
         const sel = $('categoria_id');
         sel.innerHTML = '<option value="">Sem categoria</option>' + (cats.data || []).map(c => '<option value="' + c.id + '">' + esc(c.nome) + '</option>').join('');
