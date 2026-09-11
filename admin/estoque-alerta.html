@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Alertas de estoque — Admin</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: system-ui, -apple-system, sans-serif; background: #f8fafc; color: #0f172a; }
+    .layout { display: grid; grid-template-columns: 240px 1fr; min-height: 100vh; }
+    .sidebar { background: #0f172a; color: #cbd5e1; padding: 16px 0; }
+    .sidebar__logo { display: flex; align-items: center; gap: 8px; padding: 0 16px 20px; border-bottom: 1px solid rgba(255,255,255,.1); margin-bottom: 16px; color: #fff; font-weight: 700; font-size: 15px; }
+    .sidebar__badge { background: #0ea5e9; color: #fff; padding: 2px 8px; border-radius: 6px; font-size: 10px; font-weight: 700; }
+    .sidebar__secao { padding: 16px 16px 8px; font-size: 11px; text-transform: uppercase; letter-spacing: .5px; color: #64748b; font-weight: 600; }
+    .sidebar__lista { display: flex; flex-direction: column; gap: 2px; padding: 0 8px; }
+    .sidebar__item { padding: 10px 12px; border-radius: 8px; color: #cbd5e1; text-decoration: none; font-size: 14px; display: block; }
+    .sidebar__item:hover { background: rgba(255,255,255,.06); color: #fff; }
+    .sidebar__item.ativo { background: #0ea5e9; color: #fff; }
+    .main { display: flex; flex-direction: column; }
+    .topbar { background: #fff; border-bottom: 1px solid #e2e8f0; padding: 12px 24px; display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+    .topbar h1 { font-size: 18px; }
+    .btn-loja { padding: 8px 14px; border: 1px solid #0ea5e9; border-radius: 8px; color: #0ea5e9; text-decoration: none; font-size: 13px; font-weight: 600; }
+    .btn-loja:hover { background: #0ea5e9; color: #fff; }
+    .conteudo { padding: 24px; }
+    .bloco { background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 24px; margin-bottom: 16px; }
+    .bloco h2 { font-size: 16px; margin-bottom: 4px; }
+    .bloco p.desc { font-size: 13px; color: #64748b; margin-bottom: 16px; }
+    .bloco--alerta { border-color: #fcd34d; background: #fffbeb; }
+    .bloco--erro { border-color: #fca5a5; background: #fef2f2; }
+    .tabela { width: 100%; background: #fff; border-collapse: collapse; border-radius: 12px; overflow: hidden; border: 1px solid #e2e8f0; margin-top: 12px; }
+    .tabela th { text-align: left; padding: 10px 14px; background: #f8fafc; font-size: 12px; text-transform: uppercase; color: #64748b; font-weight: 600; }
+    .tabela td { padding: 10px 14px; border-top: 1px solid #e2e8f0; font-size: 13px; }
+    .btn { padding: 6px 12px; border-radius: 6px; border: 1px solid #0ea5e9; background: #0ea5e9; color: #fff; font-weight: 600; font-size: 13px; cursor: pointer; text-decoration: none; display: inline-block; }
+    .btn:hover { filter: brightness(.94); }
+    .vazio { padding: 24px; text-align: center; color: #16a34a; font-size: 14px; font-weight: 600; }
+    .erro { padding: 20px; background: #fee2e2; color: #991b1b; border-radius: 8px; margin: 20px; font-family: monospace; }
+    .contador { display: inline-block; padding: 3px 10px; border-radius: 9999px; font-size: 12px; font-weight: 700; background: #fee2e2; color: #991b1b; margin-left: 8px; }
+    .contador--alerta { background: #fef3c7; color: #92400e; }
+    @media (max-width: 900px) { .layout { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="sidebar__logo"><span>🏠</span><span>Minha Loja</span><span class="sidebar__badge">ADMIN</span></div>
+      <div class="sidebar__secao">Principal</div>
+      <nav class="sidebar__lista">
+        <a href="./index.html" class="sidebar__item">Dashboard</a>
+        <a href="./pedidos.html" class="sidebar__item">Pedidos</a>
+        <a href="./propostas.html" class="sidebar__item">Propostas</a>
+        <a href="./conversas.html" class="sidebar__item">Conversas</a>
+      </nav>
+      <div class="sidebar__secao">Catálogo</div>
+      <nav class="sidebar__lista">
+        <a href="./produtos.html" class="sidebar__item">Produtos</a>
+        <a href="./categorias.html" class="sidebar__item">Categorias</a>
+      </nav>
+      <div class="sidebar__secao">Estoque</div>
+      <nav class="sidebar__lista">
+        <a href="./estoque.html" class="sidebar__item">Visão geral</a>
+        <a href="./estoque-movimentar.html" class="sidebar__item">Movimentar</a>
+        <a href="./estoque-historico.html" class="sidebar__item">Histórico</a>
+        <a href="./estoque-alertas.html" class="sidebar__item ativo">Alertas</a>
+      </nav>
+      <div class="sidebar__secao">Compras</div>
+      <nav class="sidebar__lista">
+        <a href="./fornecedores.html" class="sidebar__item">Fornecedores</a>
+        <a href="./compras.html" class="sidebar__item">Compras</a>
+      </nav>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <h1>Alertas de estoque</h1>
+        <a href="../index.html" class="btn-loja">← Ver loja</a>
+      </header>
+
+      <div class="conteudo" id="conteudo"><div class="erro">Carregando...</div></div>
+    </main>
+  </div>
+
+  <script type="module">
+    const el = document.getElementById('conteudo');
+    const esc = s => s == null ? '' : String(s).replace(/[&<>"']/g, function(m) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]; });
+
+    (async () => {
+      try {
+        const { supabase } = await import('../assets/js/supabase.js');
+        const r = await supabase.auth.getSession();
+        if (!r.data || !r.data.session) { location.href = '../login.html'; return; }
+
+        const baixos = await supabase
+          .from('products')
+          .select('id, nome, estoque, estoque_minimo')
+          .neq('status', 'oculto')
+          .gt('estoque_minimo', 0)
+          .order('estoque', { ascending: true });
+
+        const produtos = baixos.data || [];
+        const esgotados = produtos.filter(function(x) { return (x.estoque || 0) <= 0; });
+        const baixosNaoEsgotados = produtos.filter(function(x) { return (x.estoque || 0) > 0 && x.estoque <= x.estoque_minimo; });
+
+        el.innerHTML =
+          '<div class="bloco ' + (esgotados.length ? 'bloco--erro' : '') + '">' +
+            '<h2>🚨 Produtos esgotados <span class="contador">' + esgotados.length + '</span></h2>' +
+            '<p class="desc">Produtos com estoque zerado.</p>' +
+            (esgotados.length === 0
+              ? '<div class="vazio">✅ Nenhum produto esgotado</div>'
+              : '<table class="tabela"><thead><tr><th>Produto</th><th style="text-align:right;">Estoque</th><th style="text-align:right;">Mínimo</th><th></th></tr></thead><tbody>' +
+                esgotados.map(function(p) {
+                  return '<tr>' +
+                    '<td><strong>' + esc(p.nome) + '</strong></td>' +
+                    '<td style="text-align:right;color:#dc2626;font-weight:700;">0</td>' +
+                    '<td style="text-align:right;color:#94a3b8;">' + p.estoque_minimo + '</td>' +
+                    '<td style="text-align:right;"><a href="./estoque-movimentar.html?product=' + p.id + '" class="btn">Repor</a></td>' +
+                  '</tr>';
+                }).join('') + '</tbody></table>') +
+          '</div>' +
+
+          '<div class="bloco ' + (baixosNaoEsgotados.length ? 'bloco--alerta' : '') + '">' +
+            '<h2>⚠️ Estoque baixo <span class="contador contador--alerta">' + baixosNaoEsgotados.length + '</span></h2>' +
+            '<p class="desc">Produtos abaixo do estoque mínimo.</p>' +
+            (baixosNaoEsgotados.length === 0
+              ? '<div class="vazio">✅ Nenhum produto com estoque baixo</div>'
+              : '<table class="tabela"><thead><tr><th>Produto</th><th style="text-align:right;">Estoque</th><th style="text-align:right;">Mínimo</th><th style="text-align:right;">Falta</th><th></th></tr></thead><tbody>' +
+                baixosNaoEsgotados.map(function(p) {
+                  const falta = (p.estoque_minimo || 0) - (p.estoque || 0);
+                  return '<tr>' +
+                    '<td><strong>' + esc(p.nome) + '</strong></td>' +
+                    '<td style="text-align:right;color:#f59e0b;font-weight:700;">' + p.estoque + '</td>' +
+                    '<td style="text-align:right;color:#94a3b8;">' + p.estoque_minimo + '</td>' +
+                    '<td style="text-align:right;color:#dc2626;font-weight:700;">' + falta + '</td>' +
+                    '<td style="text-align:right;"><a href="./estoque-movimentar.html?product=' + p.id + '" class="btn">Repor</a></td>' +
+                  '</tr>';
+                }).join('') + '</tbody></table>') +
+          '</div>' +
+
+          '<div class="bloco" style="background:#f0f9ff;border-color:#bae6fd;">' +
+            '<h2>💡 Dica</h2>' +
+            '<p class="desc" style="margin:0;">Defina o <strong>estoque mínimo</strong> de cada produto ao editá-lo. Assim, você recebe alerta antes de acabar.</p>' +
+          '</div>';
+      } catch (e) {
+        el.innerHTML = '<div class="erro">Erro: ' + esc(e.message) + '</div>';
+      }
+    })();
+  </script>
+</body>
+</html>
