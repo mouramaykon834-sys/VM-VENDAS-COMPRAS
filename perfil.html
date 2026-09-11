@@ -13,29 +13,37 @@
 <body>
   <div id="header"></div>
   <main class="conteudo">
-    <div class="container" style="max-width:760px;">
+    <div class="container" style="max-width: 760px;">
       <h1 class="pagina-titulo">Minha conta</h1>
+
       <div class="tabs" role="tablist">
         <button class="tab ativo" data-aba="dados">Meus dados</button>
         <button class="tab" data-aba="senha">Alterar senha</button>
       </div>
+
       <div id="conteudo-dados"><div class="carregando"><div class="spinner"></div></div></div>
+
       <div id="conteudo-senha" class="oculto">
         <div class="cartao">
           <form id="form-senha">
-            <div class="campo"><label>Nova senha</label><input type="password" id="nova-senha" minlength="6" required /><span class="campo__dica">Mínimo 6 caracteres.</span></div>
-            <div class="campo"><label>Confirme a nova senha</label><input type="password" id="confirma-senha" minlength="6" required /></div>
+            <div class="campo">
+              <label>Nova senha</label>
+              <input type="password" id="nova-senha" minlength="8" required />
+              <span class="campo__dica">Mínimo 8 caracteres, com letras e números.</span>
+            </div>
+            <div class="campo">
+              <label>Confirme a nova senha</label>
+              <input type="password" id="confirma-senha" minlength="8" required />
+            </div>
             <button type="submit" class="btn btn--principal" id="btn-salvar-senha">Alterar senha</button>
           </form>
         </div>
       </div>
 
-      <div class="mt-8 flex gap-3" style="flex-wrap:wrap;">
+      <div class="mt-8 flex gap-3" style="flex-wrap: wrap;">
         <a href="./pedidos.html" class="btn btn--contorno">Meus pedidos</a>
         <a href="./propostas.html" class="btn btn--contorno">Minhas propostas</a>
-        <a href="./favoritos.html" class="btn btn--contorno">Meus favoritos</a>
         <a href="./chat.html" class="btn btn--contorno">Minhas conversas</a>
-        <a href="./notificacoes.html" class="btn btn--contorno">Notificações</a>
         <button type="button" class="btn btn--erro" id="btn-sair">Sair da conta</button>
       </div>
     </div>
@@ -43,82 +51,94 @@
   <div id="footer"></div>
 
   <script type="module">
-    import { renderHeader } from './assets/js/components/header.js';
-    import { renderFooter } from './assets/js/components/footer.js';
-    import { iniciarConfiguracoes } from './assets/js/services/settings.service.js';
-    import { supabase } from './assets/js/supabase.js';
-
-    await iniciarConfiguracoes();
-    await renderHeader('conta');
-    await renderFooter();
-
-    const el = document.getElementById('conteudo-dados');
-    const esc = s => s == null ? '' : String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
-
-    function toast(t, m = '', tipo = 'info') {
-      let a = document.querySelector('.toast-area');
-      if (!a) { a = document.createElement('div'); a.className = 'toast-area'; document.body.appendChild(a); }
-      const x = document.createElement('div');
-      x.className = `toast toast--${tipo}`;
-      x.innerHTML = `<div class="toast__titulo">${esc(t)}</div>${m ? `<div class="toast__msg">${esc(m)}</div>` : ''}`;
-      a.appendChild(x); setTimeout(() => x.remove(), 4000);
-    }
-
     (async () => {
-      const r = await supabase.auth.getSession();
-      if (!r.data?.session) { location.href = './login.html?redirect=perfil.html'; return; }
+      try {
+        const { renderHeader } = await import('./assets/js/components/header.js');
+        const { renderFooter } = await import('./assets/js/components/footer.js');
+        const { supabase } = await import('./assets/js/supabase.js');
 
-      const { data: p } = await supabase.from('profiles').select('*').eq('id', r.data.session.user.id).maybeSingle();
-      if (!p) { el.innerHTML = '<div class="alerta alerta--erro">Erro ao carregar perfil.</div>'; return; }
+        const r = await supabase.auth.getSession();
+        if (!r.data || !r.data.session) { location.href = './login.html?redirect=perfil.html'; return; }
 
-      el.innerHTML = `
-        <div class="cartao">
-          <form id="form-dados">
-            <div class="campo"><label>Nome completo</label><input type="text" id="nome" value="${esc(p.nome || '')}" required /></div>
-            <div class="campo"><label>E-mail (não editável)</label><input type="email" value="${esc(p.email || '')}" disabled /></div>
-            <div class="campo-grupo" style="gap:12px;">
-              <div class="campo" style="flex:1;"><label>Telefone</label><input type="tel" id="telefone" value="${esc(p.telefone || '')}" /></div>
-              <div class="campo" style="flex:1;"><label>WhatsApp</label><input type="tel" id="whatsapp" value="${esc(p.whatsapp || '')}" /></div>
-            </div>
-            <div class="campo"><label>Membro desde</label><div class="texto-suave texto-sm">${new Date(p.created_at).toLocaleDateString('pt-BR')}</div></div>
-            <button type="submit" class="btn btn--principal" id="btn-salvar-dados">Salvar alterações</button>
-          </form>
-        </div>
-      `;
-
-      document.getElementById('form-dados').onsubmit = async (e) => {
-        e.preventDefault();
-        const btn = document.getElementById('btn-salvar-dados');
-        btn.disabled = true; btn.textContent = 'Salvando...';
-        const { error } = await supabase.from('profiles').update({
-          nome: document.getElementById('nome').value.trim(),
-          telefone: document.getElementById('telefone').value.trim() || null,
-          whatsapp: document.getElementById('whatsapp').value.trim() || null
-        }).eq('id', r.data.session.user.id);
-        btn.disabled = false; btn.textContent = 'Salvar alterações';
-        if (error) { toast('Erro', error.message, 'erro'); return; }
-        toast('Dados salvos', '', 'sucesso');
-      };
+        await renderHeader('conta');
+        await renderFooter();
+        await carregar();
+      } catch (e) {}
     })();
 
-    document.getElementById('form-senha').onsubmit = async (e) => {
+    async function carregar() {
+      const el = document.getElementById('conteudo-dados');
+
+      try {
+        const { perfilAtual } = await import('./assets/js/services/auth.service.js');
+        const p = await perfilAtual();
+        if (!p) { el.innerHTML = '<div class="alerta alerta--erro">Não foi possível carregar seus dados.</div>'; return; }
+
+        el.innerHTML =
+          '<div class="cartao">' +
+            '<form id="form-dados">' +
+              '<div class="campo"><label>Nome completo</label><input type="text" id="nome" value="' + esc(p.nome || '') + '" required /></div>' +
+              '<div class="campo"><label>E-mail (não editável)</label><input type="email" value="' + esc(p.email || '') + '" disabled /></div>' +
+              '<div class="campo-grupo" style="gap:12px;">' +
+                '<div class="campo" style="flex:1;"><label>Telefone</label><input type="tel" id="telefone" value="' + esc(p.telefone || '') + '" /></div>' +
+                '<div class="campo" style="flex:1;"><label>WhatsApp</label><input type="tel" id="whatsapp" value="' + esc(p.whatsapp || '') + '" /></div>' +
+              '</div>' +
+              '<div class="campo"><label>Membro desde</label><div class="texto-suave texto-sm">' + new Date(p.created_at).toLocaleDateString('pt-BR') + '</div></div>' +
+              '<button type="submit" class="btn btn--principal" id="btn-salvar-dados">Salvar alterações</button>' +
+            '</form>' +
+          '</div>';
+
+        document.getElementById('form-dados').onsubmit = async function(e) {
+          e.preventDefault();
+          const btn = document.getElementById('btn-salvar-dados');
+          btn.disabled = true; btn.textContent = 'Salvando...';
+
+          try {
+            const { atualizarPerfil } = await import('./assets/js/services/auth.service.js');
+            await atualizarPerfil({
+              nome: document.getElementById('nome').value,
+              telefone: document.getElementById('telefone').value,
+              whatsapp: document.getElementById('whatsapp').value
+            });
+            mostrarToast('✅ Dados salvos', 'sucesso');
+          } catch (err) {
+            mostrarToast('❌ ' + err.message, 'erro');
+          }
+
+          btn.disabled = false; btn.textContent = 'Salvar alterações';
+        };
+      } catch (e) {
+        el.innerHTML = '<div class="alerta alerta--erro">Erro ao carregar.</div>';
+      }
+    }
+
+    document.getElementById('form-senha').onsubmit = async function(e) {
       e.preventDefault();
       const s1 = document.getElementById('nova-senha').value;
       const s2 = document.getElementById('confirma-senha').value;
-      if (s1.length < 6) { toast('Senha muito curta', 'Mínimo 6 caracteres', 'erro'); return; }
-      if (s1 !== s2) { toast('As senhas não coincidem', '', 'erro'); return; }
+
+      if (s1.length < 8) { mostrarToast('Senha muito curta (mínimo 8)', 'erro'); return; }
+      if (!/[A-Za-z]/.test(s1) || !/[0-9]/.test(s1)) { mostrarToast('Senha deve ter letras e números', 'erro'); return; }
+      if (s1 !== s2) { mostrarToast('As senhas não coincidem', 'erro'); return; }
+
       const btn = document.getElementById('btn-salvar-senha');
       btn.disabled = true; btn.textContent = 'Alterando...';
-      const { error } = await supabase.auth.updateUser({ password: s1 });
+
+      try {
+        const { alterarSenha } = await import('./assets/js/services/auth.service.js');
+        await alterarSenha(s1);
+        mostrarToast('✅ Senha alterada', 'sucesso');
+        document.getElementById('form-senha').reset();
+      } catch (err) {
+        mostrarToast('❌ ' + err.message, 'erro');
+      }
+
       btn.disabled = false; btn.textContent = 'Alterar senha';
-      if (error) { toast('Erro', error.message, 'erro'); return; }
-      toast('Senha alterada', 'Sua nova senha já está ativa.', 'sucesso');
-      document.getElementById('form-senha').reset();
     };
 
-    document.querySelectorAll('.tab').forEach(t => {
-      t.onclick = () => {
-        document.querySelectorAll('.tab').forEach(x => x.classList.remove('ativo'));
+    document.querySelectorAll('.tab').forEach(function(t) {
+      t.onclick = function() {
+        document.querySelectorAll('.tab').forEach(function(x) { x.classList.remove('ativo'); });
         t.classList.add('ativo');
         const a = t.dataset.aba;
         document.getElementById('conteudo-dados').classList.toggle('oculto', a !== 'dados');
@@ -126,11 +146,38 @@
       };
     });
 
-    document.getElementById('btn-sair').onclick = async () => {
+    document.getElementById('btn-sair').onclick = async function() {
       if (!confirm('Sair da conta?')) return;
-      await supabase.auth.signOut();
-      location.href = './index.html';
+      try {
+        const { sair } = await import('./assets/js/services/auth.service.js');
+        await sair();
+        location.href = './index.html';
+      } catch (e) {
+        location.href = './index.html';
+      }
     };
+
+    function mostrarToast(msg, tipo) {
+      let a = document.querySelector('.toast-area-cart');
+      if (!a) {
+        a = document.createElement('div');
+        a.className = 'toast-area-cart';
+        a.style.cssText = 'position:fixed;top:20px;right:20px;z-index:99999;display:flex;flex-direction:column;gap:10px;pointer-events:none;';
+        document.body.appendChild(a);
+      }
+      const cores = { sucesso: '#dcfce7:#166534:#16a34a', erro: '#fee2e2:#991b1b:#dc2626' };
+      const c = (cores[tipo] || cores.sucesso).split(':');
+      const el = document.createElement('div');
+      el.style.cssText = 'background:' + c[0] + ';color:' + c[1] + ';border-left:4px solid ' + c[2] + ';padding:12px 16px;border-radius:10px;box-shadow:0 8px 20px rgba(15,23,42,.15);font-family:system-ui;font-size:14px;font-weight:600;min-width:240px;pointer-events:auto;';
+      el.textContent = msg;
+      a.appendChild(el);
+      setTimeout(function() {
+        el.style.opacity = '0';
+        setTimeout(function() { el.remove(); }, 300);
+      }, 3000);
+    }
+
+    function esc(s) { return s == null ? '' : String(s).replace(/[&<>"']/g, function(m) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]; }); }
   </script>
 </body>
 </html>
