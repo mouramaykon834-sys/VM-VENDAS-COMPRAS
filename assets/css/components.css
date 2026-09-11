@@ -1,95 +1,196 @@
 /* =============================================================
    COMPONENTES — VM VENDAS E COMPRAS
-   =============================================================
-   Botões, badges, inputs, alerts, modais, toasts, tabs, avatares.
-   Depende de tokens.css e base.css.
    ============================================================= */
 
-/* -------------------------------------------------------------
-   BOTÕES
-   ------------------------------------------------------------- */
+/* =============================================================
+   BOTÕES — REDESENHADOS
+   ============================================================= */
 .btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: var(--esp-2);
-  padding: var(--pad-botao);
+  gap: 8px;
+  min-height: var(--botao-altura);
+  padding: 0 var(--botao-pad-x);
   border-radius: var(--raio-botao);
   font-family: inherit;
-  font-size: var(--texto-sm);
+  font-size: var(--botao-fonte);
   font-weight: var(--peso-semibold);
   line-height: 1;
   text-decoration: none;
   border: 1px solid transparent;
   cursor: pointer;
-  transition: all var(--transicao-rapida);
+  transition: background-color .15s ease,
+              color .15s ease,
+              border-color .15s ease,
+              transform .1s ease,
+              box-shadow .15s ease,
+              filter .15s ease;
   white-space: nowrap;
   user-select: none;
+  position: relative;
+  -webkit-tap-highlight-color: transparent;
 }
-.btn:hover { text-decoration: none; }
-.btn:focus-visible { outline: none; box-shadow: var(--anel-foco); }
-.btn:disabled,
-.btn.esta-desabilitado { opacity: 0.55; cursor: not-allowed; pointer-events: none; }
 
+.btn:focus-visible {
+  outline: none;
+  box-shadow: var(--anel-foco);
+}
+
+.btn:active:not(:disabled) {
+  transform: scale(0.97);
+}
+
+.btn:disabled,
+.btn.esta-desabilitado {
+  opacity: 0.55;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* =============================================================
+   VARIAÇÕES DE COR — CONSISTENTES
+   ============================================================= */
+
+/* Principal (azul) */
 .btn--principal {
   background: var(--cor-principal);
   color: #fff;
 }
-.btn--principal:hover { filter: brightness(0.94); color: #fff; }
+.btn--principal:hover {
+  background: var(--cor-principal-escura);
+  color: #fff;
+  text-decoration: none;
+}
 
+/* Secundário (escuro) */
 .btn--secundario {
   background: var(--cor-secundaria);
   color: #fff;
 }
-.btn--secundario:hover { filter: brightness(1.15); color: #fff; }
+.btn--secundario:hover {
+  filter: brightness(1.3);
+  color: #fff;
+  text-decoration: none;
+}
 
+/* Destaque (laranja) */
 .btn--destaque {
   background: var(--cor-destaque);
   color: #fff;
 }
-.btn--destaque:hover { filter: brightness(0.94); color: #fff; }
+.btn--destaque:hover {
+  background: var(--cor-destaque-escura);
+  color: #fff;
+  text-decoration: none;
+}
 
-.btn--sucesso { background: var(--cor-sucesso); color: #fff; }
-.btn--sucesso:hover { filter: brightness(0.94); color: #fff; }
+/* Sucesso (verde) */
+.btn--sucesso {
+  background: var(--cor-sucesso);
+  color: #fff;
+}
+.btn--sucesso:hover {
+  background: var(--cor-sucesso-escura);
+  color: #fff;
+  text-decoration: none;
+}
 
-.btn--erro { background: var(--cor-erro); color: #fff; }
-.btn--erro:hover { filter: brightness(0.94); color: #fff; }
+/* Erro (vermelho) */
+.btn--erro {
+  background: var(--cor-erro);
+  color: #fff;
+}
+.btn--erro:hover {
+  background: var(--cor-erro-escura);
+  color: #fff;
+  text-decoration: none;
+}
 
+/* Contorno (fundo branco, borda azul) */
 .btn--contorno {
-  background: transparent;
+  background: #fff;
   color: var(--cor-principal);
   border-color: var(--cor-principal);
 }
 .btn--contorno:hover {
   background: var(--cor-principal);
   color: #fff;
+  text-decoration: none;
 }
 
+/* Fantasma (só texto) */
 .btn--fantasma {
   background: transparent;
-  color: var(--cor-texto);
+  color: var(--cor-principal);
   border-color: transparent;
 }
 .btn--fantasma:hover {
-  background: var(--cor-fundo-suave);
-  color: var(--cor-principal);
+  background: rgba(14, 165, 233, 0.1);
+  color: var(--cor-principal-escura);
+  text-decoration: none;
 }
 
-.btn--sm { padding: var(--pad-botao-sm); font-size: var(--texto-xs); }
-.btn--lg { padding: var(--pad-botao-lg); font-size: var(--texto-base); }
-.btn--bloco { width: 100%; }
-.btn--icone { padding: var(--esp-2); aspect-ratio: 1; }
+/* =============================================================
+   TAMANHOS
+   ============================================================= */
+.btn--sm {
+  min-height: var(--botao-altura-sm);
+  padding: 0 var(--botao-pad-x-sm);
+  font-size: var(--botao-fonte-sm);
+}
 
-/* -------------------------------------------------------------
-   BADGES / ETIQUETAS
-   ------------------------------------------------------------- */
+.btn--lg {
+  min-height: var(--botao-altura-lg);
+  padding: 0 var(--botao-pad-x-lg);
+  font-size: var(--botao-fonte-lg);
+}
+
+.btn--bloco { width: 100%; }
+
+.btn--icone {
+  padding: 0;
+  width: var(--botao-altura);
+  min-width: var(--botao-altura);
+}
+
+/* =============================================================
+   MOBILE — botões maiores para toque (Apple/Google recomendam 48px)
+   ============================================================= */
+@media (max-width: 640px) {
+  .btn {
+    min-height: 48px;
+    padding: 0 16px;
+    font-size: 15px;
+  }
+
+  .btn--sm {
+    min-height: 40px;
+    font-size: 14px;
+  }
+
+  .btn--lg {
+    min-height: 54px;
+    font-size: 16px;
+  }
+
+  .btn--icone {
+    width: 48px;
+    min-width: 48px;
+    min-height: 48px;
+  }
+}
+
+/* =============================================================
+   BADGES
+   ============================================================= */
 .badge {
   display: inline-flex;
   align-items: center;
-  gap: var(--esp-1);
-  padding: 3px 10px;
+  gap: 4px;
+  padding: 4px 12px;
   border-radius: var(--raio-full);
-  font-size: var(--texto-xs);
+  font-size: 12px;
   font-weight: var(--peso-semibold);
   line-height: 1.4;
   white-space: nowrap;
@@ -102,83 +203,63 @@
 .badge--principal { background: var(--cor-principal); color: #fff; }
 .badge--destaque  { background: var(--cor-destaque); color: #fff; }
 
-/* -------------------------------------------------------------
+/* =============================================================
    ALERTAS
-   ------------------------------------------------------------- */
+   ============================================================= */
 .alerta {
   display: flex;
-  gap: var(--esp-3);
-  padding: var(--esp-4);
+  gap: 12px;
+  padding: 16px;
   border-radius: var(--raio-md);
   border-left: 4px solid var(--cor-info);
   background: #eff6ff;
   color: #1e3a8a;
   font-size: var(--texto-sm);
-  margin-bottom: var(--esp-4);
+  margin-bottom: 16px;
 }
 .alerta--sucesso { border-color: var(--cor-sucesso); background: #f0fdf4; color: #14532d; }
 .alerta--alerta  { border-color: var(--cor-alerta); background: #fffbeb; color: #78350f; }
 .alerta--erro    { border-color: var(--cor-erro); background: #fef2f2; color: #7f1d1d; }
 
-/* -------------------------------------------------------------
+/* =============================================================
    FORMULÁRIOS
-   ------------------------------------------------------------- */
-.campo {
-  margin-bottom: var(--esp-4);
-}
+   ============================================================= */
+.campo { margin-bottom: 16px; }
+.campo__erro { display: block; color: var(--cor-erro); font-size: 12px; margin-top: 4px; }
+.campo__dica { display: block; color: var(--cor-texto-suave); font-size: 12px; margin-top: 4px; }
 
-.campo__erro {
-  display: block;
-  color: var(--cor-erro);
-  font-size: var(--texto-xs);
-  margin-top: var(--esp-1);
-}
-
-.campo__dica {
-  display: block;
-  color: var(--cor-texto-suave);
-  font-size: var(--texto-xs);
-  margin-top: var(--esp-1);
-}
-
-.campo-grupo {
-  display: flex;
-  gap: var(--esp-2);
-  align-items: stretch;
-}
+.campo-grupo { display: flex; gap: 8px; align-items: stretch; }
 .campo-grupo > input { flex: 1; }
 
-.checkbox,
-.radio {
+.checkbox, .radio {
   display: inline-flex;
   align-items: center;
-  gap: var(--esp-2);
+  gap: 8px;
   cursor: pointer;
-  font-size: var(--texto-sm);
+  font-size: 14px;
   user-select: none;
 }
-.checkbox input,
-.radio input {
+.checkbox input, .radio input {
   width: auto;
   margin: 0;
   cursor: pointer;
   accent-color: var(--cor-principal);
 }
 
-/* -------------------------------------------------------------
+/* =============================================================
    MODAL
-   ------------------------------------------------------------- */
+   ============================================================= */
 .modal-overlay {
   position: fixed;
   inset: 0;
   z-index: var(--z-modal);
-  background: rgba(15, 23, 42, 0.5);
+  background: rgba(15, 23, 42, 0.6);
   backdrop-filter: blur(2px);
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: var(--esp-4);
-  animation: fadeIn var(--transicao-normal);
+  padding: 16px;
+  animation: fadeIn .2s;
 }
 
 .modal {
@@ -189,86 +270,62 @@
   width: 100%;
   max-height: 90vh;
   overflow-y: auto;
-  animation: subir var(--transicao-normal);
+  animation: subir .2s;
 }
 
 .modal__cabecalho {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: var(--esp-4) var(--esp-5);
+  padding: 20px 24px;
   border-bottom: 1px solid var(--cor-borda);
 }
 
 .modal__titulo { font-size: var(--texto-lg); }
-
-.modal__corpo { padding: var(--esp-5); }
-
+.modal__corpo { padding: 24px; }
 .modal__rodape {
   display: flex;
-  gap: var(--esp-2);
+  gap: 8px;
   justify-content: flex-end;
-  padding: var(--esp-4) var(--esp-5);
+  padding: 16px 24px;
   border-top: 1px solid var(--cor-borda);
   background: var(--cor-fundo-suave);
   border-radius: 0 0 var(--raio-xl) var(--raio-xl);
 }
 
 .modal__fechar {
-  padding: var(--esp-2);
+  padding: 8px;
   color: var(--cor-texto-suave);
   border-radius: var(--raio-md);
+  font-size: 20px;
+  line-height: 1;
 }
 .modal__fechar:hover { background: var(--cor-fundo-suave); color: var(--cor-texto); }
 
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 @keyframes subir {
   from { opacity: 0; transform: translateY(12px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* -------------------------------------------------------------
-   TOASTS (notificações flutuantes)
-   ------------------------------------------------------------- */
-.toast-area {
+/* =============================================================
+   TOASTS
+   ============================================================= */
+.toast-area-cart {
   position: fixed;
-  top: var(--esp-4);
-  right: var(--esp-4);
+  top: 20px;
+  right: 20px;
   z-index: var(--z-toast);
   display: flex;
   flex-direction: column;
-  gap: var(--esp-2);
+  gap: 10px;
   pointer-events: none;
-}
-.toast {
-  background: #fff;
-  border-left: 4px solid var(--cor-info);
-  border-radius: var(--raio-md);
-  box-shadow: var(--sombra-lg);
-  padding: var(--esp-3) var(--esp-4);
-  min-width: 260px;
-  max-width: 380px;
-  font-size: var(--texto-sm);
-  pointer-events: auto;
-  animation: deslizar var(--transicao-normal);
-}
-.toast--sucesso { border-color: var(--cor-sucesso); }
-.toast--erro    { border-color: var(--cor-erro); }
-.toast--alerta  { border-color: var(--cor-alerta); }
-.toast__titulo  { font-weight: var(--peso-semibold); margin-bottom: 2px; }
-.toast__msg     { color: var(--cor-texto-suave); font-size: var(--texto-xs); }
-
-@keyframes deslizar {
-  from { opacity: 0; transform: translateX(20px); }
-  to { opacity: 1; transform: translateX(0); }
+  max-width: calc(100% - 40px);
 }
 
-/* -------------------------------------------------------------
+/* =============================================================
    AVATAR
-   ------------------------------------------------------------- */
+   ============================================================= */
 .avatar {
   width: 40px;
   height: 40px;
@@ -283,66 +340,36 @@
   flex-shrink: 0;
 }
 .avatar img { width: 100%; height: 100%; object-fit: cover; }
-.avatar--sm { width: 32px; height: 32px; font-size: var(--texto-xs); }
-.avatar--lg { width: 56px; height: 56px; font-size: var(--texto-lg); }
+.avatar--sm { width: 32px; height: 32px; font-size: 12px; }
+.avatar--lg { width: 56px; height: 56px; font-size: 18px; }
 
-/* -------------------------------------------------------------
-   TABS
-   ------------------------------------------------------------- */
-.tabs {
-  display: flex;
-  gap: var(--esp-1);
-  border-bottom: 1px solid var(--cor-borda);
-  margin-bottom: var(--esp-5);
-  overflow-x: auto;
-  scrollbar-width: none;
-}
-.tabs::-webkit-scrollbar { display: none; }
-
-.tab {
-  padding: var(--esp-3) var(--esp-4);
-  font-size: var(--texto-sm);
-  font-weight: var(--peso-medio);
-  color: var(--cor-texto-suave);
-  border-bottom: 2px solid transparent;
-  white-space: nowrap;
-  cursor: pointer;
-  background: none;
-  transition: color var(--transicao-rapida);
-}
-.tab:hover { color: var(--cor-texto); }
-.tab.ativo {
-  color: var(--cor-principal);
-  border-bottom-color: var(--cor-principal);
-}
-
-/* -------------------------------------------------------------
+/* =============================================================
    ESTADOS VAZIOS
-   ------------------------------------------------------------- */
+   ============================================================= */
 .estado-vazio {
   text-align: center;
-  padding: var(--esp-12) var(--esp-4);
+  padding: 48px 16px;
   color: var(--cor-texto-suave);
 }
 .estado-vazio__icone {
   width: 64px;
   height: 64px;
-  margin: 0 auto var(--esp-4);
+  margin: 0 auto 16px;
   color: var(--cor-borda);
 }
 .estado-vazio__titulo {
   font-size: var(--texto-lg);
   color: var(--cor-texto);
-  margin-bottom: var(--esp-2);
+  margin-bottom: 8px;
 }
 .estado-vazio__descricao {
   font-size: var(--texto-sm);
-  margin-bottom: var(--esp-5);
+  margin-bottom: 20px;
 }
 
-/* -------------------------------------------------------------
-   CARREGANDO
-   ------------------------------------------------------------- */
+/* =============================================================
+   LOADING
+   ============================================================= */
 .spinner {
   width: 24px;
   height: 24px;
@@ -354,30 +381,11 @@
 }
 .spinner--lg { width: 40px; height: 40px; border-width: 4px; }
 
-@keyframes girar {
-  to { transform: rotate(360deg); }
-}
+@keyframes girar { to { transform: rotate(360deg); } }
 
 .carregando {
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: var(--esp-8);
-}
-
-/* Skeleton (placeholder de carregamento) */
-.skeleton {
-  background: linear-gradient(
-    90deg,
-    #f1f5f9 0%,
-    #e2e8f0 50%,
-    #f1f5f9 100%
-  );
-  background-size: 200% 100%;
-  animation: brilhar 1.4s infinite;
-  border-radius: var(--raio-md);
-}
-@keyframes brilhar {
-  0%   { background-position: 200% 0; }
-  100% { background-position: -200% 0; }
+  padding: 32px;
 }
