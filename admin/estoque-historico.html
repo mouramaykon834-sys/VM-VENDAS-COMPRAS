@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Histórico de estoque — Admin</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: system-ui, -apple-system, sans-serif; background: #f8fafc; color: #0f172a; }
+    .layout { display: grid; grid-template-columns: 240px 1fr; min-height: 100vh; }
+    .sidebar { background: #0f172a; color: #cbd5e1; padding: 16px 0; }
+    .sidebar__logo { display: flex; align-items: center; gap: 8px; padding: 0 16px 20px; border-bottom: 1px solid rgba(255,255,255,.1); margin-bottom: 16px; color: #fff; font-weight: 700; font-size: 15px; }
+    .sidebar__badge { background: #0ea5e9; color: #fff; padding: 2px 8px; border-radius: 6px; font-size: 10px; font-weight: 700; }
+    .sidebar__secao { padding: 16px 16px 8px; font-size: 11px; text-transform: uppercase; letter-spacing: .5px; color: #64748b; font-weight: 600; }
+    .sidebar__lista { display: flex; flex-direction: column; gap: 2px; padding: 0 8px; }
+    .sidebar__item { padding: 10px 12px; border-radius: 8px; color: #cbd5e1; text-decoration: none; font-size: 14px; display: block; }
+    .sidebar__item:hover { background: rgba(255,255,255,.06); color: #fff; }
+    .sidebar__item.ativo { background: #0ea5e9; color: #fff; }
+    .main { display: flex; flex-direction: column; }
+    .topbar { background: #fff; border-bottom: 1px solid #e2e8f0; padding: 12px 24px; display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+    .topbar h1 { font-size: 18px; }
+    .btn-loja { padding: 8px 14px; border: 1px solid #0ea5e9; border-radius: 8px; color: #0ea5e9; text-decoration: none; font-size: 13px; font-weight: 600; }
+    .btn-loja:hover { background: #0ea5e9; color: #fff; }
+    .conteudo { padding: 24px; }
+    .filtros { background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px; margin-bottom: 16px; display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; align-items: end; }
+    .campo { display: flex; flex-direction: column; gap: 4px; }
+    .campo label { font-size: 12px; font-weight: 600; color: #64748b; }
+    .campo input, .campo select { padding: 8px 12px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 14px; }
+    .btn { padding: 9px 16px; border-radius: 8px; border: 1px solid #0ea5e9; background: #0ea5e9; color: #fff; font-weight: 600; font-size: 14px; cursor: pointer; }
+    .btn--fantasma { background: transparent; color: #0ea5e9; }
+    .tabela { width: 100%; background: #fff; border-collapse: collapse; border-radius: 12px; overflow: hidden; border: 1px solid #e2e8f0; }
+    .tabela th { text-align: left; padding: 12px 16px; background: #f8fafc; font-size: 12px; text-transform: uppercase; color: #64748b; font-weight: 600; }
+    .tabela td { padding: 12px 16px; border-top: 1px solid #e2e8f0; font-size: 13px; }
+    .tabela tr:hover td { background: #f8fafc; }
+    .badge { padding: 3px 10px; border-radius: 9999px; font-size: 11px; font-weight: 600; display: inline-block; }
+    .vazio { background: #fff; padding: 60px 24px; text-align: center; border-radius: 12px; border: 1px solid #e2e8f0; color: #64748b; }
+    .erro { padding: 20px; background: #fee2e2; color: #991b1b; border-radius: 8px; margin: 20px; font-family: monospace; }
+    .paginacao { display: flex; justify-content: center; gap: 6px; margin-top: 20px; flex-wrap: wrap; }
+    @media (max-width: 900px) { .layout { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="sidebar__logo"><span>🏠</span><span>Minha Loja</span><span class="sidebar__badge">ADMIN</span></div>
+      <div class="sidebar__secao">Principal</div>
+      <nav class="sidebar__lista">
+        <a href="./index.html" class="sidebar__item">Dashboard</a>
+        <a href="./pedidos.html" class="sidebar__item">Pedidos</a>
+        <a href="./propostas.html" class="sidebar__item">Propostas</a>
+        <a href="./conversas.html" class="sidebar__item">Conversas</a>
+      </nav>
+      <div class="sidebar__secao">Catálogo</div>
+      <nav class="sidebar__lista">
+        <a href="./produtos.html" class="sidebar__item">Produtos</a>
+        <a href="./categorias.html" class="sidebar__item">Categorias</a>
+      </nav>
+      <div class="sidebar__secao">Estoque</div>
+      <nav class="sidebar__lista">
+        <a href="./estoque.html" class="sidebar__item">Visão geral</a>
+        <a href="./estoque-movimentar.html" class="sidebar__item">Movimentar</a>
+        <a href="./estoque-historico.html" class="sidebar__item ativo">Histórico</a>
+        <a href="./estoque-alertas.html" class="sidebar__item">Alertas</a>
+      </nav>
+      <div class="sidebar__secao">Compras</div>
+      <nav class="sidebar__lista">
+        <a href="./fornecedores.html" class="sidebar__item">Fornecedores</a>
+        <a href="./compras.html" class="sidebar__item">Compras</a>
+      </nav>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <h1>Histórico de movimentações</h1>
+        <a href="../index.html" class="btn-loja">← Ver loja</a>
+      </header>
+
+      <div class="conteudo">
+        <form class="filtros" id="form-filtros">
+          <div class="campo">
+            <label>Tipo</label>
+            <select name="tipo">
+              <option value="">Todos</option>
+              <optgroup label="Entradas">
+                <option value="entrada_compra">Entrada por compra</option>
+                <option value="entrada_devolucao_cliente">Devolução de cliente</option>
+                <option value="entrada_ajuste">Ajuste positivo</option>
+              </optgroup>
+              <optgroup label="Saídas">
+                <option value="saida_venda">Saída por venda</option>
+                <option value="saida_devolucao_fornecedor">Devolução ao fornecedor</option>
+                <option value="saida_perda">Perda / avaria</option>
+                <option value="saida_uso_interno">Uso interno</option>
+                <option value="saida_ajuste">Ajuste negativo</option>
+              </optgroup>
+            </select>
+          </div>
+          <div class="campo">
+            <label>Data inicial</label>
+            <input type="date" name="dataInicio" />
+          </div>
+          <div class="campo">
+            <label>Data final</label>
+            <input type="date" name="dataFim" />
+          </div>
+          <div class="campo" style="grid-column: 1 / -1; flex-direction: row; gap: 8px;">
+            <button type="submit" class="btn">🔍 Filtrar</button>
+            <button type="button" class="btn btn--fantasma" id="btn-limpar">Limpar</button>
+          </div>
+        </form>
+
+        <div id="conteudo"><div class="vazio">Carregando...</div></div>
+        <div id="paginacao" class="paginacao"></div>
+      </div>
+    </main>
+  </div>
+
+  <script type="module">
+    const el = document.getElementById('conteudo');
+    const pag = document.getElementById('paginacao');
+    const esc = s => s == null ? '' : String(s).replace(/[&<>"']/g, function(m) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]; });
+
+    let supabase;
+    let estado = { filtros: {}, pagina: 1 };
+
+    (async () => {
+      try {
+        const mod = await import('../assets/js/supabase.js');
+        supabase = mod.supabase;
+
+        const r = await supabase.auth.getSession();
+        if (!r.data || !r.data.session) { location.href = '../login.html'; return; }
+
+        document.getElementById('form-filtros').onsubmit = function(e) {
+          e.preventDefault();
+          const f = e.target;
+          estado.filtros = {};
+          if (f.tipo.value) estado.filtros.tipo = f.tipo.value;
+          if (f.dataInicio.value) estado.filtros.dataInicio = f.dataInicio.value;
+          if (f.dataFim.value) estado.filtros.dataFim = f.dataFim.value;
+          estado.pagina = 1;
+          carregar();
+        };
+
+        document.getElementById('btn-limpar').onclick = function() {
+          document.getElementById('form-filtros').reset();
+          estado.filtros = {};
+          estado.pagina = 1;
+          carregar();
+        };
+
+        await carregar();
+      } catch (e) {
+        el.innerHTML = '<div class="erro">Erro: ' + esc(e.message) + '</div>';
+      }
+    })();
+
+    async function carregar() {
+      el.innerHTML = '<div class="vazio">Carregando...</div>';
+      pag.innerHTML = '';
+
+      try {
+        const mod = await import('../assets/js/services/stock.service.js');
+        const r = await mod.listarHistorico({ filtros: estado.filtros, pagina: estado.pagina, porPagina: 30 });
+
+        if (!r.movimentacoes.length) {
+          el.innerHTML = '<div class="vazio"><div style="font-size:18px;font-weight:600;color:#0f172a;margin-bottom:8px;">Nenhuma movimentação</div><p>Nenhum registro com esses filtros.</p></div>';
+          return;
+        }
+
+        el.innerHTML =
+          '<table class="tabela">' +
+            '<thead><tr><th>Data</th><th>Produto</th><th>Tipo</th><th style="text-align:right;">Qtd</th><th style="text-align:right;">Antes</th><th style="text-align:right;">Depois</th><th>Usuário</th></tr></thead>' +
+            '<tbody>' +
+              r.movimentacoes.map(function(m) {
+                const cor = mod.corTipo(m.tipo);
+                const nome = m.products ? m.products.nome : '—';
+                return '<tr>' +
+                  '<td style="color:#64748b;font-size:12px;">' + new Date(m.created_at).toLocaleString('pt-BR') + '</td>' +
+                  '<td>' + esc(nome) + '</td>' +
+                  '<td><span class="badge" style="background:' + cor.bg + ';color:' + cor.cor + ';">' + mod.rotuloTipo(m.tipo) + '</span></td>' +
+                  '<td style="text-align:right;font-weight:700;">' + m.quantidade + '</td>' +
+                  '<td style="text-align:right;color:#94a3b8;">' + m.estoque_antes + '</td>' +
+                  '<td style="text-align:right;font-weight:700;">' + m.estoque_depois + '</td>' +
+                  '<td style="font-size:12px;color:#64748b;">' + esc(m.user_email || '—') + '</td>' +
+                '</tr>';
+              }).join('') +
+            '</tbody>' +
+          '</table>';
+
+        if (r.totalPaginas > 1) {
+          let html = '';
+          for (let i = 1; i <= r.totalPaginas; i++) {
+            html += '<button class="btn ' + (i === r.pagina ? '' : 'btn--fantasma') + '" data-p="' + i + '">' + i + '</button>';
+          }
+          pag.innerHTML = html;
+          pag.querySelectorAll('[data-p]').forEach(function(b) {
+            b.onclick = function() {
+              estado.pagina = Number(b.dataset.p);
+              carregar();
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            };
+          });
+        }
+      } catch (e) {
+        el.innerHTML = '<div class="erro">Erro: ' + esc(e.message) + '</div>';
+      }
+    }
+  </script>
+</body>
+</html>
