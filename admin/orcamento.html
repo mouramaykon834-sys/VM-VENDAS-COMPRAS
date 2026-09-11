@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Detalhe do orçamento — Admin</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: system-ui, -apple-system, sans-serif; background: #f8fafc; color: #0f172a; }
+    .layout { display: grid; grid-template-columns: 240px 1fr; min-height: 100vh; }
+    .sidebar { background: #0f172a; color: #cbd5e1; padding: 16px 0; }
+    .sidebar__logo { display: flex; align-items: center; gap: 8px; padding: 0 16px 20px; border-bottom: 1px solid rgba(255,255,255,.1); margin-bottom: 16px; color: #fff; font-weight: 700; font-size: 15px; }
+    .sidebar__badge { background: #0ea5e9; color: #fff; padding: 2px 8px; border-radius: 6px; font-size: 10px; font-weight: 700; }
+    .sidebar__secao { padding: 16px 16px 8px; font-size: 11px; text-transform: uppercase; letter-spacing: .5px; color: #64748b; font-weight: 600; }
+    .sidebar__lista { display: flex; flex-direction: column; gap: 2px; padding: 0 8px; }
+    .sidebar__item { padding: 10px 12px; border-radius: 8px; color: #cbd5e1; text-decoration: none; font-size: 14px; display: block; }
+    .sidebar__item:hover { background: rgba(255,255,255,.06); color: #fff; }
+    .sidebar__item.ativo { background: #0ea5e9; color: #fff; }
+    .main { display: flex; flex-direction: column; }
+    .topbar { background: #fff; border-bottom: 1px solid #e2e8f0; padding: 12px 24px; display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+    .topbar h1 { font-size: 18px; }
+    .topbar__acoes { display: flex; gap: 8px; flex-wrap: wrap; }
+    .btn { padding: 10px 16px; border-radius: 8px; border: 1px solid #0ea5e9; background: #0ea5e9; color: #fff; font-weight: 600; font-size: 14px; cursor: pointer; text-decoration: none; display: inline-block; }
+    .btn:hover { filter: brightness(.94); }
+    .btn--fantasma { background: transparent; color: #0ea5e9; }
+    .btn--sucesso { background: #16a34a; border-color: #16a34a; }
+    .btn--erro { background: #dc2626; border-color: #dc2626; }
+    .btn--whatsapp { background: linear-gradient(135deg, #25D366, #128C7E); border-color: #25D366; }
+    .conteudo { padding: 24px; max-width: 900px; }
+    .bloco { background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; margin-bottom: 16px; }
+    .bloco h2 { font-size: 15px; margin-bottom: 16px; padding-bottom: 10px; border-bottom: 1px solid #e2e8f0; }
+    .tabela { width: 100%; border-collapse: collapse; }
+    .tabela th, .tabela td { padding: 10px 12px; text-align: left; font-size: 14px; border-bottom: 1px solid #e2e8f0; }
+    .tabela th { font-size: 12px; text-transform: uppercase; color: #64748b; }
+    .tabela td:last-child, .tabela th:last-child { text-align: right; }
+    .badge { padding: 4px 12px; border-radius: 9999px; font-size: 12px; font-weight: 600; display: inline-block; }
+    .badge--neutro { background: #f1f5f9; color: #475569; }
+    .badge--info { background: #dbeafe; color: #1e40af; }
+    .badge--alerta { background: #fef3c7; color: #92400e; }
+    .badge--sucesso { background: #dcfce7; color: #166534; }
+    .badge--erro { background: #fee2e2; color: #991b1b; }
+    .totais { text-align: right; margin-top: 16px; padding-top: 16px; border-top: 2px solid #e2e8f0; }
+    .totais__linha { margin-bottom: 6px; font-size: 14px; }
+    .totais__total { font-size: 20px; font-weight: 700; margin-top: 8px; }
+    .status { padding: 12px 16px; border-radius: 8px; font-size: 14px; margin-top: 12px; display: none; }
+    .status.visivel { display: block; }
+    .status--ok { background: #dcfce7; color: #166534; }
+    .status--err { background: #fee2e2; color: #991b1b; }
+    .erro { padding: 20px; background: #fee2e2; color: #991b1b; border-radius: 8px; margin: 20px; font-family: monospace; }
+    @media (max-width: 900px) { .layout { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="sidebar__logo"><span>🏠</span><span>Minha Loja</span><span class="sidebar__badge">ADMIN</span></div>
+      <div class="sidebar__secao">Principal</div>
+      <nav class="sidebar__lista">
+        <a href="./index.html" class="sidebar__item">Dashboard</a>
+      </nav>
+      <div class="sidebar__secao">Vendas</div>
+      <nav class="sidebar__lista">
+        <a href="./orcamentos.html" class="sidebar__item ativo">Orçamentos</a>
+      </nav>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <h1 id="titulo">Orçamento</h1>
+        <div class="topbar__acoes" id="acoes"></div>
+      </header>
+      <div class="conteudo" id="wrapper">
+        <div class="erro">Carregando...</div>
+      </div>
+    </main>
+  </div>
+
+  <script type="module">
+    const params = new URLSearchParams(location.search);
+    const id = params.get('id');
+    const esc = s => s == null ? '' : String(s).replace(/[&<>"']/g, function(m) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]; });
+
+    let supabase;
+    let orcamento;
+
+    (async () => {
+      try {
+        if (!id) { location.href = './orcamentos.html'; return; }
+
+        const mod = await import('../assets/js/supabase.js');
+        supabase = mod.supabase;
+
+        const r = await supabase.auth.getSession();
+        if (!r.data || !r.data.session) { location.href = '../login.html'; return; }
+
+        await carregar();
+      } catch (e) {
+        document.getElementById('wrapper').innerHTML = '<div class="erro">Erro: ' + esc(e.message) + '</div>';
+      }
+    })();
+
+    async function carregar() {
+      const mod = await import('../assets/js/services/quotes.service.js');
+      orcamento = await mod.buscarOrcamento(id);
+
+      if (!orcamento) {
+        document.getElementById('wrapper').innerHTML = '<div class="erro">Orçamento não encontrado.</div>';
+        return;
+      }
+
+      const st = mod.rotuloStatus(orcamento.status);
+      document.getElementById('titulo').textContent = 'Orçamento ' + orcamento.numero;
+
+      document.getElementById('wrapper').innerHTML =
+        '<div class="bloco">' +
+          '<h2>Informações <span class="badge badge--' + st.tipo + '" style="float:right;">' + st.texto + '</span></h2>' +
+          '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;font-size:14px;">' +
+            '<div><strong>Número:</strong> ' + esc(orcamento.numero) + '</div>' +
+            '<div><strong>Cliente:</strong> ' + esc(orcamento.cliente_nome) + '</div>' +
+            '<div><strong>Telefone:</strong> ' + esc(orcamento.cliente_telefone || '—') + '</div>' +
+            '<div><strong>E-mail:</strong> ' + esc(orcamento.cliente_email || '—') + '</div>' +
+            '<div><strong>Validade:</strong> ' + (orcamento.validade ? new Date(orcamento.validade).toLocaleDateString('pt-BR') : '—') + '</div>' +
+            '<div><strong>Responsável:</strong> ' + esc(orcamento.responsavel || '—') + '</div>' +
+            '<div><strong>Condição:</strong> ' + esc(orcamento.condicao_pagamento || '—') + '</div>' +
+            '<div><strong>Prazo:</strong> ' + esc(orcamento.prazo_entrega || '—') + '</div>' +
+          '</div>' +
+          (orcamento.observacoes ? '<div style="margin-top:14px;padding:12px;background:#f8fafc;border-radius:8px;font-size:13px;"><strong>Obs:</strong> ' + esc(orcamento.observacoes) + '</div>' : '') +
+        '</div>' +
+
+        '<div class="bloco">' +
+          '<h2>Itens</h2>' +
+          '<table class="tabela">' +
+            '<thead><tr><th>Produto</th><th style="text-align:center;">Qtd</th><th style="text-align:right;">Preço un.</th><th style="text-align:right;">Desc.</th><th>Subtotal</th></tr></thead>' +
+            '<tbody>' +
+              (orcamento.quote_items || []).map(function(i) {
+                return '<tr>' +
+                  '<td>' + esc(i.product_nome) + '</td>' +
+                  '<td style="text-align:center;">' + i.quantidade + '</td>' +
+                  '<td style="text-align:right;">R$ ' + Number(i.preco_unitario).toFixed(2) + '</td>' +
+                  '<td style="text-align:right;">R$ ' + Number(i.desconto_item || 0).toFixed(2) + '</td>' +
+                  '<td style="text-align:right;font-weight:700;">R$ ' + Number(i.subtotal).toFixed(2) + '</td>' +
+                '</tr>';
+              }).join('') +
+            '</tbody>' +
+          '</table>' +
+          '<div class="totais">' +
+            '<div class="totais__linha">Subtotal: <strong>R$ ' + Number(orcamento.subtotal).toFixed(2) + '</strong></div>' +
+            '<div class="totais__linha">Desconto: <strong>- R$ ' + Number(orcamento.desconto).toFixed(2) + '</strong></div>' +
+            '<div class="totais__linha">Frete: <strong>+ R$ ' + Number(orcamento.frete).toFixed(2) + '</strong></div>' +
+            '<div class="totais__total">Total: R$ ' + Number(orcamento.total).toFixed(2) + '</div>' +
+          '</div>' +
+        '</div>' +
+
+        '<div id="status-msg" class="status"></div>';
+
+      renderAcoes();
+    }
+
+    function renderAcoes() {
+      const acoes = document.getElementById('acoes');
+      acoes.innerHTML = '';
+
+      const btnVoltar = document.createElement('a');
+      btnVoltar.href = './orcamentos.html';
+      btnVoltar.className = 'btn btn--fantasma';
+      btnVoltar.textContent = '← Voltar';
+      acoes.appendChild(btnVoltar);
+
+      const btnEditar = document.createElement('a');
+      btnEditar.href = './orcamento-editar.html?id=' + orcamento.id;
+      btnEditar.className = 'btn btn--fantasma';
+      btnEditar.textContent = 'Editar';
+      acoes.appendChild(btnEditar);
+
+      const btnPDF = document.createElement('a');
+      btnPDF.href = './orcamento-pdf.html?id=' + orcamento.id;
+      btnPDF.target = '_blank';
+      btnPDF.className = 'btn';
+      btnPDF.textContent = '📄 Gerar PDF';
+      acoes.appendChild(btnPDF);
+
+      const btnWhats = document.createElement('button');
+      btnWhats.className = 'btn btn--whatsapp';
+      btnWhats.textContent = '💬 WhatsApp';
+      btnWhats.onclick = compartilharWhatsApp;
+      acoes.appendChild(btnWhats);
+
+      if (orcamento.status === 'aprovado' && !orcamento.venda_id) {
+        const btnConverter = document.createElement('button');
+        btnConverter.className = 'btn btn--sucesso';
+        btnConverter.textContent = '✅ Converter em venda';
+        btnConverter.onclick = converter;
+        acoes.appendChild(btnConverter);
+      }
+
+      if (orcamento.status !== 'convertido' && orcamento.status !== 'cancelado') {
+        const btnCancelar = document.createElement('button');
+        btnCancelar.className = 'btn btn--erro';
+        btnCancelar.textContent = 'Cancelar';
+        btnCancelar.onclick = cancelar;
+        acoes.appendChild(btnCancelar);
+      }
+    }
+
+    async function converter() {
+      if (!confirm('Converter este orçamento em venda? Um novo pedido será criado.')) return;
+      try {
+        const mod = await import('../assets/js/services/quotes.service.js');
+        const vendaId = await mod.converterEmVenda(orcamento.id);
+        mostrarMsg('✅ Convertido! Pedido criado.', 'ok');
+        setTimeout(function() { location.reload(); }, 1500);
+      } catch (e) {
+        mostrarMsg('❌ ' + e.message, 'err');
+      }
+    }
+
+    async function cancelar() {
+      if (!confirm('Cancelar este orçamento?')) return;
+      try {
+        const mod = await import('../assets/js/services/quotes.service.js');
+        await mod.alterarStatusOrcamento(orcamento.id, 'cancelado');
+        mostrarMsg('✅ Cancelado.', 'ok');
+        setTimeout(function() { location.reload(); }, 800);
+      } catch (e) {
+        mostrarMsg('❌ ' + e.message, 'err');
+      }
+    }
+
+    function compartilharWhatsApp() {
+      const num = (orcamento.cliente_whatsapp || orcamento.cliente_telefone || '').replace(/\D/g, '');
+      if (!num) { alert('Cliente não tem WhatsApp cadastrado.'); return; }
+
+      const texto =
+        '*Orçamento ' + orcamento.numero + '*\n\n' +
+        'Olá ' + orcamento.cliente_nome + '!\n\n' +
+        'Segue o resumo do seu orçamento:\n\n' +
+        (orcamento.quote_items || []).map(function(i) {
+          return '• ' + i.quantidade + 'x ' + i.product_nome + ' — R$ ' + Number(i.subtotal).toFixed(2);
+        }).join('\n') +
+        '\n\n*Total: R$ ' + Number(orcamento.total).toFixed(2) + '*' +
+        (orcamento.validade ? '\n\nVálido até: ' + new Date(orcamento.validade).toLocaleDateString('pt-BR') : '') +
+        (orcamento.condicao_pagamento ? '\nPagamento: ' + orcamento.condicao_pagamento : '') +
+        '\n\nQualquer dúvida, é só chamar!';
+
+      window.open('https://wa.me/55' + num + '?text=' + encodeURIComponent(texto), '_blank');
+    }
+
+    function mostrarMsg(msg, tipo) {
+      const el = document.getElementById('status-msg');
+      el.textContent = msg;
+      el.className = 'status visivel status--' + tipo;
+    }
+  </script>
+</body>
+</html>
