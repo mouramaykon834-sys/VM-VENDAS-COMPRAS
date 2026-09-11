@@ -3,20 +3,37 @@
    ============================================================= */
 
 :root {
+  /* Cores da marca */
   --cor-principal:    #0ea5e9;
+  --cor-principal-escura: #0284c7;
+  --cor-principal-clara: #7dd3fc;
   --cor-secundaria:   #0f172a;
   --cor-destaque:     #f59e0b;
+  --cor-destaque-escura: #d97706;
+
+  /* Cores de fundo e texto */
   --cor-fundo:        #ffffff;
   --cor-fundo-suave:  #f8fafc;
   --cor-texto:        #0f172a;
   --cor-texto-suave:  #64748b;
   --cor-borda:        #e2e8f0;
+  --cor-borda-escura: #cbd5e1;
+
+  /* Cores semânticas */
   --cor-sucesso:      #16a34a;
+  --cor-sucesso-escura: #15803d;
   --cor-alerta:       #f59e0b;
   --cor-erro:         #dc2626;
+  --cor-erro-escura:  #b91c1c;
   --cor-info:         #0ea5e9;
 
-  --fonte-principal: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  /* Tipografia */
+  --fonte-principal: system-ui, -apple-system, "Segoe UI", Roboto,
+                     "Helvetica Neue", Arial, sans-serif;
+  --fonte-titulo:    var(--fonte-principal);
+  --fonte-mono:      ui-monospace, "SF Mono", Menlo, Monaco,
+                     "Cascadia Code", Consolas, monospace;
+
   --texto-xs:   12px;
   --texto-sm:   14px;
   --texto-base: 16px;
@@ -25,14 +42,17 @@
   --texto-2xl:  24px;
   --texto-3xl:  30px;
   --texto-4xl:  36px;
+
   --peso-normal:   400;
   --peso-medio:    500;
   --peso-semibold: 600;
   --peso-bold:     700;
+
   --linha-apertada: 1.25;
   --linha-normal:   1.5;
   --linha-solta:    1.75;
 
+  /* Espaçamentos */
   --esp-1:  4px;
   --esp-2:  8px;
   --esp-3:  12px;
@@ -44,32 +64,67 @@
   --esp-12: 48px;
   --esp-16: 64px;
 
-  --raio-sm: 6px;
-  --raio-md: 8px;
-  --raio-lg: 12px;
-  --raio-xl: 16px;
+  /* Raios */
+  --raio-sm:   6px;
+  --raio-md:   8px;
+  --raio-lg:   12px;
+  --raio-xl:   16px;
   --raio-full: 9999px;
-  --raio-botao: 8px;
-  --raio-card: 12px;
 
+  --raio-botao: var(--raio-md);
+  --raio-card:  var(--raio-lg);
+  --raio-input: var(--raio-md);
+
+  /* Sombras */
   --sombra-sm: 0 1px 2px rgba(15, 23, 42, 0.05);
   --sombra-md: 0 4px 12px rgba(15, 23, 42, 0.08);
   --sombra-lg: 0 10px 30px rgba(15, 23, 42, 0.10);
+  --sombra-xl: 0 20px 40px rgba(15, 23, 42, 0.12);
 
-  --transicao-rapida: 120ms ease;
-  --transicao-normal: 200ms ease;
+  /* Transições */
+  --transicao-rapida:  120ms ease;
+  --transicao-normal:  200ms ease;
+  --transicao-lenta:   320ms ease;
 
-  --altura-header: 72px;
-  --altura-header-mob: 64px;
+  /* Layout */
+  --largura-maxima:     1280px;
+  --largura-conteudo:   1080px;
+  --altura-header:      72px;
+  --altura-header-mob:  60px;
+
+  /* Z-index */
+  --z-base:      1;
+  --z-dropdown:  100;
+  --z-sticky:    200;
+  --z-overlay:   900;
+  --z-modal:     1000;
+  --z-toast:     1100;
+
+  /* Botões — padrões */
+  --botao-altura:      44px;
+  --botao-altura-sm:   36px;
+  --botao-altura-lg:   52px;
+  --botao-pad-x:       18px;
+  --botao-pad-x-sm:    12px;
+  --botao-pad-x-lg:    24px;
+  --botao-fonte:       15px;
+  --botao-fonte-sm:    13px;
+  --botao-fonte-lg:    16px;
+
+  /* Foco */
+  --anel-foco: 0 0 0 3px rgba(14, 165, 233, 0.35);
 }
 
-/* MODO ESCURO */
+/* =============================================================
+   MODO ESCURO
+   ============================================================= */
 html[data-tema="escuro"] {
   --cor-fundo:        #0f172a;
   --cor-fundo-suave:  #1e293b;
   --cor-texto:        #f1f5f9;
   --cor-texto-suave:  #94a3b8;
   --cor-borda:        #334155;
+  --cor-borda-escura: #475569;
   --cor-secundaria:   #f1f5f9;
 }
 
@@ -83,7 +138,8 @@ html[data-tema="escuro"] .cartao,
 html[data-tema="escuro"] .produto-card,
 html[data-tema="escuro"] .resumo,
 html[data-tema="escuro"] .filtros,
-html[data-tema="escuro"] .bloco {
+html[data-tema="escuro"] .bloco,
+html[data-tema="escuro"] .tabela {
   background-color: #1e293b !important;
   border-color: #334155 !important;
   color: #f1f5f9;
@@ -101,7 +157,26 @@ html[data-tema="escuro"] select {
   border-color: #334155;
 }
 
-html[data-tema="escuro"] .cabecalho__busca input {
-  background: #0f172a;
-  color: #f1f5f9;
+/* =============================================================
+   FORÇAR MOBILE / DESKTOP (via botão)
+   ============================================================= */
+html[data-modo="mobile"] body {
+  max-width: 480px;
+  margin: 0 auto;
+  box-shadow: 0 0 40px rgba(0,0,0,.1);
+  background: #f1f5f9;
+}
+
+html[data-modo="mobile"] .cabecalho,
+html[data-modo="mobile"] .nav-categorias,
+html[data-modo="mobile"] .nav-inferior {
+  max-width: 480px;
+  margin-left: auto;
+  margin-right: auto;
+  left: 0;
+  right: 0;
+}
+
+html[data-modo="desktop"] body {
+  min-width: 1280px;
 }
