@@ -4,30 +4,42 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="robots" content="noindex, nofollow" />
-  <title>Clientes — Admin</title>
+  <title>Clientes e usuários — Admin</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: system-ui, sans-serif; background: #f8fafc; color: #0f172a; }
+    body { font-family: system-ui, -apple-system, sans-serif; background: #f8fafc; color: #0f172a; }
     .layout { display: grid; grid-template-columns: 240px 1fr; min-height: 100vh; }
     .sidebar { background: #0f172a; color: #cbd5e1; padding: 16px 0; }
-    .sidebar__logo { display: flex; align-items: center; gap: 8px; padding: 0 16px 20px; border-bottom: 1px solid rgba(255,255,255,.1); margin-bottom: 16px; color: #fff; font-weight: 700; }
-    .sidebar__badge { background: #0ea5e9; color: #fff; padding: 2px 8px; border-radius: 6px; font-size: 10px; }
-    .sidebar__secao { padding: 16px 16px 8px; font-size: 11px; text-transform: uppercase; color: #64748b; font-weight: 600; }
+    .sidebar__logo { display: flex; align-items: center; gap: 8px; padding: 0 16px 20px; border-bottom: 1px solid rgba(255,255,255,.1); margin-bottom: 16px; color: #fff; font-weight: 700; font-size: 15px; }
+    .sidebar__badge { background: #0ea5e9; color: #fff; padding: 2px 8px; border-radius: 6px; font-size: 10px; font-weight: 700; }
+    .sidebar__secao { padding: 16px 16px 8px; font-size: 11px; text-transform: uppercase; letter-spacing: .5px; color: #64748b; font-weight: 600; }
     .sidebar__lista { display: flex; flex-direction: column; gap: 2px; padding: 0 8px; }
-    .sidebar__item { padding: 10px 12px; border-radius: 8px; color: #cbd5e1; text-decoration: none; font-size: 14px; }
+    .sidebar__item { padding: 10px 12px; border-radius: 8px; color: #cbd5e1; text-decoration: none; font-size: 14px; display: block; }
     .sidebar__item:hover { background: rgba(255,255,255,.06); color: #fff; }
     .sidebar__item.ativo { background: #0ea5e9; color: #fff; }
     .main { display: flex; flex-direction: column; }
-    .topbar { background: #fff; border-bottom: 1px solid #e2e8f0; padding: 16px 24px; }
+    .topbar { background: #fff; border-bottom: 1px solid #e2e8f0; padding: 12px 24px; display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
     .topbar h1 { font-size: 18px; }
+    .topbar input[type=search] { padding: 8px 12px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 14px; width: 220px; }
+    .btn-loja { padding: 8px 14px; border: 1px solid #0ea5e9; border-radius: 8px; color: #0ea5e9; text-decoration: none; font-size: 13px; font-weight: 600; }
+    .btn-loja:hover { background: #0ea5e9; color: #fff; }
     .conteudo { padding: 24px; }
     .tabela { width: 100%; background: #fff; border-collapse: collapse; border-radius: 12px; overflow: hidden; border: 1px solid #e2e8f0; }
-    .tabela th { text-align: left; padding: 12px 16px; background: #f8fafc; font-size: 12px; text-transform: uppercase; color: #64748b; }
+    .tabela th { text-align: left; padding: 12px 16px; background: #f8fafc; font-size: 12px; text-transform: uppercase; color: #64748b; font-weight: 600; }
     .tabela td { padding: 12px 16px; border-top: 1px solid #e2e8f0; font-size: 14px; }
     .tabela tr:hover td { background: #f8fafc; }
+    .avatar { width: 36px; height: 36px; border-radius: 50%; background: #0ea5e9; color: #fff; display: inline-flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px; }
+    .badge { padding: 3px 10px; border-radius: 9999px; font-size: 11px; font-weight: 600; display: inline-block; }
+    .badge--admin { background: #fef3c7; color: #92400e; }
+    .badge--gerente { background: #dbeafe; color: #1e40af; }
+    .badge--financeiro { background: #dcfce7; color: #166534; }
+    .badge--comercial { background: #f3e8ff; color: #6b21a8; }
+    .badge--estoque { background: #fed7aa; color: #9a3412; }
+    .badge--cliente { background: #f1f5f9; color: #475569; }
+    select.perfil-select { padding: 6px 10px; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 13px; }
     .vazio { background: #fff; padding: 60px 24px; text-align: center; border-radius: 12px; border: 1px solid #e2e8f0; color: #64748b; }
     .erro { padding: 20px; background: #fee2e2; color: #991b1b; border-radius: 8px; margin: 20px; font-family: monospace; }
-    .avatar { width: 36px; height: 36px; border-radius: 50%; background: #0ea5e9; color: #fff; display: inline-flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px; }
+    @media (max-width: 900px) { .layout { grid-template-columns: 1fr; } }
   </style>
 </head>
 <body>
@@ -45,69 +57,142 @@
       <nav class="sidebar__lista">
         <a href="./produtos.html" class="sidebar__item">Produtos</a>
         <a href="./categorias.html" class="sidebar__item">Categorias</a>
+        <a href="./produtos-destaque.html" class="sidebar__item">Destaques e promoções</a>
       </nav>
       <div class="sidebar__secao">Clientes</div>
       <nav class="sidebar__lista">
-        <a href="./clientes.html" class="sidebar__item ativo">Clientes</a>
+        <a href="./clientes.html" class="sidebar__item ativo">Clientes e usuários</a>
+      </nav>
+      <div class="sidebar__secao">Sistema</div>
+      <nav class="sidebar__lista">
+        <a href="./auditoria.html" class="sidebar__item">Auditoria</a>
       </nav>
       <div class="sidebar__secao">Configurações</div>
       <nav class="sidebar__lista">
         <a href="./empresa.html" class="sidebar__item">Dados da empresa</a>
         <a href="./identidade.html" class="sidebar__item">Identidade visual</a>
+        <a href="./configuracoes.html" class="sidebar__item">Outras configurações</a>
       </nav>
     </aside>
+
     <main class="main">
-      <header class="topbar"><h1>Clientes</h1></header>
+      <header class="topbar">
+        <h1>Clientes e usuários</h1>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <input type="search" id="busca" placeholder="Buscar por nome ou e-mail..." />
+          <a href="../index.html" class="btn-loja">← Ver loja</a>
+        </div>
+      </header>
       <div class="conteudo" id="conteudo"><div class="vazio">Carregando...</div></div>
     </main>
   </div>
 
   <script type="module">
     const el = document.getElementById('conteudo');
-    const esc = s => s == null ? '' : String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+    const esc = s => s == null ? '' : String(s).replace(/[&<>"']/g, function(m) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]; });
+
+    let supabase;
+    let todos = [];
 
     (async () => {
       try {
-        const { supabase } = await import('../assets/js/supabase.js');
+        const mod = await import('../assets/js/supabase.js');
+        supabase = mod.supabase;
+
         const r = await supabase.auth.getSession();
-        if (!r.data?.session) { location.href = '../login.html'; return; }
+        if (!r.data || !r.data.session) { location.href = '../login.html'; return; }
+
         const p = await supabase.from('profiles').select('role').eq('id', r.data.session.user.id).maybeSingle();
-        if (!p.data || p.data.role !== 'admin') { el.innerHTML = '<div class="erro">Acesso restrito</div>'; return; }
-
-        const { data, error } = await supabase
-          .from('profiles')
-          .select('*')
-          .order('created_at', { ascending: false });
-
-        if (error) { el.innerHTML = `<div class="erro">${esc(error.message)}</div>`; return; }
-        if (!data.length) {
-          el.innerHTML = `<div class="vazio">Nenhum cliente cadastrado ainda.</div>`;
+        if (!p.data || p.data.role !== 'admin') {
+          el.innerHTML = '<div class="erro">Apenas administradores podem gerenciar usuários.</div>';
           return;
         }
 
-        el.innerHTML = `
-          <table class="tabela">
-            <thead><tr><th></th><th>Nome</th><th>E-mail</th><th>Telefone</th><th>WhatsApp</th><th>Papel</th><th>Cadastrado em</th></tr></thead>
-            <tbody>
-              ${data.map(c => {
-                const inicial = (c.nome || '?').trim().charAt(0).toUpperCase();
-                return `
-                  <tr>
-                    <td><span class="avatar">${inicial}</span></td>
-                    <td><strong>${esc(c.nome || '-')}</strong></td>
-                    <td>${esc(c.email || '-')}</td>
-                    <td>${esc(c.telefone || '-')}</td>
-                    <td>${esc(c.whatsapp || '-')}</td>
-                    <td>${c.role === 'admin' ? '<span style="color:#0ea5e9;font-weight:600;">Admin</span>' : 'Cliente'}</td>
-                    <td style="font-size:12px;color:#64748b;">${new Date(c.created_at).toLocaleDateString('pt-BR')}</td>
-                  </tr>
-                `;
-              }).join('')}
-            </tbody>
-          </table>
-        `;
-      } catch (e) { el.innerHTML = `<div class="erro">${esc(e.message)}</div>`; }
+        await carregar();
+
+        document.getElementById('busca').addEventListener('input', function() {
+          const q = this.value.trim().toLowerCase();
+          renderizar(todos.filter(function(x) {
+            return !q || (x.nome || '').toLowerCase().indexOf(q) !== -1 || (x.email || '').toLowerCase().indexOf(q) !== -1;
+          }));
+        });
+      } catch (e) {
+        el.innerHTML = '<div class="erro">Erro: ' + esc(e.message) + '</div>';
+      }
     })();
+
+    async function carregar() {
+      const r = await supabase
+        .from('profiles')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (r.error) { el.innerHTML = '<div class="erro">' + esc(r.error.message) + '</div>'; return; }
+      todos = r.data || [];
+      renderizar(todos);
+    }
+
+    function renderizar(lista) {
+      if (!lista.length) {
+        el.innerHTML = '<div class="vazio">Nenhum usuário encontrado.</div>';
+        return;
+      }
+
+      el.innerHTML =
+        '<table class="tabela">' +
+          '<thead><tr><th></th><th>Nome</th><th>E-mail</th><th>Telefone</th><th>Perfil</th><th>Cadastro</th><th></th></tr></thead>' +
+          '<tbody>' +
+            lista.map(function(u) {
+              const inicial = (u.nome || u.email || '?').trim().charAt(0).toUpperCase();
+              return '<tr>' +
+                '<td><span class="avatar">' + esc(inicial) + '</span></td>' +
+                '<td><strong>' + esc(u.nome || '-') + '</strong></td>' +
+                '<td>' + esc(u.email || '-') + '</td>' +
+                '<td>' + esc(u.telefone || '-') + '</td>' +
+                '<td>' +
+                  '<select class="perfil-select" data-user="' + u.id + '">' +
+                    ['cliente','comercial','estoque','financeiro','gerente','admin'].map(function(role) {
+                      return '<option value="' + role + '"' + (u.role === role ? ' selected' : '') + '>' + rotulo(role) + '</option>';
+                    }).join('') +
+                  '</select>' +
+                '</td>' +
+                '<td style="font-size:12px;color:#64748b;">' + new Date(u.created_at).toLocaleDateString('pt-BR') + '</td>' +
+                '<td><span class="badge badge--' + (u.role || 'cliente') + '">' + rotulo(u.role) + '</span></td>' +
+              '</tr>';
+            }).join('') +
+          '</tbody>' +
+        '</table>';
+
+      el.querySelectorAll('.perfil-select').forEach(function(sel) {
+        sel.onchange = async function() {
+          const userId = sel.dataset.user;
+          const novoRole = sel.value;
+
+          if (!confirm('Alterar o perfil deste usuário para "' + rotulo(novoRole) + '"?')) {
+            carregar();
+            return;
+          }
+
+          try {
+            const { alterarPerfilUsuario } = await import('../assets/js/services/permissions.service.js');
+            await alterarPerfilUsuario(userId, novoRole);
+            alert('✅ Perfil atualizado!');
+            carregar();
+          } catch (e) {
+            alert('Erro: ' + e.message);
+            carregar();
+          }
+        };
+      });
+    }
+
+    function rotulo(r) {
+      const map = {
+        admin: 'Administrador', gerente: 'Gerente', financeiro: 'Financeiro',
+        comercial: 'Comercial', estoque: 'Estoque', cliente: 'Cliente'
+      };
+      return map[r] || r;
+    }
   </script>
 </body>
 </html>
