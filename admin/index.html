@@ -5,12 +5,47 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="robots" content="noindex, nofollow" />
   <title>Dashboard — Admin</title>
-
-  <link rel="stylesheet" href="../assets/css/tokens.css" />
-  <link rel="stylesheet" href="../assets/css/base.css" />
-  <link rel="stylesheet" href="../assets/css/layout.css" />
-  <link rel="stylesheet" href="../assets/css/components.css" />
-  <link rel="stylesheet" href="../assets/css/admin.css" />
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: system-ui, -apple-system, sans-serif; background: #f8fafc; color: #0f172a; margin: 0; }
+    .admin-layout { display: grid; grid-template-columns: 240px 1fr; min-height: 100vh; }
+    .admin-sidebar { background: #0f172a; color: #cbd5e1; padding: 16px 0; height: 100vh; overflow-y: auto; position: sticky; top: 0; }
+    .admin-sidebar__logo { display: flex; align-items: center; gap: 8px; padding: 0 16px 20px; border-bottom: 1px solid rgba(255,255,255,.1); margin-bottom: 16px; color: #fff; font-weight: 700; font-size: 15px; text-decoration: none; }
+    .admin-sidebar__logo-badge { background: #0ea5e9; color: #fff; padding: 2px 8px; border-radius: 6px; font-size: 10px; font-weight: 700; }
+    .admin-sidebar__secao { padding: 16px 16px 8px; font-size: 11px; text-transform: uppercase; letter-spacing: .5px; color: #64748b; font-weight: 600; }
+    .admin-sidebar__lista { display: flex; flex-direction: column; gap: 2px; padding: 0 8px; }
+    .admin-sidebar__item { padding: 10px 12px; border-radius: 8px; color: #cbd5e1; text-decoration: none; font-size: 14px; display: block; }
+    .admin-sidebar__item:hover { background: rgba(255,255,255,.06); color: #fff; }
+    .admin-sidebar__item.ativo { background: #0ea5e9; color: #fff; }
+    .admin-sidebar__rodape { margin-top: 20px; padding: 16px; border-top: 1px solid rgba(255,255,255,.1); }
+    .admin-sidebar__rodape a { color: #94a3b8; text-decoration: none; font-size: 13px; }
+    .admin-sidebar__rodape a:hover { color: #fff; }
+    .admin-sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(15,23,42,.5); z-index: 90; }
+    .admin-sidebar-overlay.ativa { display: block; }
+    .admin-main { display: flex; flex-direction: column; min-height: 100vh; }
+    .admin-topbar { background: #fff; border-bottom: 1px solid #e2e8f0; padding: 12px 24px; display: flex; align-items: center; gap: 12px; position: sticky; top: 0; z-index: 50; }
+    .admin-topbar__titulo { font-size: 18px; flex: 1; }
+    .admin-topbar__acoes { display: flex; gap: 8px; align-items: center; }
+    .admin-topbar__menu-btn { display: none; background: none; border: none; cursor: pointer; padding: 6px; color: #0f172a; }
+    .admin-conteudo { padding: 24px; flex: 1; }
+    .btn { padding: 9px 16px; border-radius: 8px; border: 1px solid #0ea5e9; background: #0ea5e9; color: #fff; font-weight: 600; font-size: 14px; cursor: pointer; text-decoration: none; display: inline-block; }
+    .btn:hover { filter: brightness(.94); }
+    .btn--contorno { background: transparent; color: #0ea5e9; }
+    .btn--contorno:hover { background: #0ea5e9; color: #fff; }
+    select { padding: 8px 12px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 14px; font-family: inherit; }
+    .spinner { width: 24px; height: 24px; border: 3px solid #e2e8f0; border-top-color: #0ea5e9; border-radius: 50%; animation: spin .7s linear infinite; display: inline-block; }
+    .spinner--lg { width: 40px; height: 40px; border-width: 4px; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .carregando { display: flex; justify-content: center; align-items: center; padding: 60px; }
+    .erro { padding: 20px; background: #fee2e2; color: #991b1b; border-radius: 8px; font-family: monospace; font-size: 13px; }
+    @media (max-width: 900px) {
+      .admin-layout { grid-template-columns: 1fr; }
+      .admin-sidebar { position: fixed; left: -280px; top: 0; width: 260px; z-index: 100; transition: left .2s; }
+      .admin-sidebar.aberta { left: 0; }
+      .admin-topbar__menu-btn { display: block; }
+      .admin-conteudo { padding: 16px; }
+    }
+  </style>
 </head>
 <body>
 
@@ -25,14 +60,14 @@
         </button>
         <h1 class="admin-topbar__titulo">Dashboard</h1>
         <div class="admin-topbar__acoes">
-          <select id="filtro-periodo" style="padding:8px 12px;border:1px solid #e2e8f0;border-radius:8px;font-size:14px;">
+          <select id="filtro-periodo">
             <option value="hoje">Hoje</option>
             <option value="7dias">Últimos 7 dias</option>
             <option value="mes" selected>Este mês</option>
             <option value="mes_anterior">Mês anterior</option>
             <option value="personalizado">Personalizado</option>
           </select>
-          <a href="../index.html" class="btn btn--contorno btn--sm" target="_blank">Ver loja</a>
+          <a href="../index.html" class="btn btn--contorno" target="_blank">Ver loja</a>
         </div>
       </header>
 
@@ -41,11 +76,11 @@
           <div style="display:flex;gap:12px;align-items:end;flex-wrap:wrap;">
             <div><label style="display:block;font-size:12px;font-weight:600;color:#64748b;margin-bottom:4px;">De</label><input type="date" id="dataInicio" style="padding:8px 12px;border:1px solid #e2e8f0;border-radius:8px;" /></div>
             <div><label style="display:block;font-size:12px;font-weight:600;color:#64748b;margin-bottom:4px;">Até</label><input type="date" id="dataFim" style="padding:8px 12px;border:1px solid #e2e8f0;border-radius:8px;" /></div>
-            <button class="btn btn--principal btn--sm" id="btn-aplicar-filtro">Aplicar</button>
+            <button class="btn" id="btn-aplicar-filtro">Aplicar</button>
           </div>
         </div>
 
-        <div id="conteudo"><div class="carregando" style="padding:60px;"><div class="spinner spinner--lg"></div></div></div>
+        <div id="conteudo"><div class="carregando"><div class="spinner spinner--lg"></div></div></div>
       </div>
     </main>
   </div>
@@ -66,7 +101,7 @@
         if (!r.data || !r.data.session) { location.href = '../login.html'; return; }
 
         const p = await supabase.from('profiles').select('role').eq('id', r.data.session.user.id).maybeSingle();
-        if (!p.data) { el.innerHTML = '<div class="erro" style="padding:20px;background:#fee2e2;color:#991b1b;border-radius:8px;">Perfil não encontrado</div>'; return; }
+        if (!p.data) { el.innerHTML = '<div class="erro">Perfil não encontrado</div>'; return; }
 
         renderMenu();
         await carregar();
@@ -79,7 +114,7 @@
 
         document.getElementById('btn-aplicar-filtro').onclick = carregar;
       } catch (e) {
-        el.innerHTML = '<div style="padding:20px;background:#fee2e2;color:#991b1b;border-radius:8px;font-family:monospace;">Erro: ' + esc(e.message) + '</div>';
+        el.innerHTML = '<div class="erro">Erro: ' + esc(e.message) + '</div>';
       }
     })();
 
@@ -191,7 +226,7 @@
     }
 
     async function carregar() {
-      el.innerHTML = '<div class="carregando" style="padding:60px;"><div class="spinner spinner--lg"></div></div>';
+      el.innerHTML = '<div class="carregando"><div class="spinner spinner--lg"></div></div>';
 
       try {
         const mod = await import('../assets/js/services/reports.service.js');
@@ -201,7 +236,6 @@
         const topProdutos = await mod.produtosMaisVendidos({ limite: 8 });
 
         el.innerHTML =
-          // KPIs principais
           '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:24px;">' +
             kpiCard('💰 Faturamento', 'R$ ' + kpis.faturamento.toFixed(2), '#0ea5e9') +
             kpiCard('🛒 Vendas', kpis.vendas, '#0ea5e9') +
@@ -209,7 +243,6 @@
             kpiCard('📋 Orçamentos pendentes', kpis.orcamentosPendentes, '#f59e0b') +
           '</div>' +
 
-          // KPIs secundários
           '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:24px;">' +
             kpiCard('🛍️ Compras', 'R$ ' + kpis.totalCompras.toFixed(2), '#f97316') +
             kpiCard('📥 A receber', 'R$ ' + kpis.contasReceber.toFixed(2), '#16a34a') +
@@ -217,14 +250,11 @@
             kpiCard('📦 Valor em estoque', 'R$ ' + kpis.valorEstoque.toFixed(2), '#8b5cf6') +
           '</div>' +
 
-          // Lucro bruto destacado
           '<div style="background:' + (kpis.lucroBruto >= 0 ? '#f0fdf4' : '#fef2f2') + ';border:1px solid ' + (kpis.lucroBruto >= 0 ? '#86efac' : '#fca5a5') + ';border-radius:12px;padding:24px;margin-bottom:24px;">' +
             '<div style="font-size:12px;text-transform:uppercase;color:#64748b;font-weight:600;margin-bottom:8px;">Lucro bruto estimado</div>' +
             '<div style="font-size:36px;font-weight:700;color:' + (kpis.lucroBruto >= 0 ? '#16a34a' : '#dc2626') + ';">R$ ' + kpis.lucroBruto.toFixed(2) + '</div>' +
-            '<div style="font-size:12px;color:#64748b;margin-top:8px;">Faturamento (' + kpis.faturamento.toFixed(2) + ') − Compras recebidas (' + kpis.totalCompras.toFixed(2) + ')</div>' +
           '</div>' +
 
-          // Top produtos (lista)
           (topProdutos.length
             ? '<div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:20px;">' +
                 '<h3 style="font-size:16px;margin-bottom:16px;">🏆 Produtos mais vendidos</h3>' +
@@ -242,8 +272,7 @@
               '</div>');
 
       } catch (e) {
-        console.error(e);
-        el.innerHTML = '<div style="padding:20px;background:#fee2e2;color:#991b1b;border-radius:8px;font-family:monospace;">Erro: ' + esc(e.message) + '</div>';
+        el.innerHTML = '<div class="erro">Erro: ' + esc(e.message) + '</div>';
       }
     }
 
