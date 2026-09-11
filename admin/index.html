@@ -127,6 +127,7 @@
           '<a href="./pedidos.html" class="admin-sidebar__item">Pedidos</a>' +
           '<a href="./propostas.html" class="admin-sidebar__item">Propostas</a>' +
           '<a href="./conversas.html" class="admin-sidebar__item">Conversas</a>' +
+          '<a href="./mensagens.html" class="admin-sidebar__item">Mensagens</a>' +
         '</nav>' +
         '<div class="admin-sidebar__secao">Vendas</div>' +
         '<nav class="admin-sidebar__lista">' +
@@ -201,27 +202,15 @@
       const inicio = new Date();
       let fim = new Date();
 
-      if (periodo === 'hoje') {
-        return { inicio: hoje.toISOString().slice(0, 10), fim: hoje.toISOString().slice(0, 10) };
-      }
-
-      if (periodo === '7dias') {
-        inicio.setDate(inicio.getDate() - 6);
-        return { inicio: inicio.toISOString().slice(0, 10), fim: hoje.toISOString().slice(0, 10) };
-      }
-
-      if (periodo === 'mes') {
-        inicio.setDate(1);
-        return { inicio: inicio.toISOString().slice(0, 10), fim: hoje.toISOString().slice(0, 10) };
-      }
-
+      if (periodo === 'hoje') return { inicio: hoje.toISOString().slice(0, 10), fim: hoje.toISOString().slice(0, 10) };
+      if (periodo === '7dias') { inicio.setDate(inicio.getDate() - 6); return { inicio: inicio.toISOString().slice(0, 10), fim: hoje.toISOString().slice(0, 10) }; }
+      if (periodo === 'mes') { inicio.setDate(1); return { inicio: inicio.toISOString().slice(0, 10), fim: hoje.toISOString().slice(0, 10) }; }
       if (periodo === 'mes_anterior') {
         inicio.setMonth(inicio.getMonth() - 1);
         inicio.setDate(1);
         fim = new Date(inicio.getFullYear(), inicio.getMonth() + 1, 0);
         return { inicio: inicio.toISOString().slice(0, 10), fim: fim.toISOString().slice(0, 10) };
       }
-
       return { inicio: document.getElementById('dataInicio').value || null, fim: document.getElementById('dataFim').value || null };
     }
 
@@ -270,7 +259,6 @@
                 '<div style="font-size:16px;font-weight:600;color:#0f172a;margin-bottom:4px;">Sem dados ainda</div>' +
                 '<div style="font-size:13px;">Quando houver vendas, os produtos mais vendidos aparecerão aqui.</div>' +
               '</div>');
-
       } catch (e) {
         el.innerHTML = '<div class="erro">Erro: ' + esc(e.message) + '</div>';
       }
