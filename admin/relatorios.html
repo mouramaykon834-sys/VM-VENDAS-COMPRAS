@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Relatórios — Admin</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: system-ui, -apple-system, sans-serif; background: #f8fafc; color: #0f172a; }
+    .layout { display: grid; grid-template-columns: 240px 1fr; min-height: 100vh; }
+    .sidebar { background: #0f172a; color: #cbd5e1; padding: 16px 0; }
+    .sidebar__logo { display: flex; align-items: center; gap: 8px; padding: 0 16px 20px; border-bottom: 1px solid rgba(255,255,255,.1); margin-bottom: 16px; color: #fff; font-weight: 700; font-size: 15px; }
+    .sidebar__badge { background: #0ea5e9; color: #fff; padding: 2px 8px; border-radius: 6px; font-size: 10px; font-weight: 700; }
+    .sidebar__secao { padding: 16px 16px 8px; font-size: 11px; text-transform: uppercase; letter-spacing: .5px; color: #64748b; font-weight: 600; }
+    .sidebar__lista { display: flex; flex-direction: column; gap: 2px; padding: 0 8px; }
+    .sidebar__item { padding: 10px 12px; border-radius: 8px; color: #cbd5e1; text-decoration: none; font-size: 14px; display: block; }
+    .sidebar__item:hover { background: rgba(255,255,255,.06); color: #fff; }
+    .sidebar__item.ativo { background: #0ea5e9; color: #fff; }
+    .main { display: flex; flex-direction: column; }
+    .topbar { background: #fff; border-bottom: 1px solid #e2e8f0; padding: 12px 24px; display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+    .topbar h1 { font-size: 18px; }
+    .btn-loja { padding: 8px 14px; border: 1px solid #0ea5e9; border-radius: 8px; color: #0ea5e9; text-decoration: none; font-size: 13px; font-weight: 600; }
+    .btn-loja:hover { background: #0ea5e9; color: #fff; }
+    .conteudo { padding: 24px; }
+    .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; }
+    .card { background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 24px; text-decoration: none; color: inherit; transition: all .15s; display: block; }
+    .card:hover { border-color: #0ea5e9; transform: translateY(-3px); box-shadow: 0 10px 25px rgba(14,165,233,.15); }
+    .card__emoji { font-size: 32px; margin-bottom: 12px; }
+    .card__titulo { font-size: 17px; font-weight: 600; margin-bottom: 6px; }
+    .card__desc { font-size: 13px; color: #64748b; line-height: 1.5; }
+    @media (max-width: 900px) { .layout { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="sidebar__logo"><span>🏠</span><span>Minha Loja</span><span class="sidebar__badge">ADMIN</span></div>
+      <div class="sidebar__secao">Principal</div>
+      <nav class="sidebar__lista">
+        <a href="./index.html" class="sidebar__item">Dashboard</a>
+        <a href="./pedidos.html" class="sidebar__item">Pedidos</a>
+        <a href="./propostas.html" class="sidebar__item">Propostas</a>
+        <a href="./conversas.html" class="sidebar__item">Conversas</a>
+      </nav>
+      <div class="sidebar__secao">Relatórios</div>
+      <nav class="sidebar__lista">
+        <a href="./relatorios.html" class="sidebar__item ativo">Todos os relatórios</a>
+      </nav>
+      <div class="sidebar__secao">Financeiro</div>
+      <nav class="sidebar__lista">
+        <a href="./financeiro.html" class="sidebar__item">Visão geral</a>
+        <a href="./contas-receber.html" class="sidebar__item">Contas a receber</a>
+        <a href="./contas-pagar.html" class="sidebar__item">Contas a pagar</a>
+        <a href="./fluxo-caixa.html" class="sidebar__item">Fluxo de caixa</a>
+      </nav>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <h1>Central de relatórios</h1>
+        <a href="../index.html" class="btn-loja">← Ver loja</a>
+      </header>
+
+      <div class="conteudo">
+        <p style="color:#64748b;font-size:14px;margin-bottom:20px;">Escolha o relatório que deseja gerar.</p>
+
+        <div class="cards">
+          <a href="./relatorio-vendas.html" class="card">
+            <div class="card__emoji">💰</div>
+            <div class="card__titulo">Vendas</div>
+            <div class="card__desc">Faturamento, ticket médio, vendas canceladas</div>
+          </a>
+          <a href="./relatorio-orcamentos.html" class="card">
+            <div class="card__emoji">📋</div>
+            <div class="card__titulo">Orçamentos</div>
+            <div class="card__desc">Total, taxa de conversão, valores em negociação</div>
+          </a>
+          <a href="./relatorio-compras.html" class="card">
+            <div class="card__emoji">🛍️</div>
+            <div class="card__titulo">Compras</div>
+            <div class="card__desc">Por fornecedor, produtos mais comprados, custos</div>
+          </a>
+          <a href="./relatorio-financeiro.html" class="card">
+            <div class="card__emoji">📊</div>
+            <div class="card__titulo">Financeiro</div>
+            <div class="card__desc">A pagar, a receber, fluxo, inadimplência</div>
+          </a>
+          <a href="./relatorio-estoque.html" class="card">
+            <div class="card__emoji">📦</div>
+            <div class="card__titulo">Estoque</div>
+            <div class="card__desc">Valor investido, baixo, esgotado</div>
+          </a>
+        </div>
+      </div>
+    </main>
+  </div>
+</body>
+</html>
