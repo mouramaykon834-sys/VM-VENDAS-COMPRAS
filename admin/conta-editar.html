@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Nova conta — Admin</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: system-ui, -apple-system, sans-serif; background: #f8fafc; color: #0f172a; }
+    .layout { display: grid; grid-template-columns: 240px 1fr; min-height: 100vh; }
+    .sidebar { background: #0f172a; color: #cbd5e1; padding: 16px 0; }
+    .sidebar__logo { display: flex; align-items: center; gap: 8px; padding: 0 16px 20px; border-bottom: 1px solid rgba(255,255,255,.1); margin-bottom: 16px; color: #fff; font-weight: 700; font-size: 15px; }
+    .sidebar__badge { background: #0ea5e9; color: #fff; padding: 2px 8px; border-radius: 6px; font-size: 10px; font-weight: 700; }
+    .sidebar__secao { padding: 16px 16px 8px; font-size: 11px; text-transform: uppercase; letter-spacing: .5px; color: #64748b; font-weight: 600; }
+    .sidebar__lista { display: flex; flex-direction: column; gap: 2px; padding: 0 8px; }
+    .sidebar__item { padding: 10px 12px; border-radius: 8px; color: #cbd5e1; text-decoration: none; font-size: 14px; display: block; }
+    .sidebar__item:hover { background: rgba(255,255,255,.06); color: #fff; }
+    .sidebar__item.ativo { background: #0ea5e9; color: #fff; }
+    .main { display: flex; flex-direction: column; }
+    .topbar { background: #fff; border-bottom: 1px solid #e2e8f0; padding: 12px 24px; display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+    .topbar h1 { font-size: 18px; }
+    .btn { padding: 10px 18px; border-radius: 8px; border: 1px solid #0ea5e9; background: #0ea5e9; color: #fff; font-weight: 600; font-size: 14px; cursor: pointer; }
+    .btn:hover { filter: brightness(.94); }
+    .btn--fantasma { background: transparent; color: #0ea5e9; }
+    .conteudo { padding: 24px; max-width: 720px; }
+    .bloco { background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 24px; }
+    .bloco h2 { font-size: 15px; margin-bottom: 16px; padding-bottom: 10px; border-bottom: 1px solid #e2e8f0; }
+    .campo { margin-bottom: 14px; }
+    .campo label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 5px; }
+    .campo input, .campo select, .campo textarea { width: 100%; padding: 9px 12px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 14px; font-family: inherit; }
+    .linha-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .status { padding: 12px 16px; border-radius: 8px; font-size: 14px; margin-top: 12px; display: none; }
+    .status.visivel { display: block; }
+    .status--ok { background: #dcfce7; color: #166534; }
+    .status--err { background: #fee2e2; color: #991b1b; }
+    .erro { padding: 20px; background: #fee2e2; color: #991b1b; border-radius: 8px; margin: 20px; font-family: monospace; }
+    @media (max-width: 900px) { .layout { grid-template-columns: 1fr; } .linha-2 { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="sidebar__logo"><span>🏠</span><span>Minha Loja</span><span class="sidebar__badge">ADMIN</span></div>
+      <div class="sidebar__secao">Financeiro</div>
+      <nav class="sidebar__lista">
+        <a href="./financeiro.html" class="sidebar__item">Visão geral</a>
+        <a href="./contas-receber.html" class="sidebar__item">Contas a receber</a>
+        <a href="./contas-pagar.html" class="sidebar__item">Contas a pagar</a>
+        <a href="./fluxo-caixa.html" class="sidebar__item">Fluxo de caixa</a>
+      </nav>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <h1 id="titulo">Nova conta</h1>
+        <a href="./financeiro.html" class="btn btn--fantasma">← Voltar</a>
+      </header>
+
+      <div class="conteudo">
+        <div class="bloco">
+          <h2>Dados da conta</h2>
+
+          <div class="campo">
+            <label>Tipo *</label>
+            <select id="tipo">
+              <option value="receber">💰 Conta a receber</option>
+              <option value="pagar">💸 Conta a pagar</option>
+            </select>
+          </div>
+
+          <div class="campo">
+            <label>Descrição *</label>
+            <input type="text" id="descricao" placeholder="Ex: Venda para João, Aluguel de outubro" />
+          </div>
+
+          <div class="campo">
+            <label>Categoria</label>
+            <select id="categoria_id"><option value="">Carregando...</option></select>
+          </div>
+
+          <div class="linha-2">
+            <div class="campo">
+              <label>Valor (R$) *</label>
+              <input type="number" id="valor_original" step="0.01" min="0" />
+            </div>
+            <div class="campo">
+              <label>Vencimento *</label>
+              <input type="date" id="data_vencimento" />
+            </div>
+          </div>
+
+          <div class="campo">
+            <label>Forma de pagamento</label>
+            <select id="forma_pagamento">
+              <option value="">Selecione</option>
+              <option>Dinheiro</option>
+              <option>Pix</option>
+              <option>Cartão de crédito</option>
+              <option>Cartão de débito</option>
+              <option>Boleto</option>
+              <option>Transferência</option>
+              <option>Outros</option>
+            </select>
+          </div>
+
+          <div class="campo">
+            <label>Observações</label>
+            <textarea id="observacoes" rows="3"></textarea>
+          </div>
+
+          <button class="btn" id="btn-salvar" style="width:100%;padding:14px;font-size:15px;">Salvar conta</button>
+          <div class="status" id="status"></div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script type="module">
+    const $ = id => document.getElementById(id);
+    const esc = s => s == null ? '' : String(s).replace(/[&<>"']/g, function(m) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]; });
+
+    let supabase;
+
+    (async () => {
+      try {
+        const mod = await import('../assets/js/supabase.js');
+        supabase = mod.supabase;
+
+        const r = await supabase.auth.getSession();
+        if (!r.data || !r.data.session) { location.href = '../login.html'; return; }
+
+        const params = new URLSearchParams(location.search);
+        const tipoUrl = params.get('tipo');
+        if (tipoUrl) $('tipo').value = tipoUrl;
+
+        // Data padrão: hoje + 30 dias
+        const d = new Date();
+        d.setDate(d.getDate() + 30);
+        $('data_vencimento').value = d.toISOString().slice(0, 10);
+
+        await carregarCategorias();
+
+        $('tipo').onchange = carregarCategorias;
+
+        $('btn-salvar').onclick = salvar;
+      } catch (e) {
+        document.querySelector('.conteudo').innerHTML = '<div class="erro">Erro: ' + esc(e.message) + '</div>';
+      }
+    })();
+
+    async function carregarCategorias() {
+      const tipo = $('tipo').value === 'receber' ? 'receita' : 'despesa';
+      const r = await supabase.from('financial_categories').select('id, nome').eq('tipo', tipo).eq('ativo', true).order('nome');
+      $('categoria_id').innerHTML = '<option value="">Sem categoria</option>' +
+        (r.data || []).map(function(c) { return '<option value="' + c.id + '">' + esc(c.nome) + '</option>'; }).join('');
+    }
+
+    async function salvar() {
+      const descricao = $('descricao').value.trim();
+      const valor = Number($('valor_original').value);
+      const venc = $('data_vencimento').value;
+
+      if (!descricao) { mostrarStatus('Informe a descrição.', 'err'); return; }
+      if (!valor || valor <= 0) { mostrarStatus('Informe um valor válido.', 'err'); return; }
+      if (!venc) { mostrarStatus('Informe o vencimento.', 'err'); return; }
+
+      const btn = $('btn-salvar');
+      btn.disabled = true; btn.textContent = 'Salvando...';
+
+      try {
+        const mod = await import('../assets/js/services/financial.service.js');
+        await mod.salvarConta({
+          tipo: $('tipo').value,
+          descricao: descricao,
+          categoria_id: $('categoria_id').value || null,
+          valor_original: valor,
+          data_vencimento: venc,
+          forma_pagamento: $('forma_pagamento').value || null,
+          observacoes: $('observacoes').value.trim() || null
+        });
+
+        mostrarStatus('✅ Conta criada!', 'ok');
+        setTimeout(function() {
+          location.href = $('tipo').value === 'receber' ? './contas-receber.html' : './contas-pagar.html';
+        }, 800);
+      } catch (e) {
+        mostrarStatus('❌ ' + e.message, 'err');
+        btn.disabled = false; btn.textContent = 'Salvar conta';
+      }
+    }
+
+    function mostrarStatus(msg, tipo) {
+      const st = $('status');
+      st.textContent = msg;
+      st.className = 'status visivel status--' + tipo;
+    }
+  </script>
+</body>
+</html>
