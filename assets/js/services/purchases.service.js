@@ -61,7 +61,6 @@ export async function salvarCompra(dados, itens, id) {
     purchaseId = r.data.id;
   }
 
-  // Apaga itens antigos e recria
   await supabase.from('purchase_items').delete().eq('purchase_id', purchaseId);
 
   const itensPayload = itens.map(function(i) {
@@ -88,9 +87,31 @@ export async function alterarStatusCompra(id, novoStatus) {
   if (r.error) throw r.error;
 }
 
+// -------------------------------------------------------------
+// RECEBER COMPRA + criar conta a pagar automaticamente
+// -------------------------------------------------------------
 export async function receberCompra(id) {
+  // 1) Busca a compra completa
+  const compra = await buscarCompra(id);
+  if (!compra) throw new Error('Compra não encontrada.');
+  if (compra.status === 'recebida') throw new Error('Esta compra já foi recebida.');
+
+  // 2) Chama a função do banco para receber (atualiza estoque)
   const r = await supabase.rpc('receber_compra', { p_purchase_id: id });
   if (r.error) throw r.error;
+
+  // 3) Cria automaticamente a conta a pagar
+  try {
+    await supabase.rpc('criar_conta_pagar', {
+      p_purchase_id: id,
+      p_valor: Number(compra.total),
+      p_descricao: 'Compra ' + compra.numero,
+      p_vencimento: null,
+      p_parcelas: 1
+    });
+  } catch (e) {
+    console.warn('[purchases] Conta a pagar não criada:', e.message);
+  }
 }
 
 export function rotuloStatus(s) {
