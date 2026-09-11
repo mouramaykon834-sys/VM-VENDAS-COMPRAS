@@ -45,6 +45,10 @@
         <a href="./propostas.html" class="sidebar__item">Propostas</a>
         <a href="./conversas.html" class="sidebar__item">Conversas</a>
       </nav>
+      <div class="sidebar__secao">Vendas</div>
+      <nav class="sidebar__lista">
+        <a href="./orcamentos.html" class="sidebar__item">Orçamentos</a>
+      </nav>
       <div class="sidebar__secao">Catálogo</div>
       <nav class="sidebar__lista">
         <a href="./produtos.html" class="sidebar__item">Produtos</a>
@@ -124,7 +128,6 @@
           '<div class="secao"><div class="secao__titulo">Últimas conversas</div><div class="secao__vazio">Nenhuma conversa ainda.</div></div>' +
           '<div style="margin-top:24px;padding:12px;background:#dcfce7;color:#166534;border-radius:8px;text-align:center;font-size:13px;">✅ Logado como <strong>' + session.user.email + '</strong></div>';
       } catch (e) {
-        console.error(e);
         erro(e.message);
       }
     })();
