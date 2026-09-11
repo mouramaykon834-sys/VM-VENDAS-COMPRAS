@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Relatório de estoque — Admin</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: system-ui, -apple-system, sans-serif; background: #f8fafc; color: #0f172a; }
+    .layout { display: grid; grid-template-columns: 240px 1fr; min-height: 100vh; }
+    .sidebar { background: #0f172a; color: #cbd5e1; padding: 16px 0; height: 100vh; overflow-y: auto; position: sticky; top: 0; }
+    .sidebar__logo { display: flex; align-items: center; gap: 8px; padding: 0 16px 20px; border-bottom: 1px solid rgba(255,255,255,.1); margin-bottom: 16px; color: #fff; font-weight: 700; font-size: 15px; text-decoration: none; }
+    .sidebar__badge { background: #0ea5e9; color: #fff; padding: 2px 8px; border-radius: 6px; font-size: 10px; font-weight: 700; }
+    .sidebar__secao { padding: 16px 16px 8px; font-size: 11px; text-transform: uppercase; letter-spacing: .5px; color: #64748b; font-weight: 600; }
+    .sidebar__lista { display: flex; flex-direction: column; gap: 2px; padding: 0 8px; }
+    .sidebar__item { padding: 10px 12px; border-radius: 8px; color: #cbd5e1; text-decoration: none; font-size: 14px; display: block; }
+    .sidebar__item:hover { background: rgba(255,255,255,.06); color: #fff; }
+    .sidebar__item.ativo { background: #0ea5e9; color: #fff; }
+    .main { display: flex; flex-direction: column; }
+    .topbar { background: #fff; border-bottom: 1px solid #e2e8f0; padding: 12px 24px; display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; position: sticky; top: 0; z-index: 50; }
+    .topbar h1 { font-size: 18px; }
+    .topbar__acoes { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+    .topbar input[type=search] { padding: 8px 12px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 14px; width: 220px; }
+    .btn { padding: 8px 16px; border-radius: 8px; border: 1px solid #0ea5e9; background: #0ea5e9; color: #fff; font-weight: 600; font-size: 14px; cursor: pointer; text-decoration: none; display: inline-block; }
+    .btn:hover { filter: brightness(.94); }
+    .btn--contorno { background: transparent; color: #0ea5e9; }
+    .conteudo { padding: 24px; }
+    .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; margin-bottom: 24px; }
+    .card { background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; }
+    .card--ok { border-color: #86efac; background: #f0fdf4; }
+    .card--erro { border-color: #fca5a5; background: #fef2f2; }
+    .card--alerta { border-color: #fcd34d; background: #fffbeb; }
+    .card__rotulo { font-size: 12px; text-transform: uppercase; color: #64748b; font-weight: 600; margin-bottom: 8px; }
+    .card__valor { font-size: 24px; font-weight: 700; line-height: 1.1; }
+    .tabela { width: 100%; background: #fff; border-collapse: collapse; border-radius: 12px; overflow: hidden; border: 1px solid #e2e8f0; }
+    .tabela th { text-align: left; padding: 12px 16px; background: #f8fafc; font-size: 12px; text-transform: uppercase; color: #64748b; font-weight: 600; }
+    .tabela td { padding: 12px 16px; border-top: 1px solid #e2e8f0; font-size: 14px; }
+    .tabela tbody tr:hover td { background: #f8fafc; }
+    .tabela .dir { text-align: right; }
+    .badge { padding: 3px 10px; border-radius: 9999px; font-size: 11px; font-weight: 600; display: inline-block; }
+    .badge--ok { background: #dcfce7; color: #166534; }
+    .badge--alerta { background: #fef3c7; color: #92400e; }
+    .badge--erro { background: #fee2e2; color: #991b1b; }
+    .vazio { background: #fff; padding: 60px 24px; text-align: center; border-radius: 12px; border: 1px solid #e2e8f0; color: #64748b; }
+    .erro { padding: 20px; background: #fee2e2; color: #991b1b; border-radius: 8px; font-family: monospace; font-size: 13px; }
+    @media print {
+      .sidebar, .topbar__acoes, .btn { display: none !important; }
+      .layout { display: block; }
+      .conteudo { padding: 0; }
+      body { background: #fff; }
+    }
+    @media (max-width: 900px) { .layout { grid-template-columns: 1fr; } .sidebar { position: static; height: auto; } }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <a href="../index.html" class="sidebar__logo"><span>🏠</span><span>Minha Loja</span><span class="sidebar__badge">ADMIN</span></a>
+      <div class="sidebar__secao">Relatórios</div>
+      <nav class="sidebar__lista">
+        <a href="./relatorios.html" class="sidebar__item">← Todos</a>
+        <a href="./relatorio-vendas.html" class="sidebar__item">Vendas</a>
+        <a href="./relatorio-orcamentos.html" class="sidebar__item">Orçamentos</a>
+        <a href="./relatorio-compras.html" class="sidebar__item">Compras</a>
+        <a href="./relatorio-financeiro.html" class="sidebar__item">Financeiro</a>
+        <a href="./relatorio-estoque.html" class="sidebar__item ativo">Estoque</a>
+      </nav>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <h1>Relatório de estoque</h1>
+        <div class="topbar__acoes">
+          <input type="search" id="busca" placeholder="Buscar produto..." />
+          <button class="btn btn--contorno" onclick="window.print()">🖨️ PDF</button>
+        </div>
+      </header>
+      <div class="conteudo" id="conteudo"><div class="vazio">Carregando...</div></div>
+    </main>
+  </div>
+
+  <script type="module">
+    const el = document.getElementById('conteudo');
+    const esc = s => s == null ? '' : String(s).replace(/[&<>"']/g, function(m) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]; });
+
+    let todos = [];
+
+    (async () => {
+      try {
+        const { supabase } = await import('../assets/js/supabase.js');
+        const r = await supabase.auth.getSession();
+        if (!r.data || !r.data.session) { location.href = '../login.html'; return; }
+
+        const mod = await import('../assets/js/services/reports.service.js');
+        const r2 = await mod.relatorioEstoque();
+        todos = r2.lista;
+
+        el.innerHTML =
+          '<div class="cards">' +
+            '<div class="card"><div class="card__rotulo">Total de produtos</div><div class="card__valor">' + r2.total + '</div></div>' +
+            '<div class="card card--ok"><div class="card__rotulo">💰 Valor em estoque</div><div class="card__valor" style="color:#16a34a;">R$ ' + r2.valorTotal.toFixed(2) + '</div></div>' +
+            '<div class="card card--alerta"><div class="card__rotulo">⚠️ Estoque baixo</div><div class="card__valor" style="color:#f59e0b;">' + r2.baixo + '</div></div>' +
+            '<div class="card card--erro"><div class="card__rotulo">🚨 Esgotados</div><div class="card__valor" style="color:#dc2626;">' + r2.esgotados + '</div></div>' +
+          '</div>' +
+
+          '<div id="tabela-wrap"></div>';
+
+        renderTabela(todos);
+
+        document.getElementById('busca').oninput = function(e) {
+          const q = e.target.value.trim().toLowerCase();
+          renderTabela(todos.filter(function(p) { return !q || (p.nome || '').toLowerCase().indexOf(q) !== -1; }));
+        };
+      } catch (e) {
+        el.innerHTML = '<div class="erro">Erro: ' + esc(e.message) + '</div>';
+      }
+    })();
+
+    function renderTabela(lista) {
+      const wrap = document.getElementById('tabela-wrap');
+      if (!lista.length) {
+        wrap.innerHTML = '<div class="vazio">Nenhum produto encontrado.</div>';
+        return;
+      }
+
+      wrap.innerHTML =
+        '<table class="tabela">' +
+          '<thead><tr><th>Produto</th><th>Categoria</th><th class="dir">Estoque</th><th class="dir">Mínimo</th><th class="dir">Preço</th><th class="dir">Valor total</th><th>Status</th></tr></thead>' +
+          '<tbody>' +
+            lista.map(function(p) {
+              let badge = '<span class="badge badge--ok">OK</span>';
+              if (p.estoque <= 0) badge = '<span class="badge badge--erro">Esgotado</span>';
+              else if (p.estoque_minimo > 0 && p.estoque <= p.estoque_minimo) badge = '<span class="badge badge--alerta">Baixo</span>';
+
+              const valorTotal = Number(p.estoque) * Number(p.preco);
+
+              return '<tr>' +
+                '<td><strong>' + esc(p.nome) + '</strong></td>' +
+                '<td>' + esc(p.categories ? p.categories.nome : '—') + '</td>' +
+                '<td class="dir">' + p.estoque + '</td>' +
+                '<td class="dir" style="color:#94a3b8;">' + (p.estoque_minimo || '—') + '</td>' +
+                '<td class="dir">R$ ' + Number(p.preco).toFixed(2) + '</td>' +
+                '<td class="dir"><strong>R$ ' + valorTotal.toFixed(2) + '</strong></td>' +
+                '<td>' + badge + '</td>' +
+              '</tr>';
+            }).join('') +
+          '</tbody>' +
+        '</table>';
+    }
+  </script>
+</body>
+</html>
