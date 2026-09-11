@@ -212,3 +212,43 @@ html[data-tema="escuro"] .resumo { background: #1e293b; border-color: #334155; }
   .carrinho__item { grid-template-columns: 72px 1fr; gap: 8px; }
   .carrinho__item-img { width: 72px; height: 72px; }
 }
+/* -------------------------------------------------------------
+   PÁGINAS INSTITUCIONAIS
+   ------------------------------------------------------------- */
+.pagina-institucional {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 32px 24px 64px;
+}
+.pagina-institucional h1 {
+  font-size: var(--texto-3xl);
+  margin-bottom: 8px;
+}
+.pagina-institucional .subtitulo {
+  color: var(--cor-texto-suave);
+  font-size: var(--texto-sm);
+  margin-bottom: 32px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid var(--cor-borda);
+}
+.pagina-institucional h2 {
+  font-size: var(--texto-xl);
+  margin-top: 32px;
+  margin-bottom: 12px;
+}
+.pagina-institucional p {
+  font-size: var(--texto-base);
+  line-height: var(--linha-solta);
+  margin-bottom: 16px;
+}
+.pagina-institucional ul,
+.pagina-institucional ol {
+  margin: 0 0 16px 24px;
+  line-height: var(--linha-solta);
+}
+.pagina-institucional li { margin-bottom: 8px; }
+
+@media (max-width: 640px) {
+  .pagina-institucional { padding: 20px 16px 48px; }
+  .pagina-institucional h1 { font-size: var(--texto-2xl); }
+}

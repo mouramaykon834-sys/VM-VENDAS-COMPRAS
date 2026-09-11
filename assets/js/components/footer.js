@@ -64,13 +64,23 @@ export async function renderFooter() {
           '</div>' +
           '<div>' +
             '<div class="rodape__titulo">Contato</div>' +
-            '<nav class="rodape__lista">' + tel + zap + mail + '</nav>' +
+            '<nav class="rodape__lista">' +
+              '<a href="./contato.html">Fale conosco</a>' +
+              tel +
+              zap +
+              mail +
+            '</nav>' +
             (enderecoHTML ? '<p class="mt-3 texto-xs">' + enderecoHTML + '</p>' : '') +
             (empresa.horario ? '<p class="mt-2 texto-xs">' + esc(empresa.horario) + '</p>' : '') +
           '</div>' +
         '</div>' +
-        '<div class="rodape__base">' +
-          '<span>© ' + ano + ' ' + esc(nome) + '. Todos os direitos reservados.</span>' +
+        '<div class="rodape__base" style="flex-direction:column;gap:12px;text-align:center;">' +
+          '<div style="display:flex;gap:16px;flex-wrap:wrap;justify-content:center;">' +
+            '<a href="./contato.html" style="color:#94a3b8;">Contato</a>' +
+            '<a href="./termos.html" style="color:#94a3b8;">Termos de Uso</a>' +
+            '<a href="./privacidade.html" style="color:#94a3b8;">Política de Privacidade</a>' +
+          '</div>' +
+          '<div>© ' + ano + ' ' + esc(nome) + '. Todos os direitos reservados.</div>' +
         '</div>' +
       '</div>' +
     '</footer>';
