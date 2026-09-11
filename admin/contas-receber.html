@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Contas a receber — Admin</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: system-ui, -apple-system, sans-serif; background: #f8fafc; color: #0f172a; }
+    .layout { display: grid; grid-template-columns: 240px 1fr; min-height: 100vh; }
+    .sidebar { background: #0f172a; color: #cbd5e1; padding: 16px 0; }
+    .sidebar__logo { display: flex; align-items: center; gap: 8px; padding: 0 16px 20px; border-bottom: 1px solid rgba(255,255,255,.1); margin-bottom: 16px; color: #fff; font-weight: 700; font-size: 15px; }
+    .sidebar__badge { background: #0ea5e9; color: #fff; padding: 2px 8px; border-radius: 6px; font-size: 10px; font-weight: 700; }
+    .sidebar__secao { padding: 16px 16px 8px; font-size: 11px; text-transform: uppercase; letter-spacing: .5px; color: #64748b; font-weight: 600; }
+    .sidebar__lista { display: flex; flex-direction: column; gap: 2px; padding: 0 8px; }
+    .sidebar__item { padding: 10px 12px; border-radius: 8px; color: #cbd5e1; text-decoration: none; font-size: 14px; display: block; }
+    .sidebar__item:hover { background: rgba(255,255,255,.06); color: #fff; }
+    .sidebar__item.ativo { background: #0ea5e9; color: #fff; }
+    .main { display: flex; flex-direction: column; }
+    .topbar { background: #fff; border-bottom: 1px solid #e2e8f0; padding: 12px 24px; display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+    .topbar h1 { font-size: 18px; }
+    .topbar__acoes { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+    .topbar select { padding: 8px 12px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 14px; }
+    .btn { padding: 8px 16px; border-radius: 8px; border: 1px solid #0ea5e9; background: #0ea5e9; color: #fff; font-weight: 600; font-size: 14px; cursor: pointer; text-decoration: none; display: inline-block; }
+    .btn:hover { filter: brightness(.94); }
+    .btn--fantasma { background: transparent; color: #0ea5e9; }
+    .btn--loja { padding: 8px 14px; border: 1px solid #0ea5e9; border-radius: 8px; color: #0ea5e9; text-decoration: none; font-size: 13px; font-weight: 600; }
+    .btn--loja:hover { background: #0ea5e9; color: #fff; }
+    .conteudo { padding: 24px; }
+    .tabela { width: 100%; background: #fff; border-collapse: collapse; border-radius: 12px; overflow: hidden; border: 1px solid #e2e8f0; }
+    .tabela th { text-align: left; padding: 12px 16px; background: #f8fafc; font-size: 12px; text-transform: uppercase; color: #64748b; font-weight: 600; }
+    .tabela td { padding: 12px 16px; border-top: 1px solid #e2e8f0; font-size: 14px; }
+    .tabela tr:hover td { background: #f8fafc; }
+    .badge { padding: 3px 10px; border-radius: 9999px; font-size: 11px; font-weight: 600; display: inline-block; }
+    .vazio { background: #fff; padding: 60px 24px; text-align: center; border-radius: 12px; border: 1px solid #e2e8f0; color: #64748b; }
+    .erro { padding: 20px; background: #fee2e2; color: #991b1b; border-radius: 8px; margin: 20px; font-family: monospace; }
+    .modal-bg { position: fixed; inset: 0; background: rgba(15,23,42,.6); display: none; align-items: center; justify-content: center; padding: 16px; z-index: 999; }
+    .modal-bg.aberto { display: flex; }
+    .modal { background: #fff; border-radius: 16px; padding: 24px; max-width: 480px; width: 100%; }
+    .modal h2 { font-size: 18px; margin-bottom: 16px; }
+    .campo { margin-bottom: 14px; }
+    .campo label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 5px; }
+    .campo input, .campo select, .campo textarea { width: 100%; padding: 9px 12px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 14px; font-family: inherit; }
+    .modal__acoes { display: flex; gap: 8px; justify-content: flex-end; margin-top: 16px; }
+    @media (max-width: 900px) { .layout { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="sidebar__logo"><span>🏠</span><span>Minha Loja</span><span class="sidebar__badge">ADMIN</span></div>
+      <div class="sidebar__secao">Financeiro</div>
+      <nav class="sidebar__lista">
+        <a href="./financeiro.html" class="sidebar__item">Visão geral</a>
+        <a href="./contas-receber.html" class="sidebar__item ativo">Contas a receber</a>
+        <a href="./contas-pagar.html" class="sidebar__item">Contas a pagar</a>
+        <a href="./fluxo-caixa.html" class="sidebar__item">Fluxo de caixa</a>
+      </nav>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <h1>Contas a receber</h1>
+        <div class="topbar__acoes">
+          <select id="filtro-status">
+            <option value="">Todos</option>
+            <option value="pendente">Pendente</option>
+            <option value="parcial">Parcial</option>
+            <option value="pago">Pago</option>
+            <option value="atrasado">Atrasado</option>
+            <option value="cancelado">Cancelado</option>
+          </select>
+          <a href="./conta-editar.html?tipo=receber" class="btn">+ Nova conta</a>
+          <a href="../index.html" class="btn--loja">← Ver loja</a>
+        </div>
+      </header>
+      <div class="conteudo" id="conteudo"><div class="vazio">Carregando...</div></div>
+    </main>
+  </div>
+
+  <div class="modal-bg" id="modal-bg">
+    <div class="modal" id="modal-corpo"></div>
+  </div>
+
+  <script type="module">
+    const el = document.getElementById('conteudo');
+    const esc = s => s == null ? '' : String(s).replace(/[&<>"']/g, function(m) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]; });
+
+    let supabase;
+
+    (async () => {
+      try {
+        const mod = await import('../assets/js/supabase.js');
+        supabase = mod.supabase;
+
+        const r = await supabase.auth.getSession();
+        if (!r.data || !r.data.session) { location.href = '../login.html'; return; }
+
+        await carregar();
+        document.getElementById('filtro-status').onchange = carregar;
+      } catch (e) {
+        el.innerHTML = '<div class="erro">Erro: ' + esc(e.message) + '</div>';
+      }
+    })();
+
+    async function carregar() {
+      el.innerHTML = '<div class="vazio">Carregando...</div>';
+      try {
+        const status = document.getElementById('filtro-status').value;
+        const mod = await import('../assets/js/services/financial.service.js');
+        const lista = await mod.listarContas({ tipo: 'receber', status: status || null });
+
+        if (!lista.length) {
+          el.innerHTML = '<div class="vazio"><div style="font-size:18px;font-weight:600;color:#0f172a;margin-bottom:8px;">Nenhuma conta a receber</div><p style="margin-bottom:20px;">Contas são criadas automaticamente ao converter orçamentos em venda.</p><a href="./conta-editar.html?tipo=receber" class="btn">Criar manualmente</a></div>';
+          return;
+        }
+
+        const hoje = new Date().toISOString().slice(0, 10);
+
+        el.innerHTML =
+          '<table class="tabela">' +
+            '<thead><tr><th>Vencimento</th><th>Descrição</th><th>Cliente</th><th>Valor</th><th>Aberto</th><th>Status</th><th></th></tr></thead>' +
+            '<tbody>' +
+              lista.map(function(c) {
+                const vencido = c.data_vencimento < hoje && c.status !== 'pago' && c.status !== 'cancelado';
+                const st = vencido ? { texto: 'Atrasado', tipo: 'erro' } : mod.rotuloStatus(c.status);
+                const cs = vencido ? mod.corStatus('atrasado') : mod.corStatus(c.status);
+                return '<tr>' +
+                  '<td>' + new Date(c.data_vencimento).toLocaleDateString('pt-BR') + '</td>' +
+                  '<td>' + esc(c.descricao) + (c.parcelas > 1 ? ' <span style="color:#94a3b8;font-size:11px;">(' + c.parcela_atual + '/' + c.parcelas + ')</span>' : '') + '</td>' +
+                  '<td>' + esc(c.cliente_nome || '—') + '</td>' +
+                  '<td><strong>R$ ' + Number(c.valor_original).toFixed(2) + '</strong></td>' +
+                  '<td>R$ ' + Number(c.valor_aberto).toFixed(2) + '</td>' +
+                  '<td><span class="badge" style="background:' + cs.bg + ';color:' + cs.cor + ';">' + st.texto + '</span></td>' +
+                  '<td style="text-align:right;">' +
+                    (c.status !== 'pago' && c.status !== 'cancelado'
+                      ? '<button class="btn" style="padding:6px 10px;font-size:13px;" data-pagar="' + c.id + '">Registrar pgto</button>'
+                      : '') +
+                  '</td>' +
+                '</tr>';
+              }).join('') +
+            '</tbody>' +
+          '</table>';
+
+        el.querySelectorAll('[data-pagar]').forEach(function(b) {
+          b.onclick = function() { abrirModalPagamento(lista.find(function(x) { return x.id === b.dataset.pagar; })); };
+        });
+      } catch (e) {
+        el.innerHTML = '<div class="erro">Erro: ' + esc(e.message) + '</div>';
+      }
+    }
+
+    function abrirModalPagamento(conta) {
+      const modal = document.getElementById('modal-bg');
+      const corpo = document.getElementById('modal-corpo');
+      modal.classList.add('aberto');
+
+      corpo.innerHTML =
+        '<h2>Registrar pagamento</h2>' +
+        '<p style="font-size:13px;color:#64748b;margin-bottom:16px;">' +
+          'Conta: <strong>' + esc(conta.descricao) + '</strong><br>' +
+          'Valor aberto: <strong>R$ ' + Number(conta.valor_aberto).toFixed(2) + '</strong>' +
+        '</p>' +
+        '<div class="campo"><label>Valor pago (R$)</label><input type="number" id="mp-valor" step="0.01" min="0" value="' + Number(conta.valor_aberto).toFixed(2) + '" /></div>' +
+        '<div class="campo"><label>Forma de pagamento</label><select id="mp-forma"><option value="">Selecione</option>' +
+          ['Dinheiro','Pix','Cartão de crédito','Cartão de débito','Boleto','Transferência','Outros'].map(function(f) { return '<option>' + f + '</option>'; }).join('') +
+        '</select></div>' +
+        '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;">' +
+          '<div class="campo"><label>Juros</label><input type="number" id="mp-juros" step="0.01" min="0" value="0" /></div>' +
+          '<div class="campo"><label>Multa</label><input type="number" id="mp-multa" step="0.01" min="0" value="0" /></div>' +
+          '<div class="campo"><label>Desconto</label><input type="number" id="mp-desc" step="0.01" min="0" value="0" /></div>' +
+        '</div>' +
+        '<div class="campo"><label>Observação</label><input type="text" id="mp-obs" /></div>' +
+        '<div class="modal__acoes">' +
+          '<button class="btn btn--fantasma" id="mp-cancelar">Cancelar</button>' +
+          '<button class="btn" id="mp-confirmar">Confirmar</button>' +
+        '</div>';
+
+      document.getElementById('mp-cancelar').onclick = function() { modal.classList.remove('aberto'); };
+      document.getElementById('mp-confirmar').onclick = async function() {
+        const btn = document.getElementById('mp-confirmar');
+        btn.disabled = true; btn.textContent = 'Registrando...';
+
+        try {
+          const mod = await import('../assets/js/services/financial.service.js');
+          await mod.registrarPagamento(conta.id, {
+            valor_pago: Number(document.getElementById('mp-valor').value),
+            juros: Number(document.getElementById('mp-juros').value),
+            multa: Number(document.getElementById('mp-multa').value),
+            desconto: Number(document.getElementById('mp-desc').value),
+            forma_pagamento: document.getElementById('mp-forma').value || null,
+            observacoes: document.getElementById('mp-obs').value || null
+          });
+
+          modal.classList.remove('aberto');
+          carregar();
+        } catch (e) {
+          alert('Erro: ' + e.message);
+          btn.disabled = false; btn.textContent = 'Confirmar';
+        }
+      };
+    }
+  </script>
+</body>
+</html>
