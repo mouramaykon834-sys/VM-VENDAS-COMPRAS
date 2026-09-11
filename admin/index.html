@@ -45,12 +45,10 @@
           </div>
         </div>
 
-        <div id="conteudo"><div class="carregando"><div class="spinner spinner--lg"></div></div></div>
+        <div id="conteudo"><div class="carregando" style="padding:60px;"><div class="spinner spinner--lg"></div></div></div>
       </div>
     </main>
   </div>
-
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 
   <script type="module">
     const el = document.getElementById('conteudo');
@@ -58,10 +56,6 @@
 
     let supabase;
     let periodo = 'mes';
-    let chartVendas = null;
-    let chartVendasCompras = null;
-    let chartEntradasSaidas = null;
-    let chartTopProdutos = null;
 
     (async () => {
       try {
@@ -72,9 +66,9 @@
         if (!r.data || !r.data.session) { location.href = '../login.html'; return; }
 
         const p = await supabase.from('profiles').select('role').eq('id', r.data.session.user.id).maybeSingle();
-        if (!p.data) { el.innerHTML = '<div class="erro">Perfil não encontrado</div>'; return; }
+        if (!p.data) { el.innerHTML = '<div class="erro" style="padding:20px;background:#fee2e2;color:#991b1b;border-radius:8px;">Perfil não encontrado</div>'; return; }
 
-        await renderMenu();
+        renderMenu();
         await carregar();
 
         document.getElementById('filtro-periodo').onchange = function(e) {
@@ -85,11 +79,11 @@
 
         document.getElementById('btn-aplicar-filtro').onclick = carregar;
       } catch (e) {
-        el.innerHTML = '<div style="padding:20px;background:#fee2e2;color:#991b1b;border-radius:8px;">Erro: ' + esc(e.message) + '</div>';
+        el.innerHTML = '<div style="padding:20px;background:#fee2e2;color:#991b1b;border-radius:8px;font-family:monospace;">Erro: ' + esc(e.message) + '</div>';
       }
     })();
 
-    async function renderMenu() {
+    function renderMenu() {
       const menuHTML =
         '<a href="../index.html" class="admin-sidebar__logo"><span>🏠</span><span>Minha Loja</span><span class="admin-sidebar__logo-badge">ADMIN</span></a>' +
         '<div class="admin-sidebar__secao">Principal</div>' +
@@ -173,43 +167,27 @@
       let fim = new Date();
 
       if (periodo === 'hoje') {
-        return {
-          inicio: hoje.toISOString().slice(0, 10),
-          fim: hoje.toISOString().slice(0, 10)
-        };
+        return { inicio: hoje.toISOString().slice(0, 10), fim: hoje.toISOString().slice(0, 10) };
       }
 
       if (periodo === '7dias') {
         inicio.setDate(inicio.getDate() - 6);
-        return {
-          inicio: inicio.toISOString().slice(0, 10),
-          fim: hoje.toISOString().slice(0, 10)
-        };
+        return { inicio: inicio.toISOString().slice(0, 10), fim: hoje.toISOString().slice(0, 10) };
       }
 
       if (periodo === 'mes') {
         inicio.setDate(1);
-        return {
-          inicio: inicio.toISOString().slice(0, 10),
-          fim: hoje.toISOString().slice(0, 10)
-        };
+        return { inicio: inicio.toISOString().slice(0, 10), fim: hoje.toISOString().slice(0, 10) };
       }
 
       if (periodo === 'mes_anterior') {
         inicio.setMonth(inicio.getMonth() - 1);
         inicio.setDate(1);
         fim = new Date(inicio.getFullYear(), inicio.getMonth() + 1, 0);
-        return {
-          inicio: inicio.toISOString().slice(0, 10),
-          fim: fim.toISOString().slice(0, 10)
-        };
+        return { inicio: inicio.toISOString().slice(0, 10), fim: fim.toISOString().slice(0, 10) };
       }
 
-      // Personalizado
-      return {
-        inicio: document.getElementById('dataInicio').value || null,
-        fim: document.getElementById('dataFim').value || null
-      };
+      return { inicio: document.getElementById('dataInicio').value || null, fim: document.getElementById('dataFim').value || null };
     }
 
     async function carregar() {
@@ -219,13 +197,8 @@
         const mod = await import('../assets/js/services/reports.service.js');
         const datas = calcularDatas();
 
-        const [kpis, evolucao, vendasCompras, entradasSaidas, topProdutos] = await Promise.all([
-          mod.kpisDashboard(datas),
-          mod.evolucaoVendas(datas),
-          mod.vendasXCompras({ meses: 6 }),
-          mod.entradasXSaidas({ meses: 6 }),
-          mod.produtosMaisVendidos({ limite: 8 })
-        ]);
+        const kpis = await mod.kpisDashboard(datas);
+        const topProdutos = await mod.produtosMaisVendidos({ limite: 8 });
 
         el.innerHTML =
           // KPIs principais
@@ -244,43 +217,33 @@
             kpiCard('📦 Valor em estoque', 'R$ ' + kpis.valorEstoque.toFixed(2), '#8b5cf6') +
           '</div>' +
 
-          // Lucro
-          '<div style="background:' + (kpis.lucroBruto >= 0 ? '#f0fdf4' : '#fef2f2') + ';border:1px solid ' + (kpis.lucroBruto >= 0 ? '#86efac' : '#fca5a5') + ';border-radius:12px;padding:20px;margin-bottom:24px;">' +
+          // Lucro bruto destacado
+          '<div style="background:' + (kpis.lucroBruto >= 0 ? '#f0fdf4' : '#fef2f2') + ';border:1px solid ' + (kpis.lucroBruto >= 0 ? '#86efac' : '#fca5a5') + ';border-radius:12px;padding:24px;margin-bottom:24px;">' +
             '<div style="font-size:12px;text-transform:uppercase;color:#64748b;font-weight:600;margin-bottom:8px;">Lucro bruto estimado</div>' +
-            '<div style="font-size:32px;font-weight:700;color:' + (kpis.lucroBruto >= 0 ? '#16a34a' : '#dc2626') + ';">R$ ' + kpis.lucroBruto.toFixed(2) + '</div>' +
+            '<div style="font-size:36px;font-weight:700;color:' + (kpis.lucroBruto >= 0 ? '#16a34a' : '#dc2626') + ';">R$ ' + kpis.lucroBruto.toFixed(2) + '</div>' +
+            '<div style="font-size:12px;color:#64748b;margin-top:8px;">Faturamento (' + kpis.faturamento.toFixed(2) + ') − Compras recebidas (' + kpis.totalCompras.toFixed(2) + ')</div>' +
           '</div>' +
 
-          // Gráficos
-          '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(400px,1fr));gap:16px;margin-bottom:24px;">' +
-            '<div class="card"><h3 style="font-size:16px;margin-bottom:16px;">📈 Evolução das vendas</h3><canvas id="chart-vendas"></canvas></div>' +
-            '<div class="card"><h3 style="font-size:16px;margin-bottom:16px;">📊 Vendas x Compras</h3><canvas id="chart-vc"></canvas></div>' +
-            '<div class="card"><h3 style="font-size:16px;margin-bottom:16px;">💸 Entradas x Saídas</h3><canvas id="chart-es"></canvas></div>' +
-            '<div class="card"><h3 style="font-size:16px;margin-bottom:16px;">🏆 Produtos mais vendidos</h3><canvas id="chart-top"></canvas></div>' +
-          '</div>' +
-
-          // Produtos mais vendidos lista
+          // Top produtos (lista)
           (topProdutos.length
-            ? '<div class="card" style="padding:20px;">' +
-                '<h3 style="font-size:16px;margin-bottom:16px;">🏆 Top produtos</h3>' +
+            ? '<div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:20px;">' +
+                '<h3 style="font-size:16px;margin-bottom:16px;">🏆 Produtos mais vendidos</h3>' +
                 topProdutos.map(function(p) {
-                  return '<div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #e2e8f0;">' +
+                  return '<div style="display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid #f1f5f9;">' +
                     '<div><strong>' + esc(p.nome) + '</strong></div>' +
-                    '<div style="color:#64748b;">' + p.quantidade + ' un · R$ ' + p.total.toFixed(2) + '</div>' +
+                    '<div style="color:#64748b;font-size:14px;">' + p.quantidade + ' un · R$ ' + p.total.toFixed(2) + '</div>' +
                   '</div>';
                 }).join('') +
               '</div>'
-            : '') +
-
-          '<div style="margin-top:24px;padding:12px;background:#dcfce7;color:#166534;border-radius:8px;text-align:center;font-size:13px;">✅ Logado</div>';
-
-        // Renderiza gráficos
-        setTimeout(function() {
-          renderizarGraficos(evolucao, vendasCompras, entradasSaidas, topProdutos);
-        }, 100);
+            : '<div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:40px;text-align:center;color:#64748b;">' +
+                '<div style="font-size:40px;margin-bottom:12px;">📊</div>' +
+                '<div style="font-size:16px;font-weight:600;color:#0f172a;margin-bottom:4px;">Sem dados ainda</div>' +
+                '<div style="font-size:13px;">Quando houver vendas, os produtos mais vendidos aparecerão aqui.</div>' +
+              '</div>');
 
       } catch (e) {
         console.error(e);
-        el.innerHTML = '<div style="padding:20px;background:#fee2e2;color:#991b1b;border-radius:8px;">Erro: ' + esc(e.message) + '</div>';
+        el.innerHTML = '<div style="padding:20px;background:#fee2e2;color:#991b1b;border-radius:8px;font-family:monospace;">Erro: ' + esc(e.message) + '</div>';
       }
     }
 
@@ -289,150 +252,6 @@
         '<div style="font-size:12px;text-transform:uppercase;color:#64748b;font-weight:600;margin-bottom:8px;">' + rotulo + '</div>' +
         '<div style="font-size:24px;font-weight:700;color:' + cor + ';line-height:1.1;">' + valor + '</div>' +
       '</div>';
-    }
-
-    function renderizarGraficos(evolucao, vendasCompras, entradasSaidas, topProdutos) {
-      if (typeof Chart === 'undefined') return;
-
-      const azul = '#0ea5e9';
-      const laranja = '#f97316';
-      const verde = '#16a34a';
-      const vermelho = '#dc2626';
-      const roxo = '#8b5cf6';
-
-      // 1) Evolução das vendas
-      if (chartVendas) chartVendas.destroy();
-      chartVendas = new Chart(document.getElementById('chart-vendas'), {
-        type: 'line',
-        data: {
-          labels: evolucao.map(function(e) { return new Date(e.dia + 'T12:00:00').toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }); }),
-          datasets: [{
-            label: 'Vendas (R$)',
-            data: evolucao.map(function(e) { return e.valor; }),
-            borderColor: azul,
-            backgroundColor: 'rgba(14,165,233,0.1)',
-            tension: 0.3,
-            fill: true,
-            pointBackgroundColor: azul,
-            pointRadius: 4
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: {
-            legend: { display: false }
-          },
-          scales: {
-            y: {
-              beginAtZero: true,
-              ticks: {
-                callback: function(v) { return 'R$ ' + v.toFixed(0); }
-              }
-            }
-          }
-        }
-      });
-
-      // 2) Vendas x Compras
-      if (chartVendasCompras) chartVendasCompras.destroy();
-      chartVendasCompras = new Chart(document.getElementById('chart-vc'), {
-        type: 'bar',
-        data: {
-          labels: vendasCompras.map(function(v) { return v.mes; }),
-          datasets: [
-            {
-              label: 'Vendas',
-              data: vendasCompras.map(function(v) { return v.vendas; }),
-              backgroundColor: azul,
-              borderRadius: 6
-            },
-            {
-              label: 'Compras',
-              data: vendasCompras.map(function(v) { return v.compras; }),
-              backgroundColor: laranja,
-              borderRadius: 6
-            }
-          ]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: {
-            legend: { position: 'bottom' }
-          },
-          scales: {
-            y: {
-              beginAtZero: true,
-              ticks: {
-                callback: function(v) { return 'R$ ' + v.toFixed(0); }
-              }
-            }
-          }
-        }
-      });
-
-      // 3) Entradas x Saídas
-      if (chartEntradasSaidas) chartEntradasSaidas.destroy();
-      chartEntradasSaidas = new Chart(document.getElementById('chart-es'), {
-        type: 'line',
-        data: {
-          labels: entradasSaidas.map(function(v) { return v.mes; }),
-          datasets: [
-            {
-              label: 'Entradas',
-              data: entradasSaidas.map(function(v) { return v.entradas; }),
-              borderColor: verde,
-              backgroundColor: 'rgba(22,163,74,0.1)',
-              tension: 0.3,
-              fill: true
-            },
-            {
-              label: 'Saídas',
-              data: entradasSaidas.map(function(v) { return v.saidas; }),
-              borderColor: vermelho,
-              backgroundColor: 'rgba(220,38,38,0.1)',
-              tension: 0.3,
-              fill: true
-            }
-          ]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: {
-            legend: { position: 'bottom' }
-          },
-          scales: {
-            y: {
-              beginAtZero: true,
-              ticks: {
-                callback: function(v) { return 'R$ ' + v.toFixed(0); }
-              }
-            }
-          }
-        }
-      });
-
-      // 4) Top produtos
-      if (chartTopProdutos) chartTopProdutos.destroy();
-      chartTopProdutos = new Chart(document.getElementById('chart-top'), {
-        type: 'doughnut',
-        data: {
-          labels: topProdutos.map(function(p) { return p.nome.substring(0, 20); }),
-          datasets: [{
-            data: topProdutos.map(function(p) { return p.quantidade; }),
-            backgroundColor: [azul, laranja, verde, roxo, vermelho, '#eab308', '#06b6d4', '#ec4899']
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: {
-            legend: { position: 'bottom', labels: { font: { size: 11 } } }
-          }
-        }
-      });
     }
   </script>
 </body>
