@@ -1,16 +1,9 @@
 /* =============================================================
    BASE — VM VENDAS E COMPRAS
-   =============================================================
-   Estilos universais: reset, tipografia, formulários, links e
-   utilitários. Depende de tokens.css (deve ser carregado antes).
    ============================================================= */
 
-/* -------------------------------------------------------------
-   1. RESET
-   ------------------------------------------------------------- */
-*,
-*::before,
-*::after {
+/* Reset */
+*, *::before, *::after {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
@@ -34,26 +27,15 @@ body {
   text-rendering: optimizeLegibility;
 }
 
-/* Remove estilos padrão de mídia */
-img,
-picture,
-video,
-canvas,
-svg {
+img, picture, video, canvas, svg {
   display: block;
   max-width: 100%;
   height: auto;
 }
 
-/* Remove estilos padrão de listas */
-ul,
-ol {
-  list-style: none;
-}
+ul, ol { list-style: none; }
 
-/* -------------------------------------------------------------
-   2. TIPOGRAFIA
-   ------------------------------------------------------------- */
+/* Tipografia */
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--fonte-titulo);
   font-weight: var(--peso-bold);
@@ -65,36 +47,17 @@ h1 { font-size: var(--texto-3xl); }
 h2 { font-size: var(--texto-2xl); }
 h3 { font-size: var(--texto-xl); }
 h4 { font-size: var(--texto-lg); }
-h5 { font-size: var(--texto-base); }
-h6 { font-size: var(--texto-sm); }
 
-p {
-  line-height: var(--linha-normal);
-}
-
-small {
-  font-size: var(--texto-sm);
-}
-
-strong, b {
-  font-weight: var(--peso-semibold);
-}
+p { line-height: var(--linha-normal); }
+small { font-size: var(--texto-sm); }
+strong, b { font-weight: var(--peso-semibold); }
 
 code, pre, kbd, samp {
   font-family: var(--fonte-mono);
   font-size: 0.92em;
 }
 
-pre {
-  background: var(--cor-fundo-suave);
-  padding: var(--esp-4);
-  border-radius: var(--raio-md);
-  overflow-x: auto;
-}
-
-/* -------------------------------------------------------------
-   3. LINKS
-   ------------------------------------------------------------- */
+/* Links */
 a {
   color: var(--cor-principal);
   text-decoration: none;
@@ -102,7 +65,7 @@ a {
 }
 
 a:hover {
-  color: var(--cor-secundaria);
+  color: var(--cor-principal-escura);
   text-decoration: underline;
 }
 
@@ -112,22 +75,15 @@ a:focus-visible {
   border-radius: var(--raio-sm);
 }
 
-/* -------------------------------------------------------------
-   4. FORMULÁRIOS
-   ------------------------------------------------------------- */
-input,
-textarea,
-select,
-button {
+/* Formulários */
+input, textarea, select, button {
   font: inherit;
   color: inherit;
 }
 
-input,
-textarea,
-select {
+input, textarea, select {
   width: 100%;
-  padding: var(--pad-input);
+  padding: 12px 14px;
   background-color: #fff;
   border: 1px solid var(--cor-borda);
   border-radius: var(--raio-input);
@@ -136,26 +92,19 @@ select {
               box-shadow var(--transicao-rapida);
 }
 
-input:focus,
-textarea:focus,
-select:focus {
+input:focus, textarea:focus, select:focus {
   outline: none;
   border-color: var(--cor-principal);
   box-shadow: var(--anel-foco);
 }
 
-input:disabled,
-textarea:disabled,
-select:disabled {
+input:disabled, textarea:disabled, select:disabled {
   background-color: var(--cor-fundo-suave);
   cursor: not-allowed;
   opacity: 0.7;
 }
 
-textarea {
-  resize: vertical;
-  min-height: 100px;
-}
+textarea { resize: vertical; min-height: 100px; }
 
 label {
   display: block;
@@ -165,24 +114,21 @@ label {
   color: var(--cor-texto);
 }
 
-/* Remove setas feias do input number */
+/* Remove setas de input number */
 input[type="number"]::-webkit-outer-spin-button,
 input[type="number"]::-webkit-inner-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
-input[type="number"] {
-  -moz-appearance: textfield;
-}
+input[type="number"] { -moz-appearance: textfield; }
 
-/* -------------------------------------------------------------
-   5. BOTÕES (base — variações virão em components.css)
-   ------------------------------------------------------------- */
+/* Botões base */
 button {
   cursor: pointer;
   border: none;
   background: none;
   padding: 0;
+  font-family: inherit;
 }
 
 button:disabled {
@@ -190,9 +136,7 @@ button:disabled {
   opacity: 0.6;
 }
 
-/* -------------------------------------------------------------
-   6. TABELAS
-   ------------------------------------------------------------- */
+/* Tabelas */
 table {
   width: 100%;
   border-collapse: collapse;
@@ -200,7 +144,7 @@ table {
 }
 
 th, td {
-  padding: var(--esp-3) var(--esp-4);
+  padding: 12px 16px;
   text-align: left;
   border-bottom: 1px solid var(--cor-borda);
 }
@@ -211,36 +155,24 @@ th {
   background-color: var(--cor-fundo-suave);
 }
 
-/* -------------------------------------------------------------
-   7. SELEÇÃO DE TEXTO
-   ------------------------------------------------------------- */
+/* Seleção */
 ::selection {
   background-color: var(--cor-principal);
   color: #fff;
 }
 
-/* -------------------------------------------------------------
-   8. SCROLLBAR (Chrome, Edge, Safari)
-   ------------------------------------------------------------- */
-::-webkit-scrollbar {
-  width: 10px;
-  height: 10px;
-}
-::-webkit-scrollbar-track {
-  background: var(--cor-fundo-suave);
-}
+/* Scrollbar */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: var(--cor-fundo-suave); }
 ::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
+  background: var(--cor-borda-escura);
   border-radius: var(--raio-full);
 }
-::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
-}
+::-webkit-scrollbar-thumb:hover { background: var(--cor-texto-suave); }
 
-/* -------------------------------------------------------------
-   9. UTILITÁRIOS
-   ------------------------------------------------------------- */
-/* Texto */
+/* =============================================================
+   UTILITÁRIOS
+   ============================================================= */
 .texto-centro   { text-align: center; }
 .texto-direita  { text-align: right; }
 .texto-esquerda { text-align: left; }
@@ -259,12 +191,10 @@ th {
 .peso-semibold { font-weight: var(--peso-semibold); }
 .peso-bold     { font-weight: var(--peso-bold); }
 
-/* Visibilidade */
 .oculto       { display: none !important; }
 .invisivel    { visibility: hidden; }
 .bloqueado    { pointer-events: none; opacity: 0.5; }
 
-/* Flexbox */
 .flex          { display: flex; }
 .flex-col      { display: flex; flex-direction: column; }
 .flex-centro   { display: flex; align-items: center; justify-content: center; }
@@ -280,7 +210,6 @@ th {
 .gap-4 { gap: var(--esp-4); }
 .gap-6 { gap: var(--esp-6); }
 
-/* Margens */
 .mt-1 { margin-top: var(--esp-1); }
 .mt-2 { margin-top: var(--esp-2); }
 .mt-3 { margin-top: var(--esp-3); }
@@ -295,21 +224,16 @@ th {
 .mb-6 { margin-bottom: var(--esp-6); }
 .mb-8 { margin-bottom: var(--esp-8); }
 
-.ml-2 { margin-left: var(--esp-2); }
-.mr-2 { margin-right: var(--esp-2); }
 .mx-auto { margin-left: auto; margin-right: auto; }
 
-/* Padding */
 .p-2 { padding: var(--esp-2); }
 .p-3 { padding: var(--esp-3); }
 .p-4 { padding: var(--esp-4); }
 .p-6 { padding: var(--esp-6); }
 
-/* Largura / altura */
 .w-full { width: 100%; }
 .h-full { height: 100%; }
 
-/* Container padrão */
 .container {
   width: 100%;
   max-width: var(--largura-maxima);
@@ -319,7 +243,6 @@ th {
   padding-right: var(--esp-4);
 }
 
-/* Divisor */
 .divisor {
   border: 0;
   height: 1px;
@@ -327,42 +250,37 @@ th {
   margin: var(--esp-4) 0;
 }
 
-/* Cartão genérico */
 .cartao {
   background: #fff;
   border: 1px solid var(--cor-borda);
   border-radius: var(--raio-card);
   box-shadow: var(--sombra-sm);
-  padding: var(--pad-card);
+  padding: var(--esp-4);
 }
 
-/* Acessibilidade — só visível para leitores de tela */
 .sr-only {
   position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
   overflow: hidden;
   clip: rect(0, 0, 0, 0);
   white-space: nowrap;
   border: 0;
 }
 
-/* -------------------------------------------------------------
-   10. RESPONSIVIDADE BÁSICA
-   ------------------------------------------------------------- */
+/* =============================================================
+   RESPONSIVIDADE BASE (corrige muitos problemas mobile)
+   ============================================================= */
 @media (max-width: 640px) {
   h1 { font-size: var(--texto-2xl); }
   h2 { font-size: var(--texto-xl); }
   h3 { font-size: var(--texto-lg); }
+
+  .container { padding-left: var(--esp-3); padding-right: var(--esp-3); }
 }
 
-/* Reduz animações se o usuário preferir */
 @media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
+  *, *::before, *::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
