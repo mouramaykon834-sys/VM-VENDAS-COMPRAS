@@ -17,6 +17,9 @@
     .sidebar__item { padding: 10px 12px; border-radius: 8px; color: #cbd5e1; text-decoration: none; font-size: 14px; display: block; }
     .sidebar__item:hover { background: rgba(255,255,255,.06); color: #fff; }
     .sidebar__item.ativo { background: #0ea5e9; color: #fff; }
+    .sidebar__user { padding: 12px 16px; border-top: 1px solid rgba(255,255,255,.1); margin-top: 20px; font-size: 12px; }
+    .sidebar__user-nome { color: #fff; font-weight: 600; margin-bottom: 2px; }
+    .sidebar__user-role { color: #0ea5e9; }
     .main { display: flex; flex-direction: column; }
     .topbar { background: #fff; border-bottom: 1px solid #e2e8f0; padding: 12px 24px; display: flex; justify-content: space-between; align-items: center; gap: 12px; }
     .topbar h1 { font-size: 18px; }
@@ -36,36 +39,7 @@
 </head>
 <body>
   <div class="layout">
-    <aside class="sidebar">
-      <div class="sidebar__logo"><span>🏠</span><span>Minha Loja</span><span class="sidebar__badge">ADMIN</span></div>
-      <div class="sidebar__secao">Principal</div>
-      <nav class="sidebar__lista">
-        <a href="./index.html" class="sidebar__item ativo">Dashboard</a>
-        <a href="./pedidos.html" class="sidebar__item">Pedidos</a>
-        <a href="./propostas.html" class="sidebar__item">Propostas</a>
-        <a href="./conversas.html" class="sidebar__item">Conversas</a>
-      </nav>
-      <div class="sidebar__secao">Catálogo</div>
-      <nav class="sidebar__lista">
-        <a href="./produtos.html" class="sidebar__item">Produtos</a>
-        <a href="./categorias.html" class="sidebar__item">Categorias</a>
-        <a href="./produtos-destaque.html" class="sidebar__item">Destaques e promoções</a>
-      </nav>
-      <div class="sidebar__secao">Clientes</div>
-      <nav class="sidebar__lista">
-        <a href="./clientes.html" class="sidebar__item">Clientes</a>
-      </nav>
-      <div class="sidebar__secao">Sistema</div>
-      <nav class="sidebar__lista">
-        <a href="./auditoria.html" class="sidebar__item">Auditoria</a>
-      </nav>
-      <div class="sidebar__secao">Configurações</div>
-      <nav class="sidebar__lista">
-        <a href="./empresa.html" class="sidebar__item">Dados da empresa</a>
-        <a href="./identidade.html" class="sidebar__item">Identidade visual</a>
-        <a href="./configuracoes.html" class="sidebar__item">Outras configurações</a>
-      </nav>
-    </aside>
+    <aside class="sidebar" id="sidebar"></aside>
     <main class="main">
       <header class="topbar">
         <h1>Dashboard</h1>
@@ -79,6 +53,7 @@
 
   <script type="module">
     const el = document.getElementById('conteudo');
+    const sidebar = document.getElementById('sidebar');
     const erro = (msg) => el.innerHTML = '<div class="erro">❌ ' + msg + '</div>';
 
     (async () => {
@@ -89,36 +64,111 @@
         const session = r.data ? r.data.session : null;
         if (!session) { location.href = '../login.html'; return; }
 
-        const p = await supabase.from('profiles').select('role, nome').eq('id', session.user.id).maybeSingle();
-        if (!p.data || p.data.role !== 'admin') { erro('Acesso restrito a administradores'); return; }
+        const p = await supabase.from('profiles').select('role, nome, email').eq('id', session.user.id).maybeSingle();
+        if (!p.data) { erro('Perfil não encontrado.'); return; }
 
-        const contar = async (tabela, filtro) => {
-          let q = supabase.from(tabela).select('*', { count: 'exact', head: true });
-          if (filtro) Object.entries(filtro).forEach(([k, v]) => q = q.eq(k, v));
-          const { count } = await q;
-          return count || 0;
-        };
+        // Buscar permissões
+        const perms = await supabase
+          .from('permissions')
+          .select('recurso')
+          .eq('role', p.data.role)
+          .eq('permitido', true);
+        const recursos = (perms.data || []).map(function(x) { return x.recurso; });
 
-        const resultados = await Promise.all([
-          contar('products'), contar('orders'), contar('proposals'), contar('profiles')
-        ]);
+        // Se não for admin nem tiver permissão de dashboard → bloqueia
+        if (recursos.indexOf('dashboard') === -1 && p.data.role !== 'admin') {
+          erro('Seu perfil (' + p.data.role + ') não tem acesso ao painel.');
+          return;
+        }
 
-        el.innerHTML =
-          '<div class="cards">' +
-            '<div class="card"><div class="card__rotulo">Produtos</div><div class="card__valor">' + resultados[0] + '</div></div>' +
-            '<div class="card"><div class="card__rotulo">Pedidos</div><div class="card__valor">' + resultados[1] + '</div></div>' +
-            '<div class="card"><div class="card__rotulo">Propostas</div><div class="card__valor">' + resultados[2] + '</div></div>' +
-            '<div class="card"><div class="card__rotulo">Clientes</div><div class="card__valor">' + resultados[3] + '</div></div>' +
-          '</div>' +
-          '<div class="secao"><div class="secao__titulo">Últimos pedidos</div><div class="secao__vazio">Nenhum pedido ainda.</div></div>' +
-          '<div class="secao"><div class="secao__titulo">Últimas propostas</div><div class="secao__vazio">Nenhuma proposta ainda.</div></div>' +
-          '<div class="secao"><div class="secao__titulo">Últimas conversas</div><div class="secao__vazio">Nenhuma conversa ainda.</div></div>' +
-          '<div style="margin-top:24px;padding:12px;background:#dcfce7;color:#166534;border-radius:8px;text-align:center;font-size:13px;">✅ Logado como <strong>' + session.user.email + '</strong></div>';
+        renderSidebar(p.data, recursos);
+        await carregarDashboard(session, recursos);
       } catch (e) {
         console.error(e);
         erro(e.message);
       }
     })();
+
+    function renderSidebar(perfil, recursos) {
+      function item(href, label, recurso) {
+        if (recurso && recursos.indexOf(recurso) === -1 && perfil.role !== 'admin') return '';
+        return '<a href="' + href + '" class="sidebar__item">' + label + '</a>';
+      }
+
+      sidebar.innerHTML =
+        '<div class="sidebar__logo"><span>🏠</span><span>Minha Loja</span><span class="sidebar__badge">ADMIN</span></div>' +
+
+        '<div class="sidebar__secao">Principal</div>' +
+        '<nav class="sidebar__lista">' +
+          '<a href="./index.html" class="sidebar__item ativo">Dashboard</a>' +
+          item('./pedidos.html', 'Pedidos', 'pedidos') +
+          item('./propostas.html', 'Propostas', 'propostas') +
+          item('./conversas.html', 'Conversas', 'conversas') +
+        '</nav>' +
+
+        '<div class="sidebar__secao">Catálogo</div>' +
+        '<nav class="sidebar__lista">' +
+          item('./produtos.html', 'Produtos', 'produtos') +
+          item('./categorias.html', 'Categorias', 'categorias') +
+          item('./produtos-destaque.html', 'Destaques e promoções', 'destaques') +
+        '</nav>' +
+
+        '<div class="sidebar__secao">Clientes</div>' +
+        '<nav class="sidebar__lista">' +
+          item('./clientes.html', 'Clientes', 'clientes') +
+        '</nav>' +
+
+        '<div class="sidebar__secao">Sistema</div>' +
+        '<nav class="sidebar__lista">' +
+          item('./auditoria.html', 'Auditoria', 'auditoria') +
+        '</nav>' +
+
+        '<div class="sidebar__secao">Configurações</div>' +
+        '<nav class="sidebar__lista">' +
+          item('./empresa.html', 'Dados da empresa', 'empresa') +
+          item('./identidade.html', 'Identidade visual', 'identidade') +
+        '</nav>' +
+
+        '<div class="sidebar__user">' +
+          '<div class="sidebar__user-nome">' + (perfil.nome || perfil.email) + '</div>' +
+          '<div class="sidebar__user-role">' + rotuloPerfil(perfil.role) + '</div>' +
+        '</div>';
+    }
+
+    function rotuloPerfil(r) {
+      const map = {
+        admin: 'Administrador', gerente: 'Gerente', financeiro: 'Financeiro',
+        comercial: 'Comercial', estoque: 'Estoque', cliente: 'Cliente'
+      };
+      return map[r] || r;
+    }
+
+    async function carregarDashboard(session, recursos) {
+      const { supabase } = await import('../assets/js/supabase.js');
+
+      const contar = async (tabela, filtro) => {
+        let q = supabase.from(tabela).select('*', { count: 'exact', head: true });
+        if (filtro) Object.entries(filtro).forEach(function(arr) { q = q.eq(arr[0], arr[1]); });
+        const r = await q;
+        return r.count || 0;
+      };
+
+      const resultados = await Promise.all([
+        contar('products'), contar('orders'), contar('proposals'), contar('profiles')
+      ]);
+
+      el.innerHTML =
+        '<div class="cards">' +
+          '<div class="card"><div class="card__rotulo">Produtos</div><div class="card__valor">' + resultados[0] + '</div></div>' +
+          '<div class="card"><div class="card__rotulo">Pedidos</div><div class="card__valor">' + resultados[1] + '</div></div>' +
+          '<div class="card"><div class="card__rotulo">Propostas</div><div class="card__valor">' + resultados[2] + '</div></div>' +
+          '<div class="card"><div class="card__rotulo">Clientes</div><div class="card__valor">' + resultados[3] + '</div></div>' +
+        '</div>' +
+        '<div class="secao"><div class="secao__titulo">Últimos pedidos</div><div class="secao__vazio">Nenhum pedido ainda.</div></div>' +
+        '<div class="secao"><div class="secao__titulo">Últimas propostas</div><div class="secao__vazio">Nenhuma proposta ainda.</div></div>' +
+        '<div class="secao"><div class="secao__titulo">Últimas conversas</div><div class="secao__vazio">Nenhuma conversa ainda.</div></div>' +
+        '<div style="margin-top:24px;padding:12px;background:#dcfce7;color:#166534;border-radius:8px;text-align:center;font-size:13px;">✅ Logado como <strong>' + session.user.email + '</strong></div>';
+    }
   </script>
 </body>
 </html>
