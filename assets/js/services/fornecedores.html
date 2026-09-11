@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Fornecedores — Admin</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: system-ui, -apple-system, sans-serif; background: #f8fafc; color: #0f172a; }
+    .layout { display: grid; grid-template-columns: 240px 1fr; min-height: 100vh; }
+    .sidebar { background: #0f172a; color: #cbd5e1; padding: 16px 0; }
+    .sidebar__logo { display: flex; align-items: center; gap: 8px; padding: 0 16px 20px; border-bottom: 1px solid rgba(255,255,255,.1); margin-bottom: 16px; color: #fff; font-weight: 700; font-size: 15px; }
+    .sidebar__badge { background: #0ea5e9; color: #fff; padding: 2px 8px; border-radius: 6px; font-size: 10px; font-weight: 700; }
+    .sidebar__secao { padding: 16px 16px 8px; font-size: 11px; text-transform: uppercase; letter-spacing: .5px; color: #64748b; font-weight: 600; }
+    .sidebar__lista { display: flex; flex-direction: column; gap: 2px; padding: 0 8px; }
+    .sidebar__item { padding: 10px 12px; border-radius: 8px; color: #cbd5e1; text-decoration: none; font-size: 14px; display: block; }
+    .sidebar__item:hover { background: rgba(255,255,255,.06); color: #fff; }
+    .sidebar__item.ativo { background: #0ea5e9; color: #fff; }
+    .main { display: flex; flex-direction: column; }
+    .topbar { background: #fff; border-bottom: 1px solid #e2e8f0; padding: 12px 24px; display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+    .topbar h1 { font-size: 18px; }
+    .topbar__acoes { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+    .topbar input[type=search] { padding: 8px 12px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 14px; width: 220px; }
+    .btn { padding: 8px 16px; border-radius: 8px; border: 1px solid #0ea5e9; background: #0ea5e9; color: #fff; font-weight: 600; font-size: 14px; cursor: pointer; text-decoration: none; display: inline-block; }
+    .btn:hover { filter: brightness(.94); }
+    .btn--perigo { background: transparent; color: #dc2626; border-color: transparent; padding: 6px 10px; }
+    .btn--loja { padding: 8px 14px; border: 1px solid #0ea5e9; border-radius: 8px; color: #0ea5e9; text-decoration: none; font-size: 13px; font-weight: 600; }
+    .btn--loja:hover { background: #0ea5e9; color: #fff; }
+    .conteudo { padding: 24px; }
+    .tabela { width: 100%; background: #fff; border-collapse: collapse; border-radius: 12px; overflow: hidden; border: 1px solid #e2e8f0; }
+    .tabela th { text-align: left; padding: 12px 16px; background: #f8fafc; font-size: 12px; text-transform: uppercase; color: #64748b; font-weight: 600; }
+    .tabela td { padding: 12px 16px; border-top: 1px solid #e2e8f0; font-size: 14px; }
+    .tabela tr:hover td { background: #f8fafc; }
+    .vazio { background: #fff; padding: 60px 24px; text-align: center; border-radius: 12px; border: 1px solid #e2e8f0; color: #64748b; }
+    .erro { padding: 20px; background: #fee2e2; color: #991b1b; border-radius: 8px; margin: 20px; font-family: monospace; }
+    @media (max-width: 900px) { .layout { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="sidebar__logo"><span>🏠</span><span>Minha Loja</span><span class="sidebar__badge">ADMIN</span></div>
+      <div class="sidebar__secao">Principal</div>
+      <nav class="sidebar__lista">
+        <a href="./index.html" class="sidebar__item">Dashboard</a>
+        <a href="./pedidos.html" class="sidebar__item">Pedidos</a>
+        <a href="./propostas.html" class="sidebar__item">Propostas</a>
+        <a href="./conversas.html" class="sidebar__item">Conversas</a>
+      </nav>
+      <div class="sidebar__secao">Catálogo</div>
+      <nav class="sidebar__lista">
+        <a href="./produtos.html" class="sidebar__item">Produtos</a>
+        <a href="./categorias.html" class="sidebar__item">Categorias</a>
+      </nav>
+      <div class="sidebar__secao">Estoque</div>
+      <nav class="sidebar__lista">
+        <a href="./estoque.html" class="sidebar__item">Visão geral</a>
+        <a href="./estoque-movimentar.html" class="sidebar__item">Movimentar</a>
+        <a href="./estoque-historico.html" class="sidebar__item">Histórico</a>
+        <a href="./estoque-alertas.html" class="sidebar__item">Alertas</a>
+      </nav>
+      <div class="sidebar__secao">Compras</div>
+      <nav class="sidebar__lista">
+        <a href="./fornecedores.html" class="sidebar__item ativo">Fornecedores</a>
+        <a href="./compras.html" class="sidebar__item">Compras</a>
+      </nav>
+      <div class="sidebar__secao">Clientes</div>
+      <nav class="sidebar__lista">
+        <a href="./clientes.html" class="sidebar__item">Clientes</a>
+      </nav>
+      <div class="sidebar__secao">Sistema</div>
+      <nav class="sidebar__lista">
+        <a href="./auditoria.html" class="sidebar__item">Auditoria</a>
+      </nav>
+      <div class="sidebar__secao">Configurações</div>
+      <nav class="sidebar__lista">
+        <a href="./empresa.html" class="sidebar__item">Dados da empresa</a>
+        <a href="./identidade.html" class="sidebar__item">Identidade visual</a>
+        <a href="./configuracoes.html" class="sidebar__item">Outras configurações</a>
+      </nav>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <h1>Fornecedores</h1>
+        <div class="topbar__acoes">
+          <input type="search" id="busca" placeholder="Buscar fornecedor..." />
+          <a href="./fornecedor-editar.html" class="btn">+ Novo fornecedor</a>
+          <a href="../index.html" class="btn--loja">← Ver loja</a>
+        </div>
+      </header>
+      <div class="conteudo" id="conteudo"><div class="vazio">Carregando...</div></div>
+    </main>
+  </div>
+
+  <script type="module">
+    const el = document.getElementById('conteudo');
+    const esc = s => s == null ? '' : String(s).replace(/[&<>"']/g, function(m) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]; });
+
+    let supabase;
+
+    (async () => {
+      try {
+        const mod = await import('../assets/js/supabase.js');
+        supabase = mod.supabase;
+
+        const r = await supabase.auth.getSession();
+        if (!r.data || !r.data.session) { location.href = '../login.html'; return; }
+
+        const p = await supabase.from('profiles').select('role').eq('id', r.data.session.user.id).maybeSingle();
+        if (!p.data) { el.innerHTML = '<div class="erro">Perfil não encontrado</div>'; return; }
+
+        await carregar();
+
+        let t;
+        document.getElementById('busca').addEventListener('input', function(e) {
+          clearTimeout(t);
+          const v = e.target.value.trim();
+          t = setTimeout(function() { carregar(v); }, 300);
+        });
+      } catch (e) {
+        el.innerHTML = '<div class="erro">Erro: ' + esc(e.message) + '</div>';
+      }
+    })();
+
+    async function carregar(busca) {
+      el.innerHTML = '<div class="vazio">Carregando...</div>';
+      try {
+        const mod = await import('../assets/js/services/suppliers.service.js');
+        const lista = await mod.listarFornecedores({ busca: busca || '', somenteAtivos: false });
+
+        if (!lista.length) {
+          el.innerHTML = '<div class="vazio"><div style="font-size:18px;font-weight:600;color:#0f172a;margin-bottom:8px;">Nenhum fornecedor cadastrado</div><p style="margin-bottom:20px;">Clique em "+ Novo fornecedor" para começar.</p><a href="./fornecedor-editar.html" class="btn">Cadastrar primeiro fornecedor</a></div>';
+          return;
+        }
+
+        el.innerHTML =
+          '<table class="tabela">' +
+            '<thead><tr><th>Nome</th><th>CNPJ</th><th>Telefone</th><th>E-mail</th><th>Cidade</th><th>Status</th><th style="text-align:right;">Ações</th></tr></thead>' +
+            '<tbody>' +
+              lista.map(function(f) {
+                return '<tr>' +
+                  '<td><strong>' + esc(f.nome) + '</strong></td>' +
+                  '<td>' + esc(f.cnpj || '—') + '</td>' +
+                  '<td>' + esc(f.telefone || '—') + '</td>' +
+                  '<td>' + esc(f.email || '—') + '</td>' +
+                  '<td>' + esc(f.cidade || '—') + '</td>' +
+                  '<td>' + (f.ativo ? '<span style="color:#16a34a;font-weight:600;">Ativo</span>' : '<span style="color:#94a3b8;">Inativo</span>') + '</td>' +
+                  '<td style="text-align:right;">' +
+                    '<a href="./fornecedor-editar.html?id=' + f.id + '" class="btn" style="padding:6px 10px;font-size:13px;">Editar</a>' +
+                    '<button class="btn btn--perigo" data-del="' + f.id + '">Excluir</button>' +
+                  '</td>' +
+                '</tr>';
+              }).join('') +
+            '</tbody>' +
+          '</table>';
+
+        el.querySelectorAll('[data-del]').forEach(function(b) {
+          b.onclick = async function() {
+            if (!confirm('Excluir este fornecedor?')) return;
+            try {
+              const mod = await import('../assets/js/services/suppliers.service.js');
+              await mod.excluirFornecedor(b.dataset.del);
+              carregar();
+            } catch (e) { alert('Erro: ' + e.message); }
+          };
+        });
+      } catch (e) {
+        el.innerHTML = '<div class="erro">Erro: ' + esc(e.message) + '</div>';
+      }
+    }
+  </script>
+</body>
+</html>
