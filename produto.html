@@ -142,7 +142,7 @@
       // BOTÕES
       // =====================================================
 
-      // COMPRAR AGORA
+      // COMPRAR AGORA (adiciona + redireciona)
       document.getElementById('btn-comprar').onclick = function() {
         const c = JSON.parse(localStorage.getItem('carrinho') || '[]');
         const idx = c.findIndex(function(i) { return i.id === p.id; });
@@ -152,7 +152,7 @@
         location.href = './carrinho.html';
       };
 
-      // ADICIONAR AO CARRINHO
+      // ADICIONAR AO CARRINHO (sem redirect, com toast)
       document.getElementById('btn-carrinho').onclick = function() {
         try {
           const c = JSON.parse(localStorage.getItem('carrinho') || '[]');
@@ -215,7 +215,7 @@
     }
 
     // =====================================================
-    // TOAST (aviso rápido)
+    // TOAST — inline (não depende de cart-widget.js)
     // =====================================================
     function mostrarToast(titulo, mensagem) {
       let area = document.querySelector('.toast-area-cart');
