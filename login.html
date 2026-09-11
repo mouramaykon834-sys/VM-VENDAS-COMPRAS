@@ -3,146 +3,180 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Entrar — Minha Loja</title>
-
+  <title>Criar conta — Minha Loja</title>
   <link rel="stylesheet" href="./assets/css/tokens.css" />
   <link rel="stylesheet" href="./assets/css/base.css" />
   <link rel="stylesheet" href="./assets/css/layout.css" />
   <link rel="stylesheet" href="./assets/css/components.css" />
   <link rel="stylesheet" href="./assets/css/store.css" />
-
   <style>
-    .tela-auth {
-      min-height: calc(100vh - var(--altura-header));
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: var(--esp-6) var(--esp-4);
-    }
-    .cartao-auth {
-      width: 100%;
-      max-width: 420px;
-      background: #fff;
-      border: 1px solid var(--cor-borda);
-      border-radius: var(--raio-xl);
-      padding: var(--esp-8);
-      box-shadow: var(--sombra-md);
-    }
-    .cartao-auth__titulo {
-      font-size: var(--texto-2xl);
-      margin-bottom: var(--esp-2);
-      text-align: center;
-    }
-    .cartao-auth__subtitulo {
-      color: var(--cor-texto-suave);
-      text-align: center;
-      margin-bottom: var(--esp-6);
-      font-size: var(--texto-sm);
-    }
-    .cartao-auth__rodape {
-      margin-top: var(--esp-5);
-      padding-top: var(--esp-5);
-      border-top: 1px solid var(--cor-borda);
-      text-align: center;
-      font-size: var(--texto-sm);
-      color: var(--cor-texto-suave);
-    }
+    .tela-auth { min-height: calc(100vh - var(--altura-header)); display: flex; align-items: center; justify-content: center; padding: 24px 16px; }
+    .cartao-auth { width: 100%; max-width: 460px; background: #fff; border: 1px solid var(--cor-borda); border-radius: 16px; padding: 32px; box-shadow: var(--sombra-md); }
+    .cartao-auth h1 { font-size: 24px; margin-bottom: 8px; text-align: center; }
+    .cartao-auth p.sub { color: var(--cor-texto-suave); text-align: center; margin-bottom: 24px; font-size: 14px; }
+    .cartao-auth__rodape { margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--cor-borda); text-align: center; font-size: 14px; color: var(--cor-texto-suave); }
+    .erro-msg { background: #fee2e2; color: #991b1b; padding: 12px 16px; border-radius: 8px; font-size: 14px; margin-bottom: 16px; display: none; }
+    .erro-msg.visivel { display: block; }
+    .ok-msg { background: #dcfce7; color: #166534; padding: 12px 16px; border-radius: 8px; font-size: 14px; margin-bottom: 16px; display: none; }
+    .ok-msg.visivel { display: block; }
+    .forca { display: flex; gap: 4px; margin-top: 6px; height: 4px; }
+    .forca span { flex: 1; background: #e2e8f0; border-radius: 2px; transition: background .15s; }
+    .forca.fraca span:nth-child(1) { background: #dc2626; }
+    .forca.media span:nth-child(1),
+    .forca.media span:nth-child(2) { background: #f59e0b; }
+    .forca.forte span { background: #16a34a; }
   </style>
 </head>
 <body>
-
   <div id="header"></div>
-
   <main class="tela-auth">
     <div class="cartao-auth">
+      <h1>Criar conta</h1>
+      <p class="sub">É rápido e gratuito. Você poderá comprar, favoritar e conversar com a loja.</p>
 
-      <h1 class="cartao-auth__titulo">Entrar</h1>
-      <p class="cartao-auth__subtitulo">Acesse sua conta para comprar, favoritar e fazer propostas.</p>
+      <div id="erro" class="erro-msg"></div>
+      <div id="ok" class="ok-msg"></div>
 
-      <div id="aviso-erro" class="oculto"></div>
-
-      <form id="form-login" novalidate>
+      <form id="form-cadastro" novalidate>
+        <div class="campo">
+          <label for="nome">Nome completo</label>
+          <input type="text" id="nome" autocomplete="name" required />
+        </div>
 
         <div class="campo">
           <label for="email">E-mail</label>
-          <input type="email" id="email" name="email" autocomplete="email" required />
+          <input type="email" id="email" autocomplete="email" required />
+        </div>
+
+        <div class="campo-grupo" style="gap: 12px;">
+          <div class="campo" style="flex:1;">
+            <label for="telefone">Telefone</label>
+            <input type="tel" id="telefone" autocomplete="tel" placeholder="(00) 0000-0000" />
+          </div>
+          <div class="campo" style="flex:1;">
+            <label for="whatsapp">WhatsApp</label>
+            <input type="tel" id="whatsapp" placeholder="(00) 90000-0000" />
+          </div>
         </div>
 
         <div class="campo">
           <label for="senha">Senha</label>
-          <input type="password" id="senha" name="senha" autocomplete="current-password" required />
+          <input type="password" id="senha" autocomplete="new-password" required minlength="8" />
+          <div class="forca" id="forca">
+            <span></span><span></span><span></span>
+          </div>
+          <span class="campo__dica" id="dica">Mínimo 8 caracteres, com letras e números.</span>
         </div>
 
-        <button type="submit" class="btn btn--principal btn--bloco btn--lg" id="btn-entrar">
-          Entrar
+        <label class="checkbox" style="margin-bottom: 16px;">
+          <input type="checkbox" id="aceite" required />
+          <span style="font-size: 14px;">Li e aceito os <a href="#">Termos de Uso</a> e a <a href="#">Política de Privacidade</a>.</span>
+        </label>
+
+        <button type="submit" class="btn btn--principal btn--bloco btn--lg" id="btn-criar">
+          Criar conta
         </button>
-
-        <div class="flex-entre mt-4" style="font-size: var(--texto-sm);">
-          <a href="./recuperar-senha.html">Esqueci minha senha</a>
-        </div>
-
       </form>
 
       <div class="cartao-auth__rodape">
-        Não tem conta? <a href="./cadastro.html"><strong>Criar agora</strong></a>
+        Já tem conta? <a href="./login.html"><strong>Entrar</strong></a>
       </div>
-
     </div>
   </main>
-
   <div id="footer"></div>
 
   <script type="module">
-    import { renderHeader } from './assets/js/components/header.js';
-    import { renderFooter } from './assets/js/components/footer.js';
-    import { entrar } from './assets/js/services/auth.service.js';
-    import { requireGuest, redirecionarPosLogin } from './assets/js/core/guards.js';
+    (async () => {
+      try {
+        const { renderHeader } = await import('./assets/js/components/header.js');
+        const { renderFooter } = await import('./assets/js/components/footer.js');
+        const { supabase } = await import('./assets/js/supabase.js');
 
-    // Se já estiver logado, manda para home
-    await requireGuest();
-    await renderHeader();
-    await renderFooter();
+        const r = await supabase.auth.getSession();
+        if (r.data && r.data.session) { location.href = './index.html'; return; }
 
-    const form = document.getElementById('form-login');
-    const btn  = document.getElementById('btn-entrar');
-    const aviso = document.getElementById('aviso-erro');
+        await renderHeader();
+        await renderFooter();
+      } catch (e) {}
+    })();
 
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      aviso.classList.add('oculto');
+    // Barra de força da senha
+    document.getElementById('senha').oninput = function(e) {
+      const v = e.target.value;
+      const forca = document.getElementById('forca');
+      const dica = document.getElementById('dica');
 
-      const email = form.email.value.trim();
-      const senha = form.senha.value;
+      forca.className = 'forca';
 
-      if (!email || !senha) {
-        mostrarErro('Preencha e-mail e senha.');
-        return;
+      if (v.length < 4) { dica.textContent = 'Mínimo 8 caracteres, com letras e números.'; return; }
+      if (v.length < 8) { forca.classList.add('fraca'); dica.textContent = 'Senha curta. Use pelo menos 8 caracteres.'; return; }
+
+      const temLetra = /[A-Za-z]/.test(v);
+      const temNumero = /[0-9]/.test(v);
+      const temEspecial = /[^A-Za-z0-9]/.test(v);
+
+      if (temLetra && temNumero && temEspecial && v.length >= 10) {
+        forca.classList.add('forte');
+        dica.textContent = 'Senha forte. ✓';
+      } else if (temLetra && temNumero) {
+        forca.classList.add('media');
+        dica.textContent = 'Senha média. Adicione um caractere especial para ficar mais forte.';
+      } else {
+        forca.classList.add('fraca');
+        dica.textContent = 'A senha precisa de letras e números.';
       }
+    };
+
+    document.getElementById('form-cadastro').onsubmit = async function(e) {
+      e.preventDefault();
+
+      const nome = document.getElementById('nome').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const telefone = document.getElementById('telefone').value.trim();
+      const whatsapp = document.getElementById('whatsapp').value.trim();
+      const senha = document.getElementById('senha').value;
+      const aceite = document.getElementById('aceite').checked;
+
+      const btn = document.getElementById('btn-criar');
+      const erro = document.getElementById('erro');
+      const ok = document.getElementById('ok');
+
+      erro.classList.remove('visivel');
+      ok.classList.remove('visivel');
+
+      if (!aceite) { mostrarErro('Você precisa aceitar os Termos de Uso.'); return; }
 
       btn.disabled = true;
-      btn.textContent = 'Entrando...';
+      btn.textContent = 'Criando conta...';
 
       try {
-        await entrar({ email, senha });
-        redirecionarPosLogin();
+        const { cadastrar } = await import('./assets/js/services/auth.service.js');
+        const r = await cadastrar({ nome, email, telefone, whatsapp, senha });
+
+        if (r.session) {
+          location.href = './index.html';
+          return;
+        }
+
+        mostrarOk('Conta criada! Verifique seu e-mail para confirmar.');
+        setTimeout(function() { location.href = './login.html'; }, 2500);
       } catch (err) {
-        mostrarErro(err.message || 'Erro ao entrar. Tente novamente.');
+        mostrarErro(err.message || 'Erro ao criar conta.');
         btn.disabled = false;
-        btn.textContent = 'Entrar';
+        btn.textContent = 'Criar conta';
       }
-    });
+    };
 
     function mostrarErro(msg) {
-      aviso.className = 'alerta alerta--erro';
-      aviso.innerHTML = `<div>${escapeHtml(msg)}</div>`;
+      const erro = document.getElementById('erro');
+      erro.textContent = msg;
+      erro.classList.add('visivel');
     }
 
-    function escapeHtml(s) {
-      if (s == null) return '';
-      return String(s)
-        .replaceAll('&', '&amp;').replaceAll('<', '&lt;')
-        .replaceAll('>', '&gt;').replaceAll('"', '&quot;')
-        .replaceAll("'", '&#39;');
+    function mostrarOk(msg) {
+      const ok = document.getElementById('ok');
+      ok.textContent = msg;
+      ok.classList.add('visivel');
     }
   </script>
 </body>
