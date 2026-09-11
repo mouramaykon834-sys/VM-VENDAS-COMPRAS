@@ -64,9 +64,42 @@ export async function requireAdmin() {
 
   if (p.data.role !== 'admin') {
     mostrarBloqueio('Acesso restrito', 'Esta área é exclusiva para administradores.',
-      [{ rotulo: 'Voltar para a loja', href: basePrefix() + 'index.html', principal: true },
-       { rotulo: 'Sair da conta', href: basePrefix() + 'login.html', principal: false }]);
+      [{ rotulo: 'Voltar para a loja', href: basePrefix() + 'index.html', principal: true }]);
     throw new Error('NAO_E_ADMIN');
+  }
+
+  return p.data;
+}
+
+// -------------------------------------------------------------
+// EXIGE PERMISSÃO A UM RECURSO
+// -------------------------------------------------------------
+export async function requireRecurso(recurso) {
+  const r = await supabase.auth.getSession();
+  if (!r.data || !r.data.session) {
+    const destino = basePrefix() + 'login.html?redirect=' + encodeURIComponent(window.location.pathname + window.location.search);
+    window.location.href = destino;
+    throw new Error('NAO_AUTENTICADO');
+  }
+
+  const p = await supabase.from('profiles').select('role').eq('id', r.data.session.user.id).maybeSingle();
+  if (!p.data) {
+    mostrarBloqueio('Perfil não encontrado', 'Sua conta existe mas o perfil não foi criado.',
+      [{ rotulo: 'Voltar para a loja', href: basePrefix() + 'index.html', principal: true }]);
+    throw new Error('PERFIL_INEXISTENTE');
+  }
+
+  const perm = await supabase
+    .from('permissions')
+    .select('permitido')
+    .eq('role', p.data.role)
+    .eq('recurso', recurso)
+    .maybeSingle();
+
+  if (!perm.data || !perm.data.permitido) {
+    mostrarBloqueio('Sem permissão', 'Seu perfil (' + p.data.role + ') não tem acesso a esta área.',
+      [{ rotulo: 'Voltar ao início', href: basePrefix() + 'admin/index.html', principal: true }]);
+    throw new Error('SEM_PERMISSAO');
   }
 
   return p.data;
@@ -86,7 +119,7 @@ export async function requireGuest() {
 
 // -------------------------------------------------------------
 // REDIRECIONAR APÓS LOGIN
-// -------------------------------------------------------------
+// =============================================================
 export function redirecionarPosLogin() {
   const params = new URLSearchParams(window.location.search);
   const r = params.get('redirect');
