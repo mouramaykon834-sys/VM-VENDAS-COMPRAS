@@ -1,17 +1,11 @@
 // =============================================================
 // COMPONENTE: CART + FAVORITOS — VM VENDAS E COMPRAS
 // =============================================================
-// Funções utilitárias:
-//  - adicionarAoCarrinho(produto, quantidade)
-//  - alternarFavorito(productId) → true/false (marcado)
-//  - ehFavorito(productId)
-//  - toast(titulo, mensagem, tipo)
-// =============================================================
 
 import { supabase } from '../supabase.js';
 
 // -------------------------------------------------------------
-// Toast (notificação flutuante) — não usa modal, é discreto
+// Toast (notificação flutuante)
 // -------------------------------------------------------------
 export function toast(titulo, mensagem, tipo) {
   tipo = tipo || 'info';
@@ -49,13 +43,11 @@ export function toast(titulo, mensagem, tipo) {
 
   area.appendChild(el);
 
-  // Animação de entrada
   requestAnimationFrame(function() {
     el.style.opacity = '1';
     el.style.transform = 'translateX(0)';
   });
 
-  // Remove sozinho
   setTimeout(function() {
     el.style.opacity = '0';
     el.style.transform = 'translateX(20px)';
@@ -86,10 +78,7 @@ export function adicionarAoCarrinho(produto, quantidade) {
     }
 
     localStorage.setItem('carrinho', JSON.stringify(c));
-
-    // Atualiza badge do carrinho no header (se existir)
     atualizarBadgeHeader();
-
     toast('✅ Adicionado ao carrinho', produto.nome, 'sucesso');
     return true;
   } catch (e) {
@@ -137,7 +126,7 @@ export async function ehFavorito(productId) {
 }
 
 // -------------------------------------------------------------
-// Alternar favorito — retorna true se ficou marcado, false se desmarcou
+// Alternar favorito — retorna true se ficou marcado
 // -------------------------------------------------------------
 export async function alternarFavorito(productId) {
   const { data: { user } } = await supabase.auth.getUser();
@@ -151,13 +140,11 @@ export async function alternarFavorito(productId) {
     .maybeSingle();
 
   if (r.data && r.data.id) {
-    // Remove
     const del = await supabase.from('favorites').delete().eq('id', r.data.id);
     if (del.error) throw del.error;
     atualizarBadgeFavoritosHeader();
     return false;
   } else {
-    // Insere
     const ins = await supabase.from('favorites').insert({ user_id: user.id, product_id: productId });
     if (ins.error) throw ins.error;
     atualizarBadgeFavoritosHeader();
@@ -166,10 +153,8 @@ export async function alternarFavorito(productId) {
 }
 
 function atualizarBadgeFavoritosHeader() {
-  // Só atualiza se o header estiver com o badge
   const badge = document.getElementById('badge-favoritos');
   if (!badge) return;
-
   supabase.from('favorites').select('*', { count: 'exact', head: true })
     .then(function(r) {
       if (r.count > 0) {
@@ -182,9 +167,6 @@ function atualizarBadgeFavoritosHeader() {
     .catch(function() {});
 }
 
-// -------------------------------------------------------------
-// Utilitário
-// -------------------------------------------------------------
 function escapar(s) {
   if (s == null) return '';
   return String(s).replace(/[&<>"']/g, function(m) {
