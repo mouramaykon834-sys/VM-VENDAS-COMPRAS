@@ -50,9 +50,56 @@ export function formatarCEP(cep) {
 }
 
 // -------------------------------------------------------------
-// Texto do prazo de entrega
-// Ex: "Entrega no mesmo dia" / "De 2 a 4 dias úteis"
+// Texto amigável do prazo de entrega
 // -------------------------------------------------------------
-export function textoP (calculo) {
-  return '';
+export function textoPrazo(resultado) {
+  if (!resultado || !resultado.encontrado) {
+    return resultado?.motivo || 'Não foi possível calcular o frete';
+  }
+
+  if (resultado.mesmo_dia) {
+    return 'Entrega no mesmo dia';
+  }
+
+  if (resultado.prazo_dias_min === resultado.prazo_dias_max) {
+    return `Entrega em ${resultado.prazo_dias_min} dia(s) úteis`;
+  }
+
+  return `Entrega de ${resultado.prazo_dias_min} a ${resultado.prazo_dias_max} dias úteis`;
+}
+
+// -------------------------------------------------------------
+// Formata valor de frete
+// -------------------------------------------------------------
+export function formatarFrete(valor) {
+  if (Number(valor) === 0) return 'Frete grátis';
+  return 'R$ ' + Number(valor).toFixed(2).replace('.', ',');
+}
+
+// -------------------------------------------------------------
+// Aplica máscara de CEP no input
+// -------------------------------------------------------------
+export function mascaraCEP(input) {
+  input.addEventListener('input', function(e) {
+    let v = e.target.value.replace(/\D/g, '');
+    if (v.length > 8) v = v.slice(0, 8);
+    if (v.length > 5) {
+      v = v.slice(0, 5) + '-' + v.slice(5);
+    }
+    e.target.value = v;
+  });
+}
+
+// -------------------------------------------------------------
+// Verifica se está no horário de corte para entrega no mesmo dia
+// -------------------------------------------------------------
+export function dentroDoHorarioCorte(resultado) {
+  if (!resultado || !resultado.mesmo_dia || !resultado.hora_corte) return true;
+
+  const agora = new Date();
+  const [hora, minuto] = String(resultado.hora_corte).split(':').map(Number);
+  const corte = new Date();
+  corte.setHours(hora, minuto, 0, 0);
+
+  return agora <= corte;
 }
