@@ -19,7 +19,6 @@
     .admin-sidebar__item.ativo { background: #0ea5e9; color: #fff; }
     .admin-sidebar__rodape { margin-top: 20px; padding: 16px; border-top: 1px solid rgba(255,255,255,.1); }
     .admin-sidebar__rodape a { color: #94a3b8; text-decoration: none; font-size: 13px; }
-    .admin-sidebar__rodape a:hover { color: #fff; }
     .admin-sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(15,23,42,.5); z-index: 90; }
     .admin-sidebar-overlay.ativa { display: block; }
     .admin-main { display: flex; flex-direction: column; min-height: 100vh; }
@@ -29,10 +28,8 @@
     .admin-topbar__menu-btn { display: none; background: none; border: none; cursor: pointer; padding: 6px; color: #0f172a; }
     .admin-conteudo { padding: 24px; flex: 1; }
     .btn { padding: 9px 16px; border-radius: 8px; border: 1px solid #0ea5e9; background: #0ea5e9; color: #fff; font-weight: 600; font-size: 14px; cursor: pointer; text-decoration: none; display: inline-block; }
-    .btn:hover { filter: brightness(.94); }
     .btn--contorno { background: transparent; color: #0ea5e9; }
-    .btn--contorno:hover { background: #0ea5e9; color: #fff; }
-    select { padding: 8px 12px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 14px; font-family: inherit; }
+    select { padding: 8px 12px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 14px; }
     .spinner { width: 24px; height: 24px; border: 3px solid #e2e8f0; border-top-color: #0ea5e9; border-radius: 50%; animation: spin .7s linear infinite; display: inline-block; }
     .spinner--lg { width: 40px; height: 40px; border-width: 4px; }
     @keyframes spin { to { transform: rotate(360deg); } }
@@ -174,6 +171,8 @@
         '<nav class="admin-sidebar__lista">' +
           '<a href="./empresa.html" class="admin-sidebar__item">Dados da empresa</a>' +
           '<a href="./identidade.html" class="admin-sidebar__item">Identidade visual</a>' +
+          '<a href="./pagamentos.html" class="admin-sidebar__item">Formas de pagamento</a>' +
+          '<a href="./entregas.html" class="admin-sidebar__item">Entregas e fretes</a>' +
           '<a href="./configuracoes.html" class="admin-sidebar__item">Outras configurações</a>' +
         '</nav>' +
         '<div class="admin-sidebar__rodape">' +
