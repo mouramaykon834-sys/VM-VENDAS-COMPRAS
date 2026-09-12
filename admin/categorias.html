@@ -7,47 +7,69 @@
   <title>Categorias — Admin</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: system-ui, sans-serif; background: #f8fafc; color: #0f172a; }
+    body { font-family: system-ui, -apple-system, sans-serif; background: #f8fafc; color: #0f172a; }
     .layout { display: grid; grid-template-columns: 240px 1fr; min-height: 100vh; }
-    .sidebar { background: #0f172a; color: #cbd5e1; padding: 16px 0; }
-    .sidebar__logo { display: flex; align-items: center; gap: 8px; padding: 0 16px 20px; border-bottom: 1px solid rgba(255,255,255,.1); margin-bottom: 16px; color: #fff; font-weight: 700; }
-    .sidebar__badge { background: #0ea5e9; color: #fff; padding: 2px 8px; border-radius: 6px; font-size: 10px; }
-    .sidebar__secao { padding: 16px 16px 8px; font-size: 11px; text-transform: uppercase; color: #64748b; font-weight: 600; }
+    .sidebar { background: #0f172a; color: #cbd5e1; padding: 16px 0; height: 100vh; overflow-y: auto; position: sticky; top: 0; }
+    .sidebar__logo { display: flex; align-items: center; gap: 8px; padding: 0 16px 20px; border-bottom: 1px solid rgba(255,255,255,.1); margin-bottom: 16px; color: #fff; font-weight: 700; font-size: 15px; text-decoration: none; }
+    .sidebar__badge { background: #0ea5e9; color: #fff; padding: 2px 8px; border-radius: 6px; font-size: 10px; font-weight: 700; }
+    .sidebar__secao { padding: 16px 16px 8px; font-size: 11px; text-transform: uppercase; letter-spacing: .5px; color: #64748b; font-weight: 600; }
     .sidebar__lista { display: flex; flex-direction: column; gap: 2px; padding: 0 8px; }
-    .sidebar__item { padding: 10px 12px; border-radius: 8px; color: #cbd5e1; text-decoration: none; font-size: 14px; }
+    .sidebar__item { padding: 10px 12px; border-radius: 8px; color: #cbd5e1; text-decoration: none; font-size: 14px; display: block; }
     .sidebar__item:hover { background: rgba(255,255,255,.06); color: #fff; }
     .sidebar__item.ativo { background: #0ea5e9; color: #fff; }
     .main { display: flex; flex-direction: column; }
-    .topbar { background: #fff; border-bottom: 1px solid #e2e8f0; padding: 16px 24px; display: flex; justify-content: space-between; align-items: center; }
+    .topbar { background: #fff; border-bottom: 1px solid #e2e8f0; padding: 12px 24px; display: flex; justify-content: space-between; align-items: center; gap: 12px; }
     .topbar h1 { font-size: 18px; }
     .btn { padding: 8px 16px; border-radius: 8px; border: 1px solid #0ea5e9; background: #0ea5e9; color: #fff; font-weight: 600; font-size: 14px; cursor: pointer; text-decoration: none; display: inline-block; }
     .btn:hover { filter: brightness(.94); }
     .btn--fantasma { background: transparent; color: #0ea5e9; }
     .btn--perigo { background: transparent; color: #dc2626; border-color: transparent; padding: 6px 10px; }
+    .btn--loja { padding: 8px 14px; border: 1px solid #0ea5e9; border-radius: 8px; color: #0ea5e9; text-decoration: none; font-size: 13px; font-weight: 600; }
+    .btn--loja:hover { background: #0ea5e9; color: #fff; }
     .conteudo { padding: 24px; }
     .vazio { background: #fff; padding: 60px 24px; text-align: center; border-radius: 12px; border: 1px solid #e2e8f0; color: #64748b; }
     .tabela { width: 100%; background: #fff; border-collapse: collapse; border-radius: 12px; overflow: hidden; border: 1px solid #e2e8f0; }
     .tabela th { text-align: left; padding: 12px 16px; background: #f8fafc; font-size: 12px; text-transform: uppercase; color: #64748b; }
     .tabela td { padding: 12px 16px; border-top: 1px solid #e2e8f0; font-size: 14px; }
     .tabela tr:hover td { background: #f8fafc; }
-    .badge { padding: 3px 10px; border-radius: 9999px; font-size: 11px; font-weight: 600; }
-    .badge--ok { background: #dcfce7; color: #166534; }
-    .badge--no { background: #f1f5f9; color: #64748b; }
-    .erro { padding: 20px; background: #fee2e2; color: #991b1b; border-radius: 8px; font-family: monospace; font-size: 13px; white-space: pre-wrap; }
-    /* Modal */
-    .modal-bg { position: fixed; inset: 0; background: rgba(15,23,42,.6); display: none; align-items: center; justify-content: center; padding: 24px; z-index: 999; }
+    .miniatura-circular { width: 48px; height: 48px; border-radius: 50%; object-fit: cover; background: #f1f5f9; display: block; }
+    .erro { padding: 20px; background: #fee2e2; color: #991b1b; border-radius: 8px; font-family: monospace; font-size: 13px; }
+    .modal-bg { position: fixed; inset: 0; background: rgba(15,23,42,.6); display: none; align-items: center; justify-content: center; padding: 16px; z-index: 999; }
     .modal-bg.aberto { display: flex; }
-    .modal { background: #fff; border-radius: 12px; max-width: 480px; width: 100%; padding: 24px; }
+    .modal { background: #fff; border-radius: 16px; max-width: 520px; width: 100%; max-height: 90vh; overflow-y: auto; padding: 24px; }
     .modal h2 { font-size: 18px; margin-bottom: 16px; }
-    .modal label { display: block; font-size: 13px; font-weight: 600; margin: 12px 0 4px; }
-    .modal input, .modal textarea, .modal select { width: 100%; padding: 10px 12px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 14px; font-family: inherit; }
-    .modal__acoes { display: flex; gap: 8px; justify-content: flex-end; margin-top: 20px; }
+    .campo { margin-bottom: 14px; }
+    .campo label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 5px; }
+    .campo input, .campo textarea, .campo select { width: 100%; padding: 9px 12px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 14px; font-family: inherit; }
+    .upload-imagem {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px;
+      border: 2px dashed #e2e8f0;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all .15s;
+    }
+    .upload-imagem:hover { border-color: #0ea5e9; background: #f0f9ff; }
+    .upload-imagem__preview {
+      width: 64px; height: 64px; border-radius: 50%;
+      background: #f1f5f9;
+      display: flex; align-items: center; justify-content: center;
+      overflow: hidden; flex-shrink: 0;
+      color: #94a3b8; font-size: 11px;
+    }
+    .upload-imagem__preview img { width: 100%; height: 100%; object-fit: cover; }
+    .upload-imagem__texto { flex: 1; font-size: 13px; color: #64748b; }
+    .upload-imagem__texto strong { color: #0f172a; display: block; font-size: 14px; margin-bottom: 2px; }
+    .modal__acoes { display: flex; gap: 8px; justify-content: flex-end; margin-top: 16px; }
+    @media (max-width: 900px) { .layout { grid-template-columns: 1fr; } .sidebar { position: static; height: auto; } }
   </style>
 </head>
 <body>
   <div class="layout">
     <aside class="sidebar">
-      <div class="sidebar__logo"><span>🏠</span><span>Minha Loja</span><span class="sidebar__badge">ADMIN</span></div>
+      <a href="../index.html" class="sidebar__logo"><span>🏠</span><span>Minha Loja</span><span class="sidebar__badge">ADMIN</span></a>
       <div class="sidebar__secao">Principal</div>
       <nav class="sidebar__lista">
         <a href="./index.html" class="sidebar__item">Dashboard</a>
@@ -59,194 +81,222 @@
       <nav class="sidebar__lista">
         <a href="./produtos.html" class="sidebar__item">Produtos</a>
         <a href="./categorias.html" class="sidebar__item ativo">Categorias</a>
+        <a href="./produtos-destaque.html" class="sidebar__item">Destaques e promoções</a>
       </nav>
     </aside>
 
     <main class="main">
       <header class="topbar">
         <h1>Categorias</h1>
-        <button class="btn" id="btn-nova">+ Nova categoria</button>
+        <div style="display:flex;gap:8px;">
+          <button class="btn" id="btn-nova">+ Nova categoria</button>
+          <a href="../index.html" class="btn--loja">← Ver loja</a>
+        </div>
       </header>
-      <div class="conteudo" id="conteudo">
-        <div class="vazio">Carregando...</div>
-      </div>
+      <div class="conteudo" id="conteudo"><div class="vazio">Carregando...</div></div>
     </main>
   </div>
 
   <div class="modal-bg" id="modal-bg">
-    <div class="modal">
-      <h2 id="modal-titulo">Nova categoria</h2>
-      <form id="form">
-        <label>Nome *</label>
-        <input type="text" id="nome" required />
-        <label>Descrição</label>
-        <textarea id="descricao" rows="3"></textarea>
-        <label>Ordem</label>
-        <input type="number" id="ordem" value="0" min="0" />
-        <label>Ativa</label>
-        <select id="ativo"><option value="true">Sim</option><option value="false">Não</option></select>
-        <div class="modal__acoes">
-          <button type="button" class="btn btn--fantasma" id="btn-cancelar">Cancelar</button>
-          <button type="submit" class="btn" id="btn-salvar">Salvar</button>
-        </div>
-      </form>
-    </div>
+    <div class="modal" id="modal-corpo"></div>
   </div>
 
   <script type="module">
-    const conteudo = document.getElementById('conteudo');
-    const modalBg = document.getElementById('modal-bg');
-    const form = document.getElementById('form');
-    const tituloModal = document.getElementById('modal-titulo');
+    const el = document.getElementById('conteudo');
+    const esc = s => s == null ? '' : String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
 
-    let supabase, session, perfil;
-    let editandoId = null;
+    let supabase;
     let categorias = [];
+    let arquivoImagem = null;
+    let imagemExistente = null;
 
-    function erro(msg) {
-      conteudo.innerHTML = `<div class="erro"><strong>❌ Erro</strong>\n\n${msg}</div>`;
-    }
+    (async () => {
+      try {
+        const mod = await import('../assets/js/supabase.js');
+        supabase = mod.supabase;
 
-    function slugify(s) {
-      return s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
-        .replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
-    }
+        const r = await supabase.auth.getSession();
+        if (!r.data || !r.data.session) { location.href = '../login.html'; return; }
+
+        const p = await supabase.from('profiles').select('role').eq('id', r.data.session.user.id).maybeSingle();
+        if (!p.data) { el.innerHTML = '<div class="erro">Acesso restrito.</div>'; return; }
+
+        document.getElementById('btn-nova').onclick = () => abrirModal();
+        await carregar();
+      } catch (e) {
+        el.innerHTML = '<div class="erro">Erro: ' + esc(e.message) + '</div>';
+      }
+    })();
 
     async function carregar() {
-      const { data, error } = await supabase
-        .from('categories')
-        .select('*')
-        .order('ordem', { ascending: true })
-        .order('nome', { ascending: true });
-
-      if (error) { erro(error.message); return; }
-      categorias = data || [];
+      el.innerHTML = '<div class="vazio">Carregando...</div>';
+      const r = await supabase.from('categories').select('*').order('ordem').order('nome');
+      if (r.error) { el.innerHTML = '<div class="erro">' + esc(r.error.message) + '</div>'; return; }
+      categorias = r.data || [];
 
       if (!categorias.length) {
-        conteudo.innerHTML = `
-          <div class="vazio">
-            <div style="font-size:18px;font-weight:600;color:#0f172a;margin-bottom:8px;">Nenhuma categoria ainda</div>
-            <p>Clique em "+ Nova categoria" para criar a primeira.</p>
-          </div>`;
+        el.innerHTML = '<div class="vazio"><div style="font-size:18px;font-weight:600;color:#0f172a;margin-bottom:8px;">Nenhuma categoria</div><p style="margin-bottom:20px;">Clique em "+ Nova categoria" para começar.</p></div>';
         return;
       }
 
-      conteudo.innerHTML = `
-        <table class="tabela">
-          <thead><tr><th>Ordem</th><th>Nome</th><th>Slug</th><th>Status</th><th style="text-align:right;">Ações</th></tr></thead>
-          <tbody>
-            ${categorias.map(c => `
+      el.innerHTML =
+        '<table class="tabela">' +
+          '<thead><tr><th style="width:70px;">Imagem</th><th>Nome</th><th>Slug</th><th>Ordem</th><th>Status</th><th style="text-align:right;">Ações</th></tr></thead>' +
+          '<tbody>' +
+            categorias.map(c => `
               <tr>
+                <td>
+                  ${c.imagem_url
+                    ? `<img src="${c.imagem_url}" class="miniatura-circular" alt="" />`
+                    : `<div class="miniatura-circular" style="display:flex;align-items:center;justify-content:center;color:#94a3b8;font-size:11px;">sem</div>`}
+                </td>
+                <td><strong>${esc(c.nome)}</strong></td>
+                <td style="color:#64748b;">${esc(c.slug || '')}</td>
                 <td>${c.ordem ?? 0}</td>
-                <td><strong>${escape(c.nome)}</strong></td>
-                <td style="color:#64748b;">${escape(c.slug || '')}</td>
-                <td>${c.ativo ? '<span class="badge badge--ok">Ativa</span>' : '<span class="badge badge--no">Inativa</span>'}</td>
+                <td>${c.ativo ? '<span style="color:#16a34a;font-weight:600;">Ativa</span>' : '<span style="color:#94a3b8;">Inativa</span>'}</td>
                 <td style="text-align:right;">
                   <button class="btn btn--fantasma" data-edit="${c.id}">Editar</button>
                   <button class="btn btn--perigo" data-del="${c.id}">Excluir</button>
                 </td>
               </tr>
-            `).join('')}
-          </tbody>
-        </table>
-      `;
+            `).join('') +
+          '</tbody>' +
+        '</table>';
 
-      conteudo.querySelectorAll('[data-edit]').forEach(b => {
-        b.onclick = () => {
-          const cat = categorias.find(x => x.id === b.dataset.edit);
-          abrirModal(cat);
-        };
+      el.querySelectorAll('[data-edit]').forEach(b => {
+        b.onclick = () => abrirModal(categorias.find(x => x.id === b.dataset.edit));
       });
-      conteudo.querySelectorAll('[data-del]').forEach(b => {
+
+      el.querySelectorAll('[data-del]').forEach(b => {
         b.onclick = async () => {
           const cat = categorias.find(x => x.id === b.dataset.del);
-          if (!confirm(`Excluir "${cat.nome}"?`)) return;
-          const { error } = await supabase.from('categories').delete().eq('id', cat.id);
-          if (error) { alert(error.message); return; }
+          if (!confirm(`Excluir a categoria "${cat.nome}"?`)) return;
+          const r = await supabase.from('categories').delete().eq('id', cat.id);
+          if (r.error) { alert('Erro: ' + r.error.message); return; }
           carregar();
         };
       });
     }
 
     function abrirModal(cat = null) {
-      editandoId = cat?.id || null;
-      tituloModal.textContent = cat ? 'Editar categoria' : 'Nova categoria';
-      document.getElementById('nome').value = cat?.nome || '';
-      document.getElementById('descricao').value = cat?.descricao || '';
-      document.getElementById('ordem').value = cat?.ordem ?? 0;
-      document.getElementById('ativo').value = String(cat?.ativo ?? true);
-      modalBg.classList.add('aberto');
-    }
+      const editando = !!cat;
+      arquivoImagem = null;
+      imagemExistente = cat?.imagem_url || null;
 
-    function fecharModal() {
-      modalBg.classList.remove('aberto');
-      form.reset();
-      editandoId = null;
-    }
+      const modal = document.getElementById('modal-bg');
+      const corpo = document.getElementById('modal-corpo');
+      modal.classList.add('aberto');
 
-    document.getElementById('btn-nova').onclick = () => abrirModal();
-    document.getElementById('btn-cancelar').onclick = fecharModal;
-    modalBg.onclick = (e) => { if (e.target === modalBg) fecharModal(); };
+      corpo.innerHTML =
+        '<h2>' + (editando ? 'Editar' : 'Nova') + ' categoria</h2>' +
+        '<form id="form-cat">' +
+          '<div class="campo">' +
+            '<label>Imagem da categoria</label>' +
+            '<div class="upload-imagem" id="upload-imagem">' +
+              '<div class="upload-imagem__preview" id="preview">' +
+                (imagemExistente
+                  ? '<img src="' + esc(imagemExistente) + '" alt="" />'
+                  : 'Sem imagem') +
+              '</div>' +
+              '<div class="upload-imagem__texto">' +
+                '<strong>Clique para escolher</strong>' +
+                'Recomendado: imagem quadrada (400x400px)' +
+              '</div>' +
+              '<input type="file" id="input-imagem" accept="image/*" hidden />' +
+            '</div>' +
+          '</div>' +
+          '<div class="campo">' +
+            '<label>Nome *</label>' +
+            '<input type="text" id="nome" required value="' + esc(cat?.nome || '') + '" />' +
+          '</div>' +
+          '<div class="campo">' +
+            '<label>Descrição</label>' +
+            '<textarea id="descricao" rows="3">' + esc(cat?.descricao || '') + '</textarea>' +
+          '</div>' +
+          '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">' +
+            '<div class="campo">' +
+              '<label>Ordem</label>' +
+              '<input type="number" id="ordem" min="0" value="' + (cat?.ordem ?? 0) + '" />' +
+            '</div>' +
+            '<div class="campo">' +
+              '<label>Ativa</label>' +
+              '<select id="ativo">' +
+                '<option value="true"' + (cat?.ativo !== false ? ' selected' : '') + '>Sim</option>' +
+                '<option value="false"' + (cat?.ativo === false ? ' selected' : '') + '>Não</option>' +
+              '</select>' +
+            '</div>' +
+          '</div>' +
+          '<div class="modal__acoes">' +
+            '<button type="button" class="btn btn--fantasma" id="btn-cancelar">Cancelar</button>' +
+            '<button type="submit" class="btn" id="btn-salvar">' + (editando ? 'Salvar' : 'Criar') + '</button>' +
+          '</div>' +
+        '</form>';
 
-    form.onsubmit = async (e) => {
-      e.preventDefault();
-      const btn = document.getElementById('btn-salvar');
-      btn.disabled = true;
-      btn.textContent = 'Salvando...';
+      const areaUp = document.getElementById('upload-imagem');
+      const inputImg = document.getElementById('input-imagem');
+      const preview = document.getElementById('preview');
 
-      const nome = document.getElementById('nome').value.trim();
-      const payload = {
-        nome,
-        descricao: document.getElementById('descricao').value.trim() || null,
-        ordem: Number(document.getElementById('ordem').value) || 0,
-        ativo: document.getElementById('ativo').value === 'true',
-        slug: slugify(nome)
+      areaUp.onclick = () => inputImg.click();
+      inputImg.onchange = (e) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        arquivoImagem = file;
+        preview.innerHTML = '<img src="' + URL.createObjectURL(file) + '" alt="" />';
       };
 
-      let error;
-      if (editandoId) {
-        ({ error } = await supabase.from('categories').update(payload).eq('id', editandoId));
-      } else {
-        ({ error } = await supabase.from('categories').insert(payload));
-      }
+      document.getElementById('btn-cancelar').onclick = () => modal.classList.remove('aberto');
+      modal.onclick = (e) => { if (e.target === modal) modal.classList.remove('aberto'); };
 
-      btn.disabled = false;
-      btn.textContent = 'Salvar';
+      document.getElementById('form-cat').onsubmit = async (e) => {
+        e.preventDefault();
+        const btn = document.getElementById('btn-salvar');
+        btn.disabled = true;
+        btn.textContent = 'Salvando...';
 
-      if (error) { alert('Erro: ' + error.message); return; }
-      fecharModal();
-      carregar();
-    };
+        try {
+          let imagemUrl = imagemExistente;
 
-    function escape(s) {
-      if (s == null) return '';
-      return String(s).replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]));
+          // Upload de nova imagem
+          if (arquivoImagem) {
+            const ext = (arquivoImagem.name.split('.').pop() || 'png').toLowerCase();
+            const path = 'categorias/' + Date.now() + '.' + ext;
+            const up = await supabase.storage.from('products').upload(path, arquivoImagem, { cacheControl: '3600', upsert: false });
+            if (up.error) throw up.error;
+            const urlData = supabase.storage.from('products').getPublicUrl(path);
+            imagemUrl = urlData.data.publicUrl;
+          }
+
+          const nome = document.getElementById('nome').value.trim();
+          const payload = {
+            nome: nome,
+            slug: gerarSlug(nome),
+            descricao: document.getElementById('descricao').value.trim() || null,
+            ordem: Number(document.getElementById('ordem').value) || 0,
+            ativo: document.getElementById('ativo').value === 'true',
+            imagem_url: imagemUrl
+          };
+
+          let r;
+          if (editando) {
+            r = await supabase.from('categories').update(payload).eq('id', cat.id);
+          } else {
+            r = await supabase.from('categories').insert(payload);
+          }
+          if (r.error) throw r.error;
+
+          modal.classList.remove('aberto');
+          carregar();
+        } catch (err) {
+          alert('Erro: ' + err.message);
+          btn.disabled = false;
+          btn.textContent = editando ? 'Salvar' : 'Criar';
+        }
+      };
     }
 
-    // -------------------------------------------------------------
-    // Inicialização
-    // -------------------------------------------------------------
-    (async () => {
-      try {
-        ({ supabase } = await import('../assets/js/supabase.js'));
-
-        const r = await supabase.auth.getSession();
-        session = r.data?.session;
-        if (!session) { window.location.href = '../login.html'; return; }
-
-        const p = await supabase.from('profiles').select('role').eq('id', session.user.id).maybeSingle();
-        perfil = p.data;
-        if (!perfil || perfil.role !== 'admin') {
-          erro('Acesso restrito. Este perfil não é admin.');
-          return;
-        }
-
-        await carregar();
-      } catch (e) {
-        console.error(e);
-        erro(e.message);
-      }
-    })();
+    function gerarSlug(s) {
+      return s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+    }
   </script>
 </body>
 </html>
