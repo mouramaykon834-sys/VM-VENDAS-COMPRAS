@@ -92,6 +92,7 @@
     (async () => {
       try {
         const mod = await import('../assets/js/supabase.js');
+        const menuMod = await import('../assets/js/components/admin-menu.js');
         supabase = mod.supabase;
 
         const r = await supabase.auth.getSession();
@@ -100,7 +101,7 @@
         const p = await supabase.from('profiles').select('role').eq('id', r.data.session.user.id).maybeSingle();
         if (!p.data) { el.innerHTML = '<div class="erro">Perfil não encontrado</div>'; return; }
 
-        renderMenu();
+        menuMod.renderAdminMenu('dashboard');
         await carregar();
 
         document.getElementById('filtro-periodo').onchange = function(e) {
@@ -114,87 +115,6 @@
         el.innerHTML = '<div class="erro">Erro: ' + esc(e.message) + '</div>';
       }
     })();
-
-    function renderMenu() {
-      const menuHTML =
-        '<a href="../index.html" class="admin-sidebar__logo"><span>🏠</span><span>Minha Loja</span><span class="admin-sidebar__logo-badge">ADMIN</span></a>' +
-        '<div class="admin-sidebar__secao">Principal</div>' +
-        '<nav class="admin-sidebar__lista">' +
-          '<a href="./index.html" class="admin-sidebar__item ativo">Dashboard</a>' +
-          '<a href="./pedidos.html" class="admin-sidebar__item">Pedidos</a>' +
-          '<a href="./propostas.html" class="admin-sidebar__item">Propostas</a>' +
-          '<a href="./conversas.html" class="admin-sidebar__item">Conversas</a>' +
-          '<a href="./mensagens.html" class="admin-sidebar__item">Mensagens</a>' +
-        '</nav>' +
-        '<div class="admin-sidebar__secao">Vendas</div>' +
-        '<nav class="admin-sidebar__lista">' +
-          '<a href="./orcamentos.html" class="admin-sidebar__item">Orçamentos</a>' +
-        '</nav>' +
-        '<div class="admin-sidebar__secao">Financeiro</div>' +
-        '<nav class="admin-sidebar__lista">' +
-          '<a href="./financeiro.html" class="admin-sidebar__item">Visão geral</a>' +
-          '<a href="./contas-receber.html" class="admin-sidebar__item">Contas a receber</a>' +
-          '<a href="./contas-pagar.html" class="admin-sidebar__item">Contas a pagar</a>' +
-          '<a href="./fluxo-caixa.html" class="admin-sidebar__item">Fluxo de caixa</a>' +
-        '</nav>' +
-        '<div class="admin-sidebar__secao">Relatórios</div>' +
-        '<nav class="admin-sidebar__lista">' +
-          '<a href="./relatorios.html" class="admin-sidebar__item">Todos os relatórios</a>' +
-        '</nav>' +
-        '<div class="admin-sidebar__secao">Catálogo</div>' +
-        '<nav class="admin-sidebar__lista">' +
-          '<a href="./produtos.html" class="admin-sidebar__item">Produtos</a>' +
-          '<a href="./categorias.html" class="admin-sidebar__item">Categorias</a>' +
-          '<a href="./produtos-destaque.html" class="admin-sidebar__item">Destaques e promoções</a>' +
-        '</nav>' +
-        '<div class="admin-sidebar__secao">Estoque</div>' +
-        '<nav class="admin-sidebar__lista">' +
-          '<a href="./estoque.html" class="admin-sidebar__item">Visão geral</a>' +
-          '<a href="./estoque-movimentar.html" class="admin-sidebar__item">Movimentar</a>' +
-          '<a href="./estoque-historico.html" class="admin-sidebar__item">Histórico</a>' +
-          '<a href="./estoque-alertas.html" class="admin-sidebar__item">Alertas</a>' +
-        '</nav>' +
-        '<div class="admin-sidebar__secao">Compras</div>' +
-        '<nav class="admin-sidebar__lista">' +
-          '<a href="./fornecedores.html" class="admin-sidebar__item">Fornecedores</a>' +
-          '<a href="./compras.html" class="admin-sidebar__item">Compras</a>' +
-        '</nav>' +
-        '<div class="admin-sidebar__secao">Clientes</div>' +
-        '<nav class="admin-sidebar__lista">' +
-          '<a href="./clientes.html" class="admin-sidebar__item">Clientes</a>' +
-        '</nav>' +
-        '<div class="admin-sidebar__secao">Sistema</div>' +
-        '<nav class="admin-sidebar__lista">' +
-          '<a href="./auditoria.html" class="admin-sidebar__item">Auditoria</a>' +
-        '</nav>' +
-        '<div class="admin-sidebar__secao">Configurações</div>' +
-        '<nav class="admin-sidebar__lista">' +
-          '<a href="./empresa.html" class="admin-sidebar__item">Dados da empresa</a>' +
-          '<a href="./identidade.html" class="admin-sidebar__item">Identidade visual</a>' +
-          '<a href="./pagamentos.html" class="admin-sidebar__item">Formas de pagamento</a>' +
-          '<a href="./entregas.html" class="admin-sidebar__item">Entregas e fretes</a>' +
-          '<a href="./configuracoes.html" class="admin-sidebar__item">Outras configurações</a>' +
-        '</nav>' +
-        '<div class="admin-sidebar__rodape">' +
-          '<a href="../index.html">← Ver loja</a>' +
-        '</div>';
-
-      document.getElementById('admin-sidebar').innerHTML = menuHTML;
-
-      const btn = document.getElementById('admin-menu-btn');
-      const sidebar = document.getElementById('admin-sidebar');
-      const overlay = document.getElementById('admin-sidebar-overlay');
-      if (btn) {
-        btn.onclick = function() {
-          sidebar.classList.toggle('aberta');
-          overlay.classList.toggle('ativa');
-        };
-        overlay.onclick = function() {
-          sidebar.classList.remove('aberta');
-          overlay.classList.remove('ativa');
-        };
-      }
-    }
 
     function calcularDatas() {
       const hoje = new Date();
