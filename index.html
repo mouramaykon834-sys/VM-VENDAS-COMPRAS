@@ -25,6 +25,15 @@
         </div>
       </section>
 
+      <!-- CATEGORIAS -->
+      <section class="secao" id="secao-categorias" style="display:none;">
+        <div class="secao__cabecalho">
+          <h2 class="secao__titulo">Categorias</h2>
+          <a href="./produtos.html" class="secao__link">Ver todas</a>
+        </div>
+        <div class="categorias-circulos" id="lista-categorias"></div>
+      </section>
+
       <section class="secao">
         <div class="secao__cabecalho">
           <h2 class="secao__titulo">Produtos em destaque</h2>
@@ -71,6 +80,38 @@
         if (store.titulo_home) document.getElementById('home-titulo').textContent = store.titulo_home;
         if (store.subtitulo_home) document.getElementById('home-subtitulo').textContent = store.subtitulo_home;
       } catch (e) {}
+    })();
+
+    // CATEGORIAS
+    (async () => {
+      try {
+        const { supabase } = await import('./assets/js/supabase.js');
+        const r = await supabase
+          .from('categories')
+          .select('id, nome, slug, imagem_url')
+          .eq('ativo', true)
+          .order('ordem', { ascending: true })
+          .order('nome', { ascending: true });
+
+        if (r.error || !r.data || !r.data.length) return;
+
+        const secao = document.getElementById('secao-categorias');
+        secao.style.display = 'block';
+
+        const lista = document.getElementById('lista-categorias');
+        lista.innerHTML = r.data.map(function(c) {
+          const img = c.imagem_url
+            ? '<img src="' + c.imagem_url + '" alt="' + esc(c.nome) + '" loading="lazy" />'
+            : '<div class="categorias-circulos__placeholder">' + esc(c.nome.charAt(0).toUpperCase()) + '</div>';
+
+          return '<a href="./produtos.html?categoria=' + c.id + '" class="categorias-circulos__item">' +
+            '<div class="categorias-circulos__imagem">' + img + '</div>' +
+            '<div class="categorias-circulos__nome">' + esc(c.nome) + '</div>' +
+          '</a>';
+        }).join('');
+      } catch (e) {
+        console.warn('[categorias] erro:', e);
+      }
     })();
 
     (async () => {
@@ -123,13 +164,13 @@
           '<div><span class="badge badge--' + disp.tipo + '">' + disp.texto + '</span></div>' +
           '<div class="produto-card__acoes">' +
             '<a href="./produto.html?id=' + p.id + '" class="btn btn--principal btn--sm">Comprar</a>' +
-            '<a href="./produto.html?id=' + p.id + '" class="btn btn--contorno btn--sm">Proposta</a>' +
+            '<a href="./produto.html?id=' + p.id + '#proposta" class="btn btn--contorno btn--sm">Proposta</a>' +
           '</div>' +
         '</div>' +
       '</article>';
     }
 
-    function esc(s) { return s == null ? '' : String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+    function esc(s) { return s == null ? '' : String(s).replace(/[&<>"']/g, function(m) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]; }); }
   </script>
 </body>
 </html>
