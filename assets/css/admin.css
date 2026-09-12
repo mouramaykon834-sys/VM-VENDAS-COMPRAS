@@ -2,6 +2,8 @@
    ADMIN — VM VENDAS E COMPRAS
    ============================================================= */
 
+* { box-sizing: border-box; }
+
 .admin-layout {
   display: grid;
   grid-template-columns: 240px 1fr;
@@ -100,7 +102,6 @@
 }
 .admin-sidebar__rodape a:hover { color: #fff; text-decoration: none; }
 
-/* Overlay (mobile) */
 .admin-sidebar-overlay {
   display: none;
   position: fixed;
@@ -161,141 +162,9 @@
   flex: 1;
 }
 
-.admin-pagina-sub {
-  color: #64748b;
-  font-size: 14px;
-  margin-bottom: 24px;
-}
-
-/* -------------------------------------------------------------
-   CARDS DO DASHBOARD
-   ------------------------------------------------------------- */
-.admin-cards {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 16px;
-  margin-bottom: 32px;
-}
-
-.admin-card {
-  background: #fff;
-  border: 1px solid #e2e8f0;
-  border-radius: 12px;
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.admin-card__rotulo {
-  font-size: 12px;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  color: #64748b;
-  font-weight: 600;
-}
-.admin-card__valor {
-  font-size: 30px;
-  font-weight: 700;
-  color: #0f172a;
-  line-height: 1.1;
-}
-.admin-card__nota {
-  font-size: 12px;
-  color: #64748b;
-}
-.admin-card__icone {
-  width: 40px;
-  height: 40px;
-  border-radius: 8px;
-  background: #f8fafc;
-  color: #0ea5e9;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 8px;
-}
-
-/* -------------------------------------------------------------
-   SEÇÕES
-   ------------------------------------------------------------- */
-.admin-secao {
-  background: #fff;
-  border: 1px solid #e2e8f0;
-  border-radius: 12px;
-  margin-bottom: 24px;
-  overflow: hidden;
-}
-.admin-secao__cabecalho {
-  padding: 16px 20px;
-  border-bottom: 1px solid #e2e8f0;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-}
-.admin-secao__titulo {
-  font-size: 16px;
-  font-weight: 600;
-  margin: 0;
-}
-.admin-secao__corpo { padding: 8px 0; }
-
-.admin-lista-vazia {
-  text-align: center;
-  color: #64748b;
-  font-size: 14px;
-  padding: 24px;
-}
-
-/* -------------------------------------------------------------
-   TABELAS
-   ------------------------------------------------------------- */
-.admin-tabela {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 14px;
-}
-.admin-tabela th {
-  text-align: left;
-  font-weight: 600;
-  color: #64748b;
-  font-size: 12px;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  padding: 12px 16px;
-  border-bottom: 1px solid #e2e8f0;
-  background: #f8fafc;
-}
-.admin-tabela td {
-  padding: 12px 16px;
-  border-bottom: 1px solid #e2e8f0;
-  vertical-align: middle;
-}
-.admin-tabela tbody tr:hover {
-  background: #f8fafc;
-}
-.admin-tabela__acoes {
-  display: flex;
-  gap: 8px;
-  justify-content: flex-end;
-}
-.admin-tabela__miniatura {
-  width: 40px;
-  height: 40px;
-  object-fit: cover;
-  border-radius: 6px;
-  background: #f8fafc;
-  display: block;
-}
-
 /* -------------------------------------------------------------
    RESPONSIVIDADE
    ------------------------------------------------------------- */
-@media (max-width: 1024px) {
-  .admin-cards { grid-template-columns: repeat(2, 1fr); }
-}
-
 @media (max-width: 900px) {
   .admin-layout { grid-template-columns: 1fr; }
   .admin-sidebar {
@@ -310,6 +179,5 @@
   .admin-sidebar.aberta { left: 0; }
   .admin-topbar__menu-btn { display: flex; }
   .admin-conteudo { padding: 16px; }
-  .admin-cards { grid-template-columns: 1fr; }
   .admin-topbar { padding: 12px 16px; }
 }
