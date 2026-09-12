@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Entregas e fretes — Admin</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: system-ui, -apple-system, sans-serif; background: #f8fafc; color: #0f172a; }
+    .layout { display: grid; grid-template-columns: 240px 1fr; min-height: 100vh; }
+    .sidebar { background: #0f172a; color: #cbd5e1; padding: 16px 0; height: 100vh; overflow-y: auto; position: sticky; top: 0; }
+    .sidebar__logo { display: flex; align-items: center; gap: 8px; padding: 0 16px 20px; border-bottom: 1px solid rgba(255,255,255,.1); margin-bottom: 16px; color: #fff; font-weight: 700; font-size: 15px; text-decoration: none; }
+    .sidebar__badge { background: #0ea5e9; color: #fff; padding: 2px 8px; border-radius: 6px; font-size: 10px; font-weight: 700; }
+    .sidebar__secao { padding: 16px 16px 8px; font-size: 11px; text-transform: uppercase; letter-spacing: .5px; color: #64748b; font-weight: 600; }
+    .sidebar__lista { display: flex; flex-direction: column; gap: 2px; padding: 0 8px; }
+    .sidebar__item { padding: 10px 12px; border-radius: 8px; color: #cbd5e1; text-decoration: none; font-size: 14px; display: block; }
+    .sidebar__item:hover { background: rgba(255,255,255,.06); color: #fff; }
+    .sidebar__item.ativo { background: #0ea5e9; color: #fff; }
+    .main { display: flex; flex-direction: column; }
+    .topbar { background: #fff; border-bottom: 1px solid #e2e8f0; padding: 12px 24px; display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; position: sticky; top: 0; z-index: 50; }
+    .topbar h1 { font-size: 18px; }
+    .btn { padding: 8px 16px; border-radius: 8px; border: 1px solid #0ea5e9; background: #0ea5e9; color: #fff; font-weight: 600; font-size: 14px; cursor: pointer; text-decoration: none; display: inline-block; }
+    .btn:hover { filter: brightness(.94); }
+    .btn--fantasma { background: transparent; color: #0ea5e9; }
+    .btn--perigo { background: transparent; color: #dc2626; border-color: transparent; padding: 6px 10px; }
+    .btn--loja { padding: 8px 14px; border: 1px solid #0ea5e9; border-radius: 8px; color: #0ea5e9; text-decoration: none; font-size: 13px; font-weight: 600; }
+    .btn--loja:hover { background: #0ea5e9; color: #fff; }
+    .conteudo { padding: 24px; }
+    .aviso { background: #f0f9ff; border: 1px solid #bae6fd; color: #075985; padding: 16px; border-radius: 12px; font-size: 14px; line-height: 1.6; margin-bottom: 24px; }
+    .aviso strong { color: #0c4a6e; }
+    .tabela { width: 100%; background: #fff; border-collapse: collapse; border-radius: 12px; overflow: hidden; border: 1px solid #e2e8f0; }
+    .tabela th { text-align: left; padding: 12px 16px; background: #f8fafc; font-size: 12px; text-transform: uppercase; color: #64748b; font-weight: 600; }
+    .tabela td { padding: 12px 16px; border-top: 1px solid #e2e8f0; font-size: 14px; }
+    .tabela tr:hover td { background: #f8fafc; }
+    .vazio { background: #fff; padding: 60px 24px; text-align: center; border-radius: 12px; border: 1px solid #e2e8f0; color: #64748b; }
+    .erro { padding: 20px; background: #fee2e2; color: #991b1b; border-radius: 8px; font-family: monospace; font-size: 13px; }
+    .badge { padding: 3px 10px; border-radius: 9999px; font-size: 11px; font-weight: 600; display: inline-block; }
+    .badge--ok { background: #dcfce7; color: #166534; }
+    .badge--no { background: #f1f5f9; color: #475569; }
+    .badge--info { background: #dbeafe; color: #1e40af; }
+    .badge--alerta { background: #fef3c7; color: #92400e; }
+
+    /* Modal */
+    .modal-bg { position: fixed; inset: 0; background: rgba(15,23,42,.6); display: none; align-items: center; justify-content: center; padding: 16px; z-index: 999; }
+    .modal-bg.aberto { display: flex; }
+    .modal { background: #fff; border-radius: 16px; max-width: 620px; width: 100%; max-height: 90vh; overflow-y: auto; padding: 24px; }
+    .modal h2 { font-size: 18px; margin-bottom: 16px; }
+    .campo { margin-bottom: 14px; }
+    .campo label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 5px; color: #334155; }
+    .campo input, .campo textarea, .campo select { width: 100%; padding: 9px 12px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 14px; font-family: inherit; }
+    .campo input:focus, .campo textarea:focus, .campo select:focus { outline: none; border-color: #0ea5e9; }
+    .campo__dica { font-size: 12px; color: #94a3b8; margin-top: 4px; display: block; }
+    .linha-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .linha-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+    .check-linha { display: flex; align-items: center; gap: 10px; padding: 10px 0; }
+    .check-linha input { width: auto; margin: 0; accent-color: #0ea5e9; }
+    .modal__acoes { display: flex; gap: 8px; justify-content: flex-end; margin-top: 20px; padding-top: 16px; border-top: 1px solid #f1f5f9; }
+    .grupo-campos { display: none; }
+    .grupo-campos.visivel { display: block; }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <a href="../index.html" class="sidebar__logo"><span>🏠</span><span>Minha Loja</span><span class="sidebar__badge">ADMIN</span></a>
+      <div class="sidebar__secao">Principal</div>
+      <nav class="sidebar__lista">
+        <a href="./index.html" class="sidebar__item">Dashboard</a>
+        <a href="./pedidos.html" class="sidebar__item">Pedidos</a>
+        <a href="./propostas.html" class="sidebar__item">Propostas</a>
+        <a href="./conversas.html" class="sidebar__item">Conversas</a>
+      </nav>
+      <div class="sidebar__secao">Configurações</div>
+      <nav class="sidebar__lista">
+        <a href="./empresa.html" class="sidebar__item">Dados da empresa</a>
+        <a href="./identidade.html" class="sidebar__item">Identidade visual</a>
+        <a href="./pagamentos.html" class="sidebar__item">Formas de pagamento</a>
+        <a href="./entregas.html" class="sidebar__item ativo">Entregas e fretes</a>
+        <a href="./contas.html" class="sidebar__item">Contas a receber</a>
+        <a href="./configuracoes.html" class="sidebar__item">Outras configurações</a>
+      </nav>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <h1>Entregas e fretes</h1>
+        <div style="display:flex;gap:8px;">
+          <button class="btn" id="btn-nova">+ Nova zona</button>
+          <a href="../index.html" class="btn--loja">← Ver loja</a>
+        </div>
+      </header>
+
+      <div class="conteudo">
+        <div class="aviso">
+          <strong>💡 Como funciona:</strong> crie zonas de entrega por CEP, cidade ou bairro.
+          O cliente vai informar o CEP no checkout e o sistema calcula automaticamente o frete e o prazo.
+        </div>
+        <div id="conteudo"><div class="vazio">Carregando...</div></div>
+      </div>
+    </main>
+  </div>
+
+  <div class="modal-bg" id="modal-bg">
+    <div class="modal" id="modal-corpo"></div>
+  </div>
+
+  <script type="module">
+    const el = document.getElementById('conteudo');
+    const esc = s => s == null ? '' : String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+
+    let supabase;
+    let zonas = [];
+
+    (async () => {
+      try {
+        const mod = await import('../assets/js/supabase.js');
+        supabase = mod.supabase;
+
+        const r = await supabase.auth.getSession();
+        if (!r.data || !r.data.session) { location.href = '../login.html'; return; }
+
+        const p = await supabase.from('profiles').select('role').eq('id', r.data.session.user.id).maybeSingle();
+        if (!p.data || p.data.role !== 'admin') {
+          el.innerHTML = '<div class="erro">Acesso restrito.</div>';
+          return;
+        }
+
+        document.getElementById('btn-nova').onclick = () => abrirModal();
+        await carregar();
+      } catch (e) {
+        el.innerHTML = '<div class="erro">Erro: ' + esc(e.message) + '</div>';
+      }
+    })();
+
+    async function carregar() {
+      el.innerHTML = '<div class="vazio">Carregando...</div>';
+
+      const r = await supabase.from('delivery_zones').select('*').order('ordem');
+      if (r.error) { el.innerHTML = '<div class="erro">' + esc(r.error.message) + '</div>'; return; }
+      zonas = r.data || [];
+
+      if (!zonas.length) {
+        el.innerHTML = '<div class="vazio"><div style="font-size:18px;font-weight:600;color:#0f172a;margin-bottom:8px;">Nenhuma zona de entrega</div><p style="margin-bottom:16px;">Clique em "+ Nova zona" para começar.</p><div style="background:#f0f9ff;padding:16px;border-radius:12px;text-align:left;font-size:13px;line-height:1.6;color:#075985;"><strong>Exemplos para criar:</strong><br>• <strong>Minha cidade</strong> — CEP 01310-000 a 01319-999 · Frete R$ 10 · Mesmo dia<br>• <strong>Região metropolitana</strong> — CEP 01000-000 a 09999-999 · Frete R$ 20 · 2-4 dias</div></div>';
+        return;
+      }
+
+      el.innerHTML =
+        '<table class="tabela">' +
+          '<thead><tr><th>Zona</th><th>Tipo</th><th>Regra</th><th>Frete</th><th>Prazo</th><th>Status</th><th style="text-align:right;">Ações</th></tr></thead>' +
+          '<tbody>' +
+            zonas.map(z => {
+              let regra = '';
+              if (z.tipo === 'cep_faixa') regra = `${z.cep_inicio} até ${z.cep_fim}`;
+              else if (z.tipo === 'cidade') regra = `${z.cidade}/${z.estado}`;
+              else if (z.tipo === 'bairro') regra = `${z.bairro}, ${z.cidade}`;
+              else if (z.tipo === 'retirada') regra = 'Retirada na loja';
+              else if (z.tipo === 'todo_brasil') regra = 'Todo o Brasil';
+
+              const prazo = z.mesmo_dia
+                ? 'Mesmo dia'
+                : `${z.prazo_dias_min}-${z.prazo_dias_max} dias`;
+
+              return `
+                <tr>
+                  <td><strong>${esc(z.nome)}</strong></td>
+                  <td><span class="badge badge--info">${z.tipo}</span></td>
+                  <td style="font-size:13px;color:#475569;">${esc(regra)}</td>
+                  <td>
+                    ${z.frete_gratis_acima
+                      ? `<strong>R$ ${Number(z.valor_frete).toFixed(2)}</strong><br><span style="font-size:11px;color:#16a34a;">Grátis acima de R$ ${Number(z.frete_gratis_acima).toFixed(2)}</span>`
+                      : `<strong>R$ ${Number(z.valor_frete).toFixed(2)}</strong>`}
+                  </td>
+                  <td>${prazo}</td>
+                  <td>${z.ativo ? '<span class="badge badge--ok">Ativa</span>' : '<span class="badge badge--no">Inativa</span>'}</td>
+                  <td style="text-align:right;">
+                    <button class="btn btn--fantasma" data-edit="${z.id}">Editar</button>
+                    <button class="btn btn--perigo" data-del="${z.id}">Excluir</button>
+                  </td>
+                </tr>
+              `;
+            }).join('') +
+          '</tbody>' +
+        '</table>';
+
+      el.querySelectorAll('[data-edit]').forEach(b => {
+        b.onclick = () => abrirModal(zonas.find(x => x.id === b.dataset.edit));
+      });
+      el.querySelectorAll('[data-del]').forEach(b => {
+        b.onclick = async () => {
+          if (!confirm('Excluir esta zona?')) return;
+          await supabase.from('delivery_zones').delete().eq('id', b.dataset.del);
+          carregar();
+        };
+      });
+    }
+
+    function abrirModal(z = null) {
+      const editando = !!z;
+      const modal = document.getElementById('modal-bg');
+      const corpo = document.getElementById('modal-corpo');
+      modal.classList.add('aberto');
+
+      corpo.innerHTML = `
+        <h2>${editando ? 'Editar' : 'Nova'} zona de entrega</h2>
+        <form id="form-zona">
+
+          <div class="campo">
+            <label>Nome da zona *</label>
+            <input type="text" id="nome" required value="${esc(z?.nome || '')}" placeholder="Ex: Minha cidade, Região metropolitana" />
+          </div>
+
+          <div class="linha-2">
+            <div class="campo">
+              <label>Tipo de regra *</label>
+              <select id="tipo" required>
+                <option value="cep_faixa" ${z?.tipo === 'cep_faixa' ? 'selected' : ''}>Faixa de CEP</option>
+                <option value="cidade" ${z?.tipo === 'cidade' ? 'selected' : ''}>Cidade</option>
+                <option value="bairro" ${z?.tipo === 'bairro' ? 'selected' : ''}>Bairro específico</option>
+                <option value="retirada" ${z?.tipo === 'retirada' ? 'selected' : ''}>Retirada na loja</option>
+                <option value="todo_brasil" ${z?.tipo === 'todo_brasil' ? 'selected' : ''}>Todo o Brasil</option>
+              </select>
+            </div>
+            <div class="campo">
+              <label>Ordem</label>
+              <input type="number" id="ordem" min="0" value="${z?.ordem ?? 0}" />
+            </div>
+          </div>
+
+          <div class="grupo-campos" id="campos-cep">
+            <div class="linha-2">
+              <div class="campo">
+                <label>CEP inicial</label>
+                <input type="text" id="cep_inicio" value="${esc(z?.cep_inicio || '')}" placeholder="01310000" maxlength="9" />
+              </div>
+              <div class="campo">
+                <label>CEP final</label>
+                <input type="text" id="cep_fim" value="${esc(z?.cep_fim || '')}" placeholder="01319999" maxlength="9" />
+              </div>
+            </div>
+          </div>
+
+          <div class="grupo-campos" id="campos-cidade">
+            <div class="linha-2">
+              <div class="campo">
+                <label>Cidade</label>
+                <input type="text" id="cidade" value="${esc(z?.cidade || '')}" />
+              </div>
+              <div class="campo">
+                <label>Estado (UF)</label>
+                <input type="text" id="estado" maxlength="2" value="${esc(z?.estado || '')}" />
+              </div>
+            </div>
+          </div>
+
+          <div class="grupo-campos" id="campos-bairro">
+            <div class="campo">
+              <label>Bairro</label>
+              <input type="text" id="bairro" value="${esc(z?.bairro || '')}" />
+            </div>
+          </div>
+
+          <div class="linha-3">
+            <div class="campo">
+              <label>Prazo mín. (dias)</label>
+              <input type="number" id="prazo_dias_min" min="0" value="${z?.prazo_dias_min ?? 1}" />
+            </div>
+            <div class="campo">
+              <label>Prazo máx. (dias)</label>
+              <input type="number" id="prazo_dias_max" min="0" value="${z?.prazo_dias_max ?? 3}" />
+            </div>
+            <div class="campo">
+              <label>Hora de corte</label>
+              <input type="time" id="hora_corte" value="${esc(z?.hora_corte || '')}" />
+              <span class="campo__dica">Para mesmo dia</span>
+            </div>
+          </div>
+
+          <div class="linha-2">
+            <div class="campo">
+              <label>Valor do frete (R$)</label>
+              <input type="number" id="valor_frete" min="0" step="0.01" value="${z?.valor_frete ?? 0}" />
+            </div>
+            <div class="campo">
+              <label>Grátis acima de (R$)</label>
+              <input type="number" id="frete_gratis_acima" min="0" step="0.01" value="${z?.frete_gratis_acima ?? ''}" />
+              <span class="campo__dica">Deixe vazio para nunca ser grátis</span>
+            </div>
+          </div>
+
+          <div class="check-linha">
+            <input type="checkbox" id="mesmo_dia" ${z?.mesmo_dia ? 'checked' : ''} />
+            <label for="mesmo_dia" style="margin:0;cursor:pointer;">Entrega no mesmo dia</label>
+          </div>
+
+          <div class="check-linha">
+            <input type="checkbox" id="ativo" ${z?.ativo !== false ? 'checked' : ''} />
+            <label for="ativo" style="margin:0;cursor:pointer;">Ativa</label>
+          </div>
+
+          <div class="campo">
+            <label>Observações</label>
+            <textarea id="observacoes" rows="2">${esc(z?.observacoes || '')}</textarea>
+          </div>
+
+          <div class="modal__acoes">
+            <button type="button" class="btn btn--fantasma" id="btn-cancelar">Cancelar</button>
+            <button type="submit" class="btn" id="btn-salvar">${editando ? 'Salvar' : 'Criar'}</button>
+          </div>
+        </form>
+      `;
+
+      // Mostra/esconde campos por tipo
+      function atualizarGrupos() {
+        const tipo = document.getElementById('tipo').value;
+        document.getElementById('campos-cep').classList.toggle('visivel', tipo === 'cep_faixa');
+        document.getElementById('campos-cidade').classList.toggle('visivel', tipo === 'cidade');
+        document.getElementById('campos-bairro').classList.toggle('visivel', tipo === 'bairro');
+      }
+      document.getElementById('tipo').onchange = atualizarGrupos;
+      atualizarGrupos();
+
+      document.getElementById('btn-cancelar').onclick = () => modal.classList.remove('aberto');
+      modal.onclick = (e) => { if (e.target === modal) modal.classList.remove('aberto'); };
+
+      document.getElementById('form-zona').onsubmit = async (e) => {
+        e.preventDefault();
+        const btn = document.getElementById('btn-salvar');
+        btn.disabled = true;
+        btn.textContent = 'Salvando...';
+
+        const payload = {
+          nome: document.getElementById('nome').value.trim(),
+          tipo: document.getElementById('tipo').value,
+          ordem: Number(document.getElementById('ordem').value) || 0,
+          cep_inicio: document.getElementById('cep_inicio').value.trim() || null,
+          cep_fim: document.getElementById('cep_fim').value.trim() || null,
+          cidade: document.getElementById('cidade').value.trim() || null,
+          estado: document.getElementById('estado').value.trim().toUpperCase() || null,
+          bairro: document.getElementById('bairro').value.trim() || null,
+          prazo_dias_min: Number(document.getElementById('prazo_dias_min').value) || 0,
+          prazo_dias_max: Number(document.getElementById('prazo_dias_max').value) || 0,
+          hora_corte: document.getElementById('hora_corte').value || null,
+          valor_frete: Number(document.getElementById('valor_frete').value) || 0,
+          frete_gratis_acima: document.getElementById('frete_gratis_acima').value
+            ? Number(document.getElementById('frete_gratis_acima').value)
+            : null,
+          mesmo_dia: document.getElementById('mesmo_dia').checked,
+          ativo: document.getElementById('ativo').checked,
+          observacoes: document.getElementById('observacoes').value.trim() || null
+        };
+
+        try {
+          let r;
+          if (editando) {
+            r = await supabase.from('delivery_zones').update(payload).eq('id', z.id);
+          } else {
+            r = await supabase.from('delivery_zones').insert(payload);
+          }
+          if (r.error) throw r.error;
+
+          modal.classList.remove('aberto');
+          carregar();
+        } catch (err) {
+          alert('Erro: ' + err.message);
+          btn.disabled = false;
+          btn.textContent = editando ? 'Salvar' : 'Criar';
+        }
+      };
+    }
+  </script>
+</body>
+</html>
