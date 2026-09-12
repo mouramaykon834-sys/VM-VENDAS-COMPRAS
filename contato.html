@@ -4,127 +4,43 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Contato — Minha Loja</title>
-  <meta name="description" content="Entre em contato conosco. Tire dúvidas, faça sugestões ou fale sobre pedidos." />
-
   <link rel="stylesheet" href="./assets/css/tokens.css" />
   <link rel="stylesheet" href="./assets/css/base.css" />
   <link rel="stylesheet" href="./assets/css/layout.css" />
   <link rel="stylesheet" href="./assets/css/components.css" />
   <link rel="stylesheet" href="./assets/css/store.css" />
-
   <style>
-    .contato-wrap {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 32px;
-      align-items: start;
-      margin-bottom: 48px;
-    }
-    @media (max-width: 900px) {
-      .contato-wrap { grid-template-columns: 1fr; gap: 24px; }
-    }
-    .contato-bloco {
-      background: #fff;
-      border: 1px solid var(--cor-borda);
-      border-radius: 16px;
-      padding: 32px;
-    }
-    .contato-bloco h2 {
-      font-size: var(--texto-xl);
-      margin-bottom: 8px;
-    }
-    .contato-bloco p.sub {
-      color: var(--cor-texto-suave);
-      font-size: var(--texto-sm);
-      margin-bottom: 24px;
-    }
-    .info-item {
-      display: flex;
-      gap: 12px;
-      align-items: flex-start;
-      padding: 14px 0;
-      border-bottom: 1px solid var(--cor-borda);
-    }
+    .contato-wrap { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; align-items: start; margin-bottom: 48px; }
+    @media (max-width: 900px) { .contato-wrap { grid-template-columns: 1fr; gap: 24px; } }
+    .contato-bloco { background: #fff; border: 1px solid var(--cor-borda); border-radius: 16px; padding: 32px; }
+    .contato-bloco h2 { font-size: var(--texto-xl); margin-bottom: 8px; }
+    .contato-bloco p.sub { color: var(--cor-texto-suave); font-size: var(--texto-sm); margin-bottom: 24px; }
+    .info-item { display: flex; gap: 12px; align-items: flex-start; padding: 14px 0; border-bottom: 1px solid var(--cor-borda); }
     .info-item:last-child { border-bottom: none; }
-    .info-item__icone {
-      width: 40px;
-      height: 40px;
-      border-radius: 10px;
-      background: var(--cor-fundo-suave);
-      color: var(--cor-principal);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-    }
-    .info-item__texto {
-      flex: 1;
-      font-size: var(--texto-sm);
-    }
-    .info-item__texto strong {
-      display: block;
-      font-weight: var(--peso-semibold);
-      margin-bottom: 2px;
-    }
-    .info-item__texto a {
-      color: var(--cor-texto-suave);
-      word-break: break-word;
-    }
-    .info-item__texto a:hover { color: var(--cor-principal); }
-
-    .sucesso-box {
-      background: #dcfce7;
-      border: 1px solid #86efac;
-      color: #166534;
-      border-radius: 12px;
-      padding: 20px;
-      margin-bottom: 20px;
-      font-size: var(--texto-sm);
-      display: none;
-    }
+    .info-item__icone { width: 40px; height: 40px; border-radius: 10px; background: var(--cor-fundo-suave); color: var(--cor-principal); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .info-item__texto { flex: 1; font-size: var(--texto-sm); }
+    .info-item__texto strong { display: block; font-weight: var(--peso-semibold); margin-bottom: 2px; }
+    .info-item__texto a { color: var(--cor-texto-suave); word-break: break-word; }
+    .sucesso-box { background: #dcfce7; border: 1px solid #86efac; color: #166534; border-radius: 12px; padding: 20px; margin-bottom: 20px; font-size: var(--texto-sm); display: none; }
     .sucesso-box.visivel { display: block; }
-    .sucesso-box h3 {
-      font-size: var(--texto-base);
-      margin-bottom: 6px;
-    }
-
-    .erro-box {
-      background: #fee2e2;
-      color: #991b1b;
-      border-radius: 12px;
-      padding: 14px 16px;
-      margin-bottom: 16px;
-      font-size: var(--texto-sm);
-      display: none;
-    }
+    .erro-box { background: #fee2e2; color: #991b1b; border-radius: 12px; padding: 14px 16px; margin-bottom: 16px; font-size: var(--texto-sm); display: none; }
     .erro-box.visivel { display: block; }
-
-    @media (max-width: 640px) {
-      .contato-bloco { padding: 20px; }
-    }
+    @media (max-width: 640px) { .contato-bloco { padding: 20px; } }
   </style>
 </head>
 <body>
-
   <div id="header"></div>
 
   <main class="conteudo">
     <div class="container">
-
-      <div class="migalhas">
-        <a href="./index.html">Início</a>
-        <span>Contato</span>
-      </div>
+      <div class="migalhas"><a href="./index.html">Início</a><span>Contato</span></div>
 
       <h1 class="pagina-titulo">Fale conosco</h1>
       <p style="color:var(--cor-texto-suave);margin-bottom:32px;max-width:640px;">
-        Tem dúvidas, sugestões ou precisa de ajuda com um pedido? Envie uma mensagem —
-        respondemos o mais rápido possível.
+        Tem dúvidas, sugestões ou precisa de ajuda com um pedido? Envie uma mensagem — respondemos o mais rápido possível.
       </p>
 
       <div class="contato-wrap">
-
-        <!-- Formulário -->
         <div class="contato-bloco">
           <h2>Envie uma mensagem</h2>
           <p class="sub">Preencha o formulário e retornaremos em breve.</p>
@@ -141,7 +57,6 @@
               <label for="nome">Nome completo *</label>
               <input type="text" id="nome" required />
             </div>
-
             <div class="campo-grupo" style="gap: 12px;">
               <div class="campo" style="flex:1;">
                 <label for="email">E-mail *</label>
@@ -152,12 +67,10 @@
                 <input type="tel" id="telefone" />
               </div>
             </div>
-
             <div class="campo">
               <label for="whatsapp">WhatsApp</label>
-              <input type="tel" id="whatsapp" placeholder="(00) 90000-0000" />
+              <input type="tel" id="whatsapp" />
             </div>
-
             <div class="campo">
               <label for="assunto">Assunto</label>
               <select id="assunto">
@@ -171,19 +84,16 @@
                 <option>Outro</option>
               </select>
             </div>
-
             <div class="campo">
               <label for="mensagem">Mensagem *</label>
               <textarea id="mensagem" rows="5" required></textarea>
             </div>
-
             <button type="submit" class="btn btn--principal btn--bloco btn--lg" id="btn-enviar">
               Enviar mensagem
             </button>
           </form>
         </div>
 
-        <!-- Informações de contato -->
         <div class="contato-bloco">
           <h2>Outras formas de contato</h2>
           <p class="sub">Ou fale com a gente por um destes canais.</p>
@@ -191,14 +101,13 @@
           <div id="info-contato">
             <div class="info-item">
               <div class="info-item__icone">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
               </div>
               <div class="info-item__texto">
                 <strong>E-mail</strong>
                 <a href="mailto:contato@exemplo.com" id="link-email">contato@exemplo.com</a>
               </div>
             </div>
-
             <div class="info-item">
               <div class="info-item__icone">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
@@ -208,53 +117,42 @@
                 <a href="#" id="link-whatsapp" target="_blank" rel="noopener">Falar no WhatsApp</a>
               </div>
             </div>
-
             <div class="info-item">
               <div class="info-item__icone">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
               </div>
               <div class="info-item__texto">
                 <strong>Telefone</strong>
                 <a href="#" id="link-telefone">—</a>
               </div>
             </div>
-
             <div class="info-item">
               <div class="info-item__icone">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
               </div>
               <div class="info-item__texto">
                 <strong>Endereço</strong>
                 <span id="info-endereco" style="color:var(--cor-texto-suave);">—</span>
               </div>
             </div>
-
             <div class="info-item">
               <div class="info-item__icone">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
               </div>
               <div class="info-item__texto">
-                <strong>Horário de atendimento</strong>
+                <strong>Horário</strong>
                 <span id="info-horario" style="color:var(--cor-texto-suave);">—</span>
               </div>
             </div>
           </div>
-
-          <div style="margin-top:24px;padding:16px;background:var(--cor-fundo-suave);border-radius:12px;font-size:var(--texto-sm);color:var(--cor-texto-suave);line-height:1.6;">
-            💡 <strong>Dica:</strong> se sua mensagem for sobre um pedido específico,
-            informe o número do pedido na mensagem para agilizar o atendimento.
-          </div>
         </div>
-
       </div>
-
     </div>
   </main>
 
   <div id="footer"></div>
 
   <script type="module">
-    // 1. Header + footer
     (async () => {
       try {
         const { renderHeader } = await import('./assets/js/components/header.js');
@@ -264,7 +162,6 @@
       } catch (e) {}
     })();
 
-    // 2. Supabase
     let supabase;
     (async () => {
       try {
@@ -274,7 +171,6 @@
       } catch (e) {}
     })();
 
-    // 3. Formulário
     document.getElementById('form-contato').onsubmit = async (e) => {
       e.preventDefault();
 
@@ -292,25 +188,23 @@
       const assunto = document.getElementById('assunto').value;
       const mensagem = document.getElementById('mensagem').value.trim();
 
-      if (!nome || !email || !mensagem) {
-        mostrarErro('Preencha nome, e-mail e mensagem.');
-        return;
-      }
-
-      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-        mostrarErro('E-mail inválido.');
-        return;
-      }
-
-      if (mensagem.length < 10) {
-        mostrarErro('A mensagem está muito curta.');
-        return;
-      }
+      if (!nome || !email || !mensagem) { mostrarErro('Preencha nome, e-mail e mensagem.'); return; }
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { mostrarErro('E-mail inválido.'); return; }
+      if (mensagem.length < 10) { mostrarErro('A mensagem está muito curta.'); return; }
 
       btn.disabled = true;
       btn.textContent = 'Enviando...';
 
       try {
+        // 🔐 Rate limiting
+        const { verificarLimite, registrarTentativa } = await import('./assets/js/services/rate-limit.service.js');
+        const rl = await verificarLimite('contato', email.toLowerCase());
+
+        if (!rl.permitido) {
+          const min = Math.ceil(rl.esperar_segundos / 60);
+          throw new Error(`Muitas mensagens enviadas. Aguarde ${min} minuto${min > 1 ? 's' : ''}.`);
+        }
+
         const r = await supabase.from('contact_messages').insert({
           nome: nome,
           email: email,
@@ -319,6 +213,8 @@
           assunto: assunto || null,
           mensagem: mensagem
         });
+
+        await registrarTentativa('contato', email.toLowerCase(), !r.error);
 
         if (r.error) throw r.error;
 
@@ -333,7 +229,7 @@
         }, 3000);
       } catch (err) {
         console.error(err);
-        mostrarErro('Não foi possível enviar. Tente novamente.');
+        mostrarErro(err.message || 'Não foi possível enviar. Tente novamente.');
         btn.disabled = false;
         btn.textContent = 'Enviar mensagem';
       }
@@ -349,35 +245,24 @@
       try {
         const r = await supabase.from('company_settings').select('*').eq('id', 1).maybeSingle();
         const e = r.data || {};
-
         if (e.email) {
           document.getElementById('link-email').textContent = e.email;
           document.getElementById('link-email').href = 'mailto:' + e.email;
         }
-
         if (e.whatsapp) {
           const limpo = e.whatsapp.replace(/\D/g, '');
           document.getElementById('link-whatsapp').href = 'https://wa.me/55' + limpo + '?text=' + encodeURIComponent('Olá! Vim pelo site e gostaria de falar com a loja.');
         }
-
         if (e.telefone) {
           const limpo = e.telefone.replace(/\D/g, '');
           const linkTel = document.getElementById('link-telefone');
           linkTel.textContent = e.telefone;
           linkTel.href = 'tel:' + limpo;
         }
-
-        const end = [
-          e.endereco,
-          [e.cidade, e.estado].filter(Boolean).join(' - '),
-          e.cep
-        ].filter(Boolean).join(', ');
+        const end = [e.endereco, [e.cidade, e.estado].filter(Boolean).join(' - '), e.cep].filter(Boolean).join(', ');
         if (end) document.getElementById('info-endereco').textContent = end;
-
         if (e.horario) document.getElementById('info-horario').textContent = e.horario;
-      } catch (err) {
-        // silencioso
-      }
+      } catch (err) {}
     }
   </script>
 </body>
