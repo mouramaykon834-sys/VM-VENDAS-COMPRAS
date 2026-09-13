@@ -1,183 +1,704 @@
 /* =============================================================
    ADMIN — VM VENDAS E COMPRAS
+   MENU LATERAL RECOLHÍVEL
    ============================================================= */
 
-* { box-sizing: border-box; }
+* {
+  box-sizing: border-box;
+}
+
+
+/* =============================================================
+   LAYOUT
+   ============================================================= */
 
 .admin-layout {
   display: grid;
+
   grid-template-columns: 240px 1fr;
+
   min-height: 100vh;
+
   background: #f8fafc;
+
+  transition: grid-template-columns 180ms ease;
 }
 
-/* -------------------------------------------------------------
+
+/* =============================================================
    SIDEBAR
-   ------------------------------------------------------------- */
+   ============================================================= */
+
 .admin-sidebar {
   background: #0f172a;
+
   color: #cbd5e1;
-  padding: 16px 0;
+
+  padding: 12px 0;
+
   display: flex;
+
   flex-direction: column;
+
   position: sticky;
+
   top: 0;
+
   height: 100vh;
+
   overflow-y: auto;
+
+  overflow-x: hidden;
+
+  z-index: 1000;
+
+  transition:
+    width 180ms ease,
+    padding 180ms ease;
+
+  scrollbar-width: thin;
 }
+
+
+/* =============================================================
+   TOPO
+   ============================================================= */
+
+.admin-sidebar__topo {
+  position: relative;
+
+  display: flex;
+
+  align-items: center;
+
+  min-height: 54px;
+
+  padding: 0 10px 10px;
+
+  margin-bottom: 6px;
+
+  border-bottom:
+    1px solid rgba(255,255,255,.08);
+}
+
 
 .admin-sidebar__logo {
   display: flex;
+
   align-items: center;
-  gap: 8px;
-  padding: 0 16px 20px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  margin-bottom: 16px;
+
+  gap: 9px;
+
+  min-width: 0;
+
+  flex: 1;
+
+  padding: 7px;
+
   color: #fff;
+
   font-weight: 700;
-  font-size: 15px;
+
+  font-size: 14px;
+
+  text-decoration: none;
+
+  white-space: nowrap;
+}
+
+
+.admin-sidebar__logo:hover {
+  color: #fff;
+
   text-decoration: none;
 }
-.admin-sidebar__logo:hover { text-decoration: none; color: #fff; }
+
+
+.admin-sidebar__logo-icone {
+  width: 30px;
+
+  height: 30px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  flex-shrink: 0;
+
+  border-radius: 8px;
+
+  background: rgba(255,255,255,.08);
+}
+
+
+.admin-sidebar__logo-texto {
+  overflow: hidden;
+
+  text-overflow: ellipsis;
+}
+
 
 .admin-sidebar__logo-badge {
   background: #0ea5e9;
+
   color: #fff;
-  padding: 2px 8px;
-  border-radius: 6px;
-  font-size: 10px;
+
+  padding: 2px 6px;
+
+  border-radius: 5px;
+
+  font-size: 9px;
+
   font-weight: 700;
-  letter-spacing: 0.5px;
+
+  letter-spacing: .4px;
+
+  flex-shrink: 0;
 }
 
-.admin-sidebar__secao {
-  padding: 16px 16px 8px;
-  font-size: 11px;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  color: #64748b;
-  font-weight: 600;
+
+/* =============================================================
+   BOTÃO RECOLHER
+   ============================================================= */
+
+.admin-sidebar__recolher {
+  width: 28px;
+
+  height: 28px;
+
+  flex-shrink: 0;
+
+  border: 0;
+
+  border-radius: 7px;
+
+  background: rgba(255,255,255,.06);
+
+  color: #94a3b8;
+
+  font-size: 22px;
+
+  line-height: 1;
+
+  cursor: pointer;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  transition: .15s ease;
 }
+
+
+.admin-sidebar__recolher:hover {
+  background: rgba(255,255,255,.12);
+
+  color: #fff;
+}
+
+
+/* =============================================================
+   SEÇÕES
+   ============================================================= */
+
+.admin-sidebar__secao {
+  padding: 14px 16px 6px;
+
+  font-size: 10px;
+
+  text-transform: uppercase;
+
+  letter-spacing: .7px;
+
+  color: #64748b;
+
+  font-weight: 700;
+
+  white-space: nowrap;
+
+  transition: opacity 150ms ease;
+}
+
+
+/* =============================================================
+   LISTA
+   ============================================================= */
 
 .admin-sidebar__lista {
   display: flex;
+
   flex-direction: column;
+
   gap: 2px;
+
   padding: 0 8px;
 }
 
+
+/* =============================================================
+   ITEM
+   ============================================================= */
+
 .admin-sidebar__item {
   display: flex;
+
   align-items: center;
+
   gap: 12px;
-  padding: 10px 12px;
+
+  min-height: 40px;
+
+  padding: 8px 10px;
+
   border-radius: 8px;
+
   color: #cbd5e1;
-  font-size: 14px;
+
+  font-size: 13px;
+
   font-weight: 500;
+
   text-decoration: none;
-  transition: all 120ms ease;
+
+  white-space: nowrap;
+
+  transition:
+    background 120ms ease,
+    color 120ms ease;
 }
+
+
 .admin-sidebar__item:hover {
-  background: rgba(255, 255, 255, 0.06);
+  background: rgba(255,255,255,.07);
+
   color: #fff;
+
   text-decoration: none;
 }
+
+
 .admin-sidebar__item.ativo {
   background: #0ea5e9;
+
   color: #fff;
 }
+
+
+/* =============================================================
+   ÍCONES
+   ============================================================= */
+
+.admin-sidebar__icone {
+  width: 22px;
+
+  min-width: 22px;
+
+  height: 22px;
+
+  display: inline-flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  font-size: 16px;
+
+  line-height: 1;
+
+  flex-shrink: 0;
+}
+
+
+/* =============================================================
+   RODAPÉ
+   ============================================================= */
 
 .admin-sidebar__rodape {
   margin-top: auto;
-  padding: 16px;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
+
+  padding: 12px;
+
+  border-top:
+    1px solid rgba(255,255,255,.08);
+
   font-size: 12px;
 }
+
+
 .admin-sidebar__rodape a {
+  display: flex;
+
+  align-items: center;
+
+  gap: 12px;
+
+  min-height: 38px;
+
+  padding: 8px 10px;
+
   color: #94a3b8;
-  display: block;
-  padding: 4px 0;
+
+  border-radius: 8px;
+
+  text-decoration: none;
+
+  white-space: nowrap;
+}
+
+
+.admin-sidebar__rodape a:hover {
+  background: rgba(255,255,255,.06);
+
+  color: #fff;
+
   text-decoration: none;
 }
-.admin-sidebar__rodape a:hover { color: #fff; text-decoration: none; }
 
-.admin-sidebar-overlay {
-  display: none;
-  position: fixed;
-  inset: 0;
-  background: rgba(15, 23, 42, 0.5);
-  z-index: 900;
+
+/* =============================================================
+   MENU RECOLHIDO
+   ============================================================= */
+
+.admin-sidebar.recolhida {
+  width: 72px;
+
+  padding-left: 6px;
+
+  padding-right: 6px;
 }
-.admin-sidebar-overlay.ativa { display: block; }
 
-/* -------------------------------------------------------------
+
+/* Logo recolhida */
+
+.admin-sidebar.recolhida
+.admin-sidebar__topo {
+  justify-content: center;
+
+  padding-left: 5px;
+
+  padding-right: 5px;
+}
+
+
+.admin-sidebar.recolhida
+.admin-sidebar__logo {
+  justify-content: center;
+
+  padding: 6px;
+}
+
+
+.admin-sidebar.recolhida
+.admin-sidebar__logo-texto,
+
+.admin-sidebar.recolhida
+.admin-sidebar__logo-badge {
+  display: none;
+}
+
+
+/* Botão fica abaixo/acima de forma compacta */
+
+.admin-sidebar.recolhida
+.admin-sidebar__recolher {
+  position: absolute;
+
+  right: -2px;
+
+  top: 13px;
+
+  width: 24px;
+
+  height: 24px;
+
+  font-size: 19px;
+}
+
+
+/* Seções desaparecem */
+
+.admin-sidebar.recolhida
+.admin-sidebar__secao {
+  height: 4px;
+
+  padding: 0;
+
+  margin: 5px 12px;
+
+  background: rgba(255,255,255,.08);
+
+  border-radius: 10px;
+
+  font-size: 0;
+
+  opacity: .8;
+}
+
+
+/* Itens viram somente ícones */
+
+.admin-sidebar.recolhida
+.admin-sidebar__lista {
+  padding-left: 6px;
+
+  padding-right: 6px;
+}
+
+
+.admin-sidebar.recolhida
+.admin-sidebar__item {
+  justify-content: center;
+
+  gap: 0;
+
+  padding: 8px;
+
+  width: 100%;
+}
+
+
+.admin-sidebar.recolhida
+.admin-sidebar__texto {
+  display: none;
+}
+
+
+/* Rodapé */
+
+.admin-sidebar.recolhida
+.admin-sidebar__rodape {
+  padding: 8px 6px;
+}
+
+
+.admin-sidebar.recolhida
+.admin-sidebar__rodape a {
+  justify-content: center;
+
+  gap: 0;
+
+  padding: 8px;
+}
+
+
+.admin-sidebar.recolhida
+.admin-sidebar__rodape .admin-sidebar__texto {
+  display: none;
+}
+
+
+/* =============================================================
    ÁREA PRINCIPAL
-   ------------------------------------------------------------- */
+   ============================================================= */
+
 .admin-main {
   display: flex;
+
   flex-direction: column;
+
   min-width: 0;
+
   background: #f8fafc;
 }
 
+
 .admin-topbar {
   background: #fff;
-  border-bottom: 1px solid #e2e8f0;
+
+  border-bottom:
+    1px solid #e2e8f0;
+
   padding: 12px 24px;
+
   display: flex;
+
   align-items: center;
+
   gap: 16px;
+
   position: sticky;
+
   top: 0;
+
   z-index: 100;
+
   min-height: 60px;
 }
 
+
 .admin-topbar__titulo {
   font-size: 18px;
+
   font-weight: 600;
+
   margin: 0;
+
   flex: 1;
 }
+
 
 .admin-topbar__acoes {
   display: flex;
+
   gap: 8px;
+
   align-items: center;
 }
 
+
 .admin-topbar__menu-btn {
   display: none;
+
   padding: 8px;
+
   border-radius: 8px;
+
   color: #0f172a;
+
   background: none;
+
   border: none;
+
   cursor: pointer;
 }
 
+
 .admin-conteudo {
   padding: 24px;
+
   flex: 1;
 }
 
-/* -------------------------------------------------------------
+
+/* =============================================================
+   OVERLAY MOBILE
+   ============================================================= */
+
+.admin-sidebar-overlay {
+  display: none;
+
+  position: fixed;
+
+  inset: 0;
+
+  background: rgba(15,23,42,.5);
+
+  z-index: 900;
+}
+
+
+.admin-sidebar-overlay.ativa {
+  display: block;
+}
+
+
+/* =============================================================
+   DESKTOP — MENU RECOLHIDO REDUZ O ESPAÇO
+   ============================================================= */
+
+.admin-layout:has(.admin-sidebar.recolhida) {
+  grid-template-columns: 72px 1fr;
+}
+
+
+/* =============================================================
    RESPONSIVIDADE
-   ------------------------------------------------------------- */
+   ============================================================= */
+
 @media (max-width: 900px) {
-  .admin-layout { grid-template-columns: 1fr; }
-  .admin-sidebar {
-    position: fixed;
-    top: 0;
-    left: -260px;
-    width: 260px;
-    z-index: 1000;
-    transition: left 200ms ease;
-    height: 100vh;
+
+  .admin-layout {
+    grid-template-columns: 1fr !important;
   }
-  .admin-sidebar.aberta { left: 0; }
-  .admin-topbar__menu-btn { display: flex; }
-  .admin-conteudo { padding: 16px; }
-  .admin-topbar { padding: 12px 16px; }
+
+  .admin-sidebar {
+
+    position: fixed;
+
+    top: 0;
+
+    left: -260px;
+
+    width: 260px;
+
+    z-index: 1000;
+
+    transition: left 200ms ease;
+
+    height: 100vh;
+
+  }
+
+  .admin-sidebar.aberta {
+    left: 0;
+  }
+
+  /* No celular o menu começa expandido */
+
+  .admin-sidebar.recolhida {
+    width: 260px;
+
+    padding: 12px 0;
+  }
+
+  .admin-sidebar.recolhida
+  .admin-sidebar__logo-texto,
+
+  .admin-sidebar.recolhida
+  .admin-sidebar__logo-badge,
+
+  .admin-sidebar.recolhida
+  .admin-sidebar__texto {
+    display: inline;
+  }
+
+  .admin-sidebar.recolhida
+  .admin-sidebar__secao {
+    height: auto;
+
+    padding: 14px 16px 6px;
+
+    margin: 0;
+
+    background: none;
+
+    font-size: 10px;
+  }
+
+  .admin-sidebar.recolhida
+  .admin-sidebar__item {
+    justify-content: flex-start;
+
+    gap: 12px;
+
+    padding: 8px 10px;
+  }
+
+  .admin-sidebar.recolhida
+  .admin-sidebar__rodape a {
+    justify-content: flex-start;
+
+    gap: 12px;
+  }
+
+  .admin-sidebar__recolher {
+    display: none;
+  }
+
+  .admin-topbar__menu-btn {
+    display: flex;
+  }
+
+  .admin-conteudo {
+    padding: 16px;
+  }
+
+  .admin-topbar {
+    padding: 12px 16px;
+  }
+
 }
