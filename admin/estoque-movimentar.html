@@ -1,1 +1,916 @@
 
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+
+  <title>Movimentar estoque — Admin</title>
+
+  <link rel="stylesheet" href="../assets/css/admin.css" />
+
+  <style>
+    .mov-wrap {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .mov-card {
+      background: #fff;
+      border: 1px solid #e2e8f0;
+      border-radius: 14px;
+      padding: 24px;
+      box-shadow: 0 2px 8px rgba(15,23,42,.04);
+    }
+
+    .produto {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 16px;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      margin-bottom: 20px;
+    }
+
+    .produto img {
+      width: 64px;
+      height: 64px;
+      object-fit: cover;
+      border-radius: 10px;
+      background: #e2e8f0;
+    }
+
+    .produto__sem-imagem {
+      width: 64px;
+      height: 64px;
+      border-radius: 10px;
+      background: #e2e8f0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 26px;
+      flex-shrink: 0;
+    }
+
+    .produto h2 {
+      margin: 0 0 5px;
+      font-size: 18px;
+      color: #0f172a;
+    }
+
+    .produto p {
+      margin: 0;
+      color: #64748b;
+      font-size: 13px;
+    }
+
+    .estoque-atual {
+      margin-left: auto;
+      text-align: right;
+    }
+
+    .estoque-atual strong {
+      display: block;
+      font-size: 25px;
+      color: #0f172a;
+    }
+
+    .estoque-atual span {
+      font-size: 12px;
+      color: #64748b;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .campo {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .campo--full {
+      grid-column: 1 / -1;
+    }
+
+    .campo label {
+      font-size: 13px;
+      font-weight: 600;
+      color: #334155;
+    }
+
+    .campo input,
+    .campo select,
+    .campo textarea {
+      width: 100%;
+      padding: 11px 12px;
+      border: 1px solid #cbd5e1;
+      border-radius: 9px;
+      background: #fff;
+      font: inherit;
+      color: #0f172a;
+    }
+
+    .campo textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
+
+    .campo input:focus,
+    .campo select:focus,
+    .campo textarea:focus {
+      outline: none;
+      border-color: #0ea5e9;
+      box-shadow: 0 0 0 3px rgba(14,165,233,.1);
+    }
+
+    .tipo {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+
+    .tipo button {
+      border: 1px solid #cbd5e1;
+      background: #fff;
+      border-radius: 10px;
+      padding: 12px;
+      cursor: pointer;
+      font-weight: 600;
+      color: #475569;
+    }
+
+    .tipo button.ativo-entrada {
+      border-color: #16a34a;
+      background: #f0fdf4;
+      color: #166534;
+    }
+
+    .tipo button.ativo-saida {
+      border-color: #dc2626;
+      background: #fef2f2;
+      color: #991b1b;
+    }
+
+    .acoes {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 22px;
+      padding-top: 18px;
+      border-top: 1px solid #e2e8f0;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 10px 16px;
+      border-radius: 9px;
+      border: 1px solid #cbd5e1;
+      background: #fff;
+      color: #334155;
+      text-decoration: none;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .btn--primario {
+      background: #0ea5e9;
+      border-color: #0ea5e9;
+      color: #fff;
+    }
+
+    .btn:disabled {
+      opacity: .6;
+      cursor: not-allowed;
+    }
+
+    .mensagem {
+      display: none;
+      margin-bottom: 16px;
+      padding: 12px 14px;
+      border-radius: 9px;
+      font-size: 13px;
+    }
+
+    .mensagem.erro {
+      display: block;
+      background: #fef2f2;
+      color: #991b1b;
+      border: 1px solid #fecaca;
+    }
+
+    .mensagem.ok {
+      display: block;
+      background: #f0fdf4;
+      color: #166534;
+      border: 1px solid #bbf7d0;
+    }
+
+    .ajuda {
+      font-size: 12px;
+      color: #64748b;
+      margin-top: 5px;
+    }
+
+    @media(max-width:650px) {
+
+      .grid {
+        grid-template-columns: 1fr;
+      }
+
+      .campo--full {
+        grid-column: auto;
+      }
+
+      .tipo {
+        grid-template-columns: 1fr;
+      }
+
+      .produto {
+        align-items: flex-start;
+        flex-wrap: wrap;
+      }
+
+      .estoque-atual {
+        margin-left: 0;
+      }
+
+      .acoes {
+        flex-direction: column-reverse;
+      }
+
+      .acoes .btn {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="admin-layout">
+
+    <aside
+      class="admin-sidebar"
+      id="admin-sidebar">
+    </aside>
+
+    <div
+      class="admin-sidebar-overlay"
+      id="admin-sidebar-overlay">
+    </div>
+
+
+    <main class="admin-main">
+
+      <header class="admin-topbar">
+
+        <button
+          id="admin-menu-btn"
+          class="admin-topbar__menu-btn"
+          aria-label="Abrir menu">
+          ☰
+        </button>
+
+        <h1 class="admin-topbar__titulo">
+          Movimentar estoque
+        </h1>
+
+      </header>
+
+
+      <div class="admin-conteudo">
+
+        <div class="mov-wrap">
+
+          <div
+            id="mensagem"
+            class="mensagem">
+          </div>
+
+
+          <div class="mov-card">
+
+            <div
+              id="produto"
+              class="produto">
+
+              <div class="produto__sem-imagem">
+                📦
+              </div>
+
+              <div>
+                <h2>Carregando produto...</h2>
+                <p>Aguarde...</p>
+              </div>
+
+            </div>
+
+
+            <div class="tipo">
+
+              <button
+                type="button"
+                id="btn-entrada"
+                class="ativo-entrada">
+
+                ＋ Entrada
+
+              </button>
+
+              <button
+                type="button"
+                id="btn-saida">
+
+                − Saída
+
+              </button>
+
+            </div>
+
+
+            <form id="form">
+
+              <div class="grid">
+
+                <div class="campo campo--full">
+
+                  <label for="tipo">
+                    Tipo de movimentação
+                  </label>
+
+                  <select
+                    id="tipo"
+                    required>
+                  </select>
+
+                </div>
+
+
+                <div class="campo">
+
+                  <label for="quantidade">
+                    Quantidade
+                  </label>
+
+                  <input
+                    id="quantidade"
+                    type="number"
+                    min="1"
+                    step="1"
+                    required
+                    placeholder="Ex.: 10" />
+
+                  <div class="ajuda">
+                    Informe somente números inteiros positivos.
+                  </div>
+
+                </div>
+
+
+                <div class="campo">
+
+                  <label for="origem">
+                    Origem / motivo
+                  </label>
+
+                  <input
+                    id="origem"
+                    type="text"
+                    maxlength="150"
+                    placeholder="Ex.: Compra do fornecedor" />
+
+                </div>
+
+
+                <div class="campo campo--full">
+
+                  <label for="observacao">
+                    Observação
+                  </label>
+
+                  <textarea
+                    id="observacao"
+                    maxlength="500"
+                    placeholder="Detalhes adicionais da movimentação (opcional)">
+                  </textarea>
+
+                </div>
+
+              </div>
+
+
+              <div class="acoes">
+
+                <a
+                  id="voltar"
+                  href="./estoque.html"
+                  class="btn">
+                  Cancelar
+                </a>
+
+                <button
+                  id="salvar"
+                  type="submit"
+                  class="btn btn--primario">
+
+                  Registrar movimentação
+
+                </button>
+
+              </div>
+
+            </form>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </main>
+
+  </div>
+
+
+  <script type="module">
+
+    import { supabase }
+      from '../assets/js/supabase.js';
+
+    import { renderAdminMenu }
+      from '../assets/js/components/admin-menu.js';
+
+    import {
+      movimentar,
+      tiposEntrada,
+      tiposSaida
+    } from '../assets/js/services/stock.service.js';
+
+
+    const produtoEl =
+      document.getElementById('produto');
+
+    const mensagemEl =
+      document.getElementById('mensagem');
+
+    const tipoEl =
+      document.getElementById('tipo');
+
+    const form =
+      document.getElementById('form');
+
+    const salvar =
+      document.getElementById('salvar');
+
+    const btnEntrada =
+      document.getElementById('btn-entrada');
+
+    const btnSaida =
+      document.getElementById('btn-saida');
+
+
+    const params =
+      new URLSearchParams(location.search);
+
+    const productId =
+      (
+        params.get('product') ||
+        params.get('product_id') ||
+        ''
+      ).replace(/["']/g, '');
+
+
+    let modo = 'entrada';
+
+    let produto = null;
+
+
+    function esc(v) {
+
+      return v == null
+        ? ''
+        : String(v).replace(
+            /[&<>"']/g,
+            m => ({
+              '&':'&amp;',
+              '<':'&lt;',
+              '>':'&gt;',
+              '"':'&quot;',
+              "'":'&#39;'
+            }[m])
+          );
+
+    }
+
+
+    function mensagem(texto, tipo) {
+
+      mensagemEl.textContent = texto;
+
+      mensagemEl.className =
+        'mensagem ' + tipo;
+
+    }
+
+
+    function preencherTipos() {
+
+      const lista =
+        modo === 'entrada'
+          ? tiposEntrada()
+          : tiposSaida();
+
+
+      tipoEl.innerHTML =
+        lista.map(x => `
+          <option value="${esc(x.value)}">
+            ${esc(x.label)}
+          </option>
+        `).join('');
+
+    }
+
+
+    function mudarModo(novoModo) {
+
+      modo = novoModo;
+
+      btnEntrada.className =
+        modo === 'entrada'
+          ? 'ativo-entrada'
+          : '';
+
+      btnSaida.className =
+        modo === 'saida'
+          ? 'ativo-saida'
+          : '';
+
+      preencherTipos();
+
+      document.getElementById('origem').value = '';
+
+    }
+
+
+    async function carregar() {
+
+      try {
+
+        const sessao =
+          await supabase.auth.getSession();
+
+
+        if (!sessao.data?.session) {
+
+          location.href =
+            '../login.html';
+
+          return;
+
+        }
+
+
+        renderAdminMenu(
+          'movimentar'
+        );
+
+
+        if (!productId) {
+
+          produtoEl.innerHTML = `
+            <div class="produto__sem-imagem">
+              ⚠️
+            </div>
+
+            <div>
+              <h2>Produto não informado</h2>
+
+              <p>
+                Abra esta tela pelo botão
+                Movimentar de um produto.
+              </p>
+            </div>
+          `;
+
+          salvar.disabled = true;
+
+          return;
+
+        }
+
+
+        const r =
+          await supabase
+            .from('products')
+            .select(`
+              id,
+              nome,
+              estoque,
+              sku,
+              preco,
+              status,
+              product_images (
+                url,
+                principal,
+                ordem
+              )
+            `)
+            .eq('id', productId)
+            .maybeSingle();
+
+
+        if (r.error)
+          throw r.error;
+
+
+        if (!r.data) {
+
+          produtoEl.innerHTML = `
+            <div class="produto__sem-imagem">
+              ⚠️
+            </div>
+
+            <div>
+              <h2>Produto não encontrado</h2>
+
+              <p>
+                O produto informado não existe
+                ou não está disponível.
+              </p>
+            </div>
+          `;
+
+          salvar.disabled = true;
+
+          return;
+
+        }
+
+
+        produto = r.data;
+
+
+        const imgs =
+          (produto.product_images || [])
+            .slice()
+            .sort(
+              (a,b) =>
+                (b.principal ? 1 : 0) -
+                (a.principal ? 1 : 0)
+            );
+
+
+        const img =
+          imgs[0]?.url;
+
+
+        const imagem =
+          img
+            ? `
+              <img
+                src="${esc(img)}"
+                alt="">
+            `
+            : `
+              <div class="produto__sem-imagem">
+                📦
+              </div>
+            `;
+
+
+        produtoEl.innerHTML = `
+
+          ${imagem}
+
+          <div>
+
+            <h2>
+              ${esc(produto.nome)}
+            </h2>
+
+            <p>
+              ${
+                produto.sku
+                  ? 'SKU: ' + esc(produto.sku)
+                  : 'Produto'
+              }
+            </p>
+
+          </div>
+
+          <div class="estoque-atual">
+
+            <strong>
+              ${Number(produto.estoque || 0)}
+            </strong>
+
+            <span>
+              estoque atual
+            </span>
+
+          </div>
+
+        `;
+
+
+        preencherTipos();
+
+      } catch (e) {
+
+        mensagem(
+          'Erro ao carregar o produto: ' +
+          (e.message || e),
+          'erro'
+        );
+
+        salvar.disabled = true;
+
+      }
+
+    }
+
+
+    btnEntrada.onclick =
+      () => mudarModo('entrada');
+
+
+    btnSaida.onclick =
+      () => mudarModo('saida');
+
+
+    form.addEventListener(
+      'submit',
+      async function(e) {
+
+        e.preventDefault();
+
+
+        if (!produto)
+          return;
+
+
+        const quantidade =
+          Number(
+            document.getElementById(
+              'quantidade'
+            ).value
+          );
+
+
+        const tipo =
+          tipoEl.value;
+
+
+        const origem =
+          document
+            .getElementById('origem')
+            .value
+            .trim();
+
+
+        const observacao =
+          document
+            .getElementById('observacao')
+            .value
+            .trim();
+
+
+        if (
+          !Number.isInteger(quantidade) ||
+          quantidade <= 0
+        ) {
+
+          mensagem(
+            'Informe uma quantidade inteira maior que zero.',
+            'erro'
+          );
+
+          return;
+
+        }
+
+
+        if (
+          modo === 'saida' &&
+          quantidade >
+          Number(produto.estoque || 0)
+        ) {
+
+          mensagem(
+            'A quantidade informada é maior que o estoque disponível.',
+            'erro'
+          );
+
+          return;
+
+        }
+
+
+        salvar.disabled = true;
+
+        salvar.textContent =
+          'Registrando...';
+
+        mensagemEl.className =
+          'mensagem';
+
+
+        try {
+
+          await movimentar({
+
+            product_id:
+              produto.id,
+
+            tipo,
+
+            quantidade,
+
+            origem:
+              origem ||
+              'Ajuste de estoque',
+
+            observacao
+
+          });
+
+
+          mensagem(
+            'Movimentação registrada com sucesso!',
+            'ok'
+          );
+
+
+          form.reset();
+
+
+          const novoEstoque =
+            modo === 'entrada'
+
+              ? Number(produto.estoque || 0)
+                + quantidade
+
+              : Number(produto.estoque || 0)
+                - quantidade;
+
+
+          produto.estoque =
+            novoEstoque;
+
+
+          const atual =
+            produtoEl.querySelector(
+              '.estoque-atual strong'
+            );
+
+
+          if (atual)
+            atual.textContent =
+              novoEstoque;
+
+
+          setTimeout(() => {
+
+            location.href =
+              './estoque.html';
+
+          }, 900);
+
+
+        } catch (e) {
+
+          mensagem(
+            'Não foi possível registrar: ' +
+            (e.message || e),
+            'erro'
+          );
+
+
+          salvar.disabled =
+            false;
+
+          salvar.textContent =
+            'Registrar movimentação';
+
+        }
+
+      }
+    );
+
+
+    carregar();
+
+  </script>
+
+</body>
+</html>
