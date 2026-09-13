@@ -1,155 +1,450 @@
-// =============================================================
-// SERVICE: PEDIDOS — VM VENDAS E COMPRAS
-// =============================================================
 import { supabase } from '../supabase.js';
 
-// -------------------------------------------------------------
-// Cria um pedido completo a partir do carrinho
-// -------------------------------------------------------------
+
+/* ============================================================
+   PEDIDOS
+   ============================================================ */
+
+
+/**
+ * Cria/finaliza um pedido através da RPC segura do banco.
+ *
+ * IMPORTANTE:
+ * - Não confia no preço enviado pelo navegador.
+ * - O banco consulta o preço real do produto.
+ * - O banco valida o estoque.
+ * - O banco registra a saída do estoque.
+ * - O banco cria o pedido e os itens.
+ * - O token evita duplicidade em caso de duplo clique/reenvio.
+ */
 export async function criarPedido({
-  itens,
-  dadosContato = {},
-  observacoes = ''
+    itens = [],
+    dadosContato = {},
+    observacoes = ''
 }) {
-  if (!Array.isArray(itens) || !itens.length) {
-    throw new Error('Carrinho vazio.');
-  }
 
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) throw new Error('É preciso estar logado para finalizar o pedido.');
+    // ----------------------------------------------------------
+    // 1. Validar carrinho
+    // ----------------------------------------------------------
 
-  // Calcula totais
-  const subtotal = itens.reduce((s, i) => s + (Number(i.preco) * Number(i.quantidade)), 0);
-  const total = subtotal;
+    if (!Array.isArray(itens) || itens.length === 0) {
+        throw new Error('O carrinho está vazio.');
+    }
 
-  // Cria o pedido
-  const { data: pedido, error: errPedido } = await supabase
-    .from('orders')
-    .insert({
-      user_id: user.id,
-      status: 'aguardando',
-      subtotal,
-      desconto: 0,
-      total,
-      observacoes: observacoes?.trim() || null,
-      nome_contato: dadosContato.nome || null,
-      telefone: dadosContato.telefone || null,
-      whatsapp: dadosContato.whatsapp || null,
-      email_contato: dadosContato.email || null,
-      endereco: dadosContato.endereco || null
-    })
-    .select('id, numero')
-    .single();
 
-  if (errPedido) {
-    console.error('[orders.service] Erro ao criar pedido:', errPedido);
-    throw errPedido;
-  }
+    // ----------------------------------------------------------
+    // 2. Verificar autenticação
+    // ----------------------------------------------------------
 
-  // Cria os itens
-  const itensPayload = itens.map(i => ({
-    order_id: pedido.id,
-    product_id: i.id,
-    product_nome: i.nome,
-    product_sku: i.sku || null,
-    product_imagem: i.imagem || null,
-    preco_unitario: Number(i.preco),
-    quantidade: Number(i.quantidade),
-    subtotal: Number(i.preco) * Number(i.quantidade)
-  }));
+    const {
+        data: { user },
+        error: authError
+    } = await supabase.auth.getUser();
 
-  const { error: errItens } = await supabase.from('order_items').insert(itensPayload);
-  if (errItens) {
-    console.error('[orders.service] Erro ao criar itens:', errItens);
-    throw errItens;
-  }
+    if (authError) {
+        throw new Error(
+            authError.message || 'Não foi possível verificar o usuário.'
+        );
+    }
 
-  // Notifica admin (usa a tabela notifications)
-  try {
-    await supabase.from('notifications').insert({
-      user_id: user.id,
-      tipo: 'pedido',
-      titulo: 'Novo pedido recebido',
-      mensagem: `Pedido ${pedido.numero} no valor de R$ ${total.toFixed(2)}`,
-      link: `/admin/pedidos.html`
+    if (!user) {
+        throw new Error(
+            'Você precisa estar autenticado para realizar o pedido.'
+        );
+    }
+
+
+    // ----------------------------------------------------------
+    // 3. Normalizar itens
+    //
+    // O preço do carrinho NÃO é enviado para a RPC.
+    // O banco será responsável por buscar o preço oficial.
+    // ----------------------------------------------------------
+
+    const itensNormalizados = itens.map((item) => {
+
+        const productId =
+            item.product_id ||
+            item.id ||
+            null;
+
+        const quantidade =
+            Number(item.quantidade);
+
+
+        if (!productId) {
+            throw new Error(
+                'Um dos produtos do carrinho não possui identificação válida.'
+            );
+        }
+
+
+        if (!Number.isInteger(quantidade) || quantidade <= 0) {
+            throw new Error(
+                'A quantidade de um dos produtos é inválida.'
+            );
+        }
+
+
+        return {
+            product_id: productId,
+            quantidade
+        };
+
     });
-  } catch (_) { /* silencioso */ }
 
-  return { id: pedido.id, numero: pedido.numero, total };
+
+    // ----------------------------------------------------------
+    // 4. Token de checkout
+    //
+    // Mantemos o mesmo token enquanto o checkout não terminar.
+    //
+    // Isso protege contra:
+    // - duplo clique;
+    // - reenvio;
+    // - perda de resposta da internet;
+    // - tentativa imediata de repetir a operação.
+    // ----------------------------------------------------------
+
+    const TOKEN_KEY = 'vm_checkout_token';
+
+    let checkoutToken =
+        localStorage.getItem(TOKEN_KEY);
+
+
+    if (!checkoutToken) {
+
+        checkoutToken =
+            crypto.randomUUID();
+
+        localStorage.setItem(
+            TOKEN_KEY,
+            checkoutToken
+        );
+    }
+
+
+    // ----------------------------------------------------------
+    // 5. Preparar dados enviados ao banco
+    // ----------------------------------------------------------
+
+    const dados = {
+
+        nome_contato:
+            dadosContato.nome_contato ||
+            dadosContato.nome ||
+            '',
+
+        telefone:
+            dadosContato.telefone ||
+            '',
+
+        whatsapp:
+            dadosContato.whatsapp ||
+            '',
+
+        email:
+            dadosContato.email ||
+            '',
+
+        endereco:
+            dadosContato.endereco ||
+            null,
+
+        cep:
+            dadosContato.cep ||
+            '',
+
+        observacoes:
+            observacoes ||
+            dadosContato.observacoes ||
+            '',
+
+        // ------------------------------------------------------
+        // Pagamento
+        // ------------------------------------------------------
+
+        payment_method_id:
+            dadosContato.payment_method_id ||
+            null,
+
+        payment_method_nome:
+            dadosContato.payment_method_nome ||
+            '',
+
+        parcelas:
+            Number(dadosContato.parcelas || 1),
+
+        // ------------------------------------------------------
+        // Entrega
+        // ------------------------------------------------------
+
+        delivery_zone_id:
+            dadosContato.delivery_zone_id ||
+            null,
+
+        frete:
+            Number(dadosContato.frete || 0),
+
+        desconto:
+            Number(dadosContato.desconto || 0),
+
+        // ------------------------------------------------------
+        // Controle
+        // ------------------------------------------------------
+
+        checkout_token:
+            checkoutToken
+    };
+
+
+    // ----------------------------------------------------------
+    // 6. Chamar RPC
+    // ----------------------------------------------------------
+
+    const {
+        data,
+        error
+    } = await supabase.rpc(
+        'finalizar_venda',
+        {
+            p_itens: itensNormalizados,
+            p_dados: dados
+        }
+    );
+
+
+    // ----------------------------------------------------------
+    // 7. Tratar erro
+    // ----------------------------------------------------------
+
+    if (error) {
+
+        console.error(
+            'Erro ao finalizar venda:',
+            error
+        );
+
+        /*
+         * NÃO removemos o token aqui.
+         *
+         * Se o erro ocorreu antes da conclusão,
+         * o usuário poderá tentar novamente utilizando
+         * o mesmo token.
+         */
+
+        throw new Error(
+            error.message ||
+            'Não foi possível finalizar o pedido.'
+        );
+    }
+
+
+    // ----------------------------------------------------------
+    // 8. Validar resposta
+    // ----------------------------------------------------------
+
+    if (!data || data.sucesso !== true) {
+
+        throw new Error(
+            data?.mensagem ||
+            'O pedido não pôde ser finalizado.'
+        );
+    }
+
+
+    // ----------------------------------------------------------
+    // 9. Pedido concluído
+    //
+    // Agora podemos remover o token.
+    // ----------------------------------------------------------
+
+    localStorage.removeItem(TOKEN_KEY);
+
+
+    // ----------------------------------------------------------
+    // 10. Obter número do pedido
+    //
+    // A RPC retorna o ID.
+    // O número pode ser gerado automaticamente pelo banco.
+    // ----------------------------------------------------------
+
+    let numero = null;
+
+
+    if (data.order_id) {
+
+        const {
+            data: pedido,
+            error: pedidoError
+        } = await supabase
+            .from('orders')
+            .select('id, numero, total, status')
+            .eq('id', data.order_id)
+            .maybeSingle();
+
+
+        if (!pedidoError && pedido) {
+            numero = pedido.numero;
+        }
+
+    }
+
+
+    // ----------------------------------------------------------
+    // 11. Retorno compatível com o sistema atual
+    // ----------------------------------------------------------
+
+    return {
+
+        id:
+            data.order_id,
+
+        numero:
+            numero,
+
+        total:
+            Number(
+                data.total || 0
+            ),
+
+        subtotal:
+            Number(
+                data.subtotal || 0
+            ),
+
+        frete:
+            Number(
+                data.frete || 0
+            ),
+
+        desconto:
+            Number(
+                data.desconto || 0
+            ),
+
+        parcelas:
+            Number(
+                data.parcelas || 1
+            ),
+
+        checkout_id:
+            data.checkout_id || null,
+
+        duplicado:
+            data.duplicado === true,
+
+        status:
+            'aguardando'
+
+    };
+
 }
 
-// -------------------------------------------------------------
-// Lista pedidos do usuário logado
-// -------------------------------------------------------------
-export async function listarMeusPedidos() {
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return [];
 
-  const { data, error } = await supabase
-    .from('orders')
-    .select(`id, numero, status, total, created_at, order_items ( id, product_nome, quantidade, preco_unitario, product_imagem )`)
-    .eq('user_id', user.id)
-    .order('created_at', { ascending: false });
+/* ============================================================
+   BUSCAR PEDIDO
+   ============================================================ */
 
-  if (error) throw error;
-  return data || [];
-}
-
-// -------------------------------------------------------------
-// Busca um pedido por id (com itens)
-// -------------------------------------------------------------
 export async function buscarPedido(id) {
-  const { data, error } = await supabase
-    .from('orders')
-    .select(`*, order_items ( * )`)
-    .eq('id', id)
-    .maybeSingle();
 
-  if (error) throw error;
-  return data;
+    if (!id) {
+        throw new Error('ID do pedido não informado.');
+    }
+
+
+    const {
+        data,
+        error
+    } = await supabase
+        .from('orders')
+        .select(`
+            *,
+            order_items (*)
+        `)
+        .eq('id', id)
+        .maybeSingle();
+
+
+    if (error) {
+
+        console.error(
+            'Erro ao buscar pedido:',
+            error
+        );
+
+        throw new Error(
+            error.message ||
+            'Não foi possível carregar o pedido.'
+        );
+    }
+
+
+    return data;
+
 }
 
-// -------------------------------------------------------------
-// Lista pedidos para o admin (com nome do cliente)
-// -------------------------------------------------------------
-export async function listarTodosPedidos({ status = null, busca = '' } = {}) {
-  let q = supabase
-    .from('orders')
-    .select(`id, numero, status, total, created_at, nome_contato, user_id, order_items ( id, product_nome, quantidade )`)
-    .order('created_at', { ascending: false });
 
-  if (status) q = q.eq('status', status);
+/* ============================================================
+   LISTAR MEUS PEDIDOS
+   ============================================================ */
 
-  const { data, error } = await q;
-  if (error) throw error;
-  return data || [];
-}
+export async function listarMeusPedidos() {
 
-// -------------------------------------------------------------
-// Atualiza status do pedido
-// -------------------------------------------------------------
-export async function atualizarStatusPedido(id, novoStatus, obsAdmin = null) {
-  const payload = { status: novoStatus };
-  if (obsAdmin != null) payload.obs_admin = obsAdmin;
+    const {
+        data: { user },
+        error: authError
+    } = await supabase.auth.getUser();
 
-  const { error } = await supabase.from('orders').update(payload).eq('id', id);
-  if (error) throw error;
-}
 
-// -------------------------------------------------------------
-// Traduz status para texto amigável
-// -------------------------------------------------------------
-export function rotuloStatusPedido(s) {
-  const map = {
-    aguardando:    ['Aguardando', 'alerta'],
-    recebido:      ['Recebido', 'info'],
-    em_analise:    ['Em análise', 'info'],
-    confirmado:    ['Confirmado', 'sucesso'],
-    em_preparacao: ['Em preparação', 'info'],
-    enviado:       ['Enviado', 'info'],
-    concluido:     ['Concluído', 'sucesso'],
-    cancelado:     ['Cancelado', 'erro']
-  };
-  const [texto, tipo] = map[s] || [s, 'neutro'];
-  return { texto, tipo };
+    if (authError) {
+
+        throw new Error(
+            authError.message ||
+            'Não foi possível verificar o usuário.'
+        );
+    }
+
+
+    if (!user) {
+        throw new Error(
+            'Usuário não autenticado.'
+        );
+    }
+
+
+    const {
+        data,
+        error
+    } = await supabase
+        .from('orders')
+        .select(`
+            *,
+            order_items (*)
+        `)
+        .eq('user_id', user.id)
+        .order(
+            'created_at',
+            {
+                ascending: false
+            }
+        );
+
+
+    if (error) {
+
+        console.error(
+            'Erro ao listar pedidos:',
+            error
+        );
+
+        throw new Error(
+            error.message ||
+            'Não foi possível carregar seus pedidos.'
+        );
+    }
+
+
+    return data || [];
+
 }
