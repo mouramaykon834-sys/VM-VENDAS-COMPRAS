@@ -22,21 +22,21 @@ const SENHAS_PROIBIDAS = [
   'access','yankees','987654321','dallas','austin','thunder','taylor','matrix','william',
   'corvette','hello','martin','heather','secret','fucker','merlin','diamond','1234qwer',
   'gfhjkm','hammer','silver','222222','88888888','anthony','justin','test','bailey',
-  'patrick','internet','scooter','orange','11111','golfer','cookie','richard',
-  'samantha','bigdog','guitar','jackson','whatever','mickey','chicken','sparky','snoopy',
-  'maverick','phoenix','camaro','sexy','peanut','morgan','welcome','falcon','cowboy',
-  'ferrari','samsung','andrea','smokey','steelers','joseph','mercedes','dakota','arsenal',
-  'eagles','melissa','boomer','booboo','spider','nascar','monster','tigers','yellow',
-  'xxxxxx','123123123','gateway','marina','diablo','bulldog','qwer1234','compaq','purple',
-  'hardcore','banana','junior','hannah','123654','porsche','lakers','iceman','money',
-  'cowboys','987654','london','tennis','999999','ncc1701','coffee','scooby','0000',
-  'miller','boston','q1w2e3r4','fuckoff','brandon','yamaha','chester','mother','forever',
-  'johnny','edward','333333','oliver','redsox','player','nikita','knight','fender',
-  'barney','midnight','please','brandy','chicago','badboy','iwantu','slayer','rangers',
-  'charles','angel','flower','bigdaddy','rabbit','wizard','bigdick','jasper','enter',
-  'rachel','chris','steven','winner','adidas','victoria','natasha','1q2w3e4r','jasmine',
-  'winter','prince','panties','marine','ghbdtn','fishing','cocacola','casper','james',
-  '232323','raiders','888888','marlboro','gandalf','asdfasdf','crystal','87654321'
+  'patrick','internet','scooter','orange','11111','golfer','cookie','richard','samantha',
+  'bigdog','guitar','jackson','whatever','mickey','chicken','sparky','snoopy','maverick',
+  'phoenix','camaro','sexy','peanut','morgan','welcome','falcon','cowboy','ferrari',
+  'samsung','andrea','smokey','steelers','joseph','mercedes','dakota','arsenal','eagles',
+  'melissa','boomer','booboo','spider','nascar','monster','tigers','yellow','xxxxxx',
+  '123123123','gateway','marina','diablo','bulldog','qwer1234','compaq','purple','hardcore',
+  'banana','junior','hannah','123654','porsche','lakers','iceman','money','cowboys',
+  '987654','london','tennis','999999','ncc1701','coffee','scooby','0000','miller','boston',
+  'q1w2e3r4','fuckoff','brandon','yamaha','chester','mother','forever','johnny','edward',
+  '333333','oliver','redsox','player','nikita','knight','fender','barney','midnight',
+  'please','brandy','chicago','badboy','iwantu','slayer','rangers','charles','angel',
+  'flower','bigdaddy','rabbit','wizard','bigdick','jasper','enter','rachel','chris','steven',
+  'winner','adidas','victoria','natasha','1q2w3e4r','jasmine','winter','prince','panties',
+  'marine','ghbdtn','fishing','cocacola','casper','james','232323','raiders','888888',
+  'marlboro','gandalf','asdfasdf','crystal','87654321'
 ];
 
 function ehSenhaComum(senha) {
@@ -66,7 +66,6 @@ export async function cadastrar({
   senha
 }) {
 
-  // Validações
   if (!nome || nome.trim().length < 3) {
     throw new Error(
       'Informe seu nome completo (mínimo 3 caracteres).'
@@ -129,7 +128,7 @@ export async function cadastrar({
     }
   });
 
-  // Registra tentativa (sucesso ou falha)
+  // Registra tentativa
   await registrarTentativa(
     'cadastro',
     email.toLowerCase(),
@@ -315,7 +314,6 @@ export async function enviarEmailRecuperacao(email) {
   );
 
   if (!rl.permitido) {
-
     const min = Math.ceil(
       rl.esperar_segundos / 60
     );
