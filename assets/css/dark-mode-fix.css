@@ -1,0 +1,202 @@
+/* =========================================================
+   CORREÇÃO GLOBAL — TEMA ESCURO
+   Não altera o tema claro.
+   ========================================================= */
+
+html[data-tema="escuro"] {
+    color-scheme: dark;
+}
+
+/* Texto geral */
+html[data-tema="escuro"] body,
+html[data-tema="escuro"] main,
+html[data-tema="escuro"] section,
+html[data-tema="escuro"] article,
+html[data-tema="escuro"] aside,
+html[data-tema="escuro"] div,
+html[data-tema="escuro"] span,
+html[data-tema="escuro"] p,
+html[data-tema="escuro"] label,
+html[data-tema="escuro"] small,
+html[data-tema="escuro"] strong,
+html[data-tema="escuro"] b {
+    color: var(--cor-texto) !important;
+}
+
+/* Títulos */
+html[data-tema="escuro"] h1,
+html[data-tema="escuro"] h2,
+html[data-tema="escuro"] h3,
+html[data-tema="escuro"] h4,
+html[data-tema="escuro"] h5,
+html[data-tema="escuro"] h6 {
+    color: var(--cor-texto) !important;
+}
+
+/* Textos secundários */
+html[data-tema="escuro"] .texto-suave,
+html[data-tema="escuro"] .texto-secundario,
+html[data-tema="escuro"] .descricao,
+html[data-tema="escuro"] .descricao-produto,
+html[data-tema="escuro"] .produto-card__condicao,
+html[data-tema="escuro"] .produto__descricao {
+    color: var(--cor-texto-suave) !important;
+}
+
+/* Links */
+html[data-tema="escuro"] a {
+    color: var(--cor-principal-clara);
+}
+
+html[data-tema="escuro"] a:hover {
+    color: #bae6fd;
+}
+
+/* Inputs */
+html[data-tema="escuro"] input,
+html[data-tema="escuro"] textarea,
+html[data-tema="escuro"] select {
+    background-color: #0f172a !important;
+    color: #f1f5f9 !important;
+    border-color: #475569 !important;
+}
+
+html[data-tema="escuro"] input::placeholder,
+html[data-tema="escuro"] textarea::placeholder {
+    color: #94a3b8 !important;
+}
+
+/* Opções dos selects */
+html[data-tema="escuro"] option {
+    background-color: #0f172a;
+    color: #f1f5f9;
+}
+
+/* Cards e blocos */
+html[data-tema="escuro"] .produto-card,
+html[data-tema="escuro"] .cartao,
+html[data-tema="escuro"] .card,
+html[data-tema="escuro"] .bloco,
+html[data-tema="escuro"] .resumo,
+html[data-tema="escuro"] .filtros,
+html[data-tema="escuro"] .tabela-container {
+    background-color: #1e293b !important;
+    color: #f1f5f9 !important;
+    border-color: #334155 !important;
+}
+
+/* Texto dentro dos cards */
+html[data-tema="escuro"] .produto-card *,
+html[data-tema="escuro"] .cartao *,
+html[data-tema="escuro"] .card * {
+    color: inherit;
+}
+
+/* Nome do produto */
+html[data-tema="escuro"] .produto-card__nome {
+    color: #f8fafc !important;
+}
+
+/* Preço do produto */
+html[data-tema="escuro"] .produto-card__preco {
+    color: #f8fafc !important;
+}
+
+/* Condição do produto */
+html[data-tema="escuro"] .produto-card__condicao {
+    color: #cbd5e1 !important;
+}
+
+/* Tabelas */
+html[data-tema="escuro"] table,
+html[data-tema="escuro"] thead,
+html[data-tema="escuro"] tbody,
+html[data-tema="escuro"] tr,
+html[data-tema="escuro"] th,
+html[data-tema="escuro"] td {
+    color: #f1f5f9 !important;
+    border-color: #334155 !important;
+}
+
+html[data-tema="escuro"] th {
+    background-color: #0f172a !important;
+}
+
+html[data-tema="escuro"] td {
+    background-color: #1e293b !important;
+}
+
+/* Formulários */
+html[data-tema="escuro"] .form-group,
+html[data-tema="escuro"] .campo,
+html[data-tema="escuro"] .campo-formulario {
+    color: #f1f5f9 !important;
+}
+
+/* Botões que possuem texto escuro fixo */
+html[data-tema="escuro"] button:not(.admin-menu-toggle),
+html[data-tema="escuro"] .btn {
+    color: inherit;
+}
+
+/* Cabeçalho */
+html[data-tema="escuro"] .cabecalho {
+    background-color: #1e293b !important;
+    color: #f1f5f9 !important;
+    border-color: #334155 !important;
+}
+
+/* Rodapé */
+html[data-tema="escuro"] .rodape {
+    background-color: #020617 !important;
+    color: #f1f5f9 !important;
+}
+
+html[data-tema="escuro"] .rodape *,
+html[data-tema="escuro"] .rodape p,
+html[data-tema="escuro"] .rodape span,
+html[data-tema="escuro"] .rodape a {
+    color: #cbd5e1 !important;
+}
+
+/* Modais */
+html[data-tema="escuro"] .modal,
+html[data-tema="escuro"] .modal-content,
+html[data-tema="escuro"] .modal__conteudo {
+    background-color: #1e293b !important;
+    color: #f1f5f9 !important;
+    border-color: #334155 !important;
+}
+
+/* Listas */
+html[data-tema="escuro"] li {
+    color: #f1f5f9 !important;
+}
+
+/* Mensagens */
+html[data-tema="escuro"] .mensagem,
+html[data-tema="escuro"] .alerta,
+html[data-tema="escuro"] .vazio {
+    color: #f1f5f9 !important;
+}
+
+/* Elementos com cores pretas aplicadas diretamente */
+html[data-tema="escuro"] [style*="color: black"],
+html[data-tema="escuro"] [style*="color:black"],
+html[data-tema="escuro"] [style*="color: #000"],
+html[data-tema="escuro"] [style*="color:#000"],
+html[data-tema="escuro"] [style*="color: #111"],
+html[data-tema="escuro"] [style*="color:#111"] {
+    color: #f1f5f9 !important;
+}
+
+/* SVGs que estejam herdando preto */
+html[data-tema="escuro"] svg {
+    color: currentColor;
+}
+
+/* Mantém textos de botões coloridos quando definidos pelo sistema */
+html[data-tema="escuro"] .btn-primary,
+html[data-tema="escuro"] .botao-principal {
+    color: #ffffff !important;
+}
