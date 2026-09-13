@@ -3,7 +3,7 @@
 // =============================================================
 
 import { supabase } from '../supabase.js';
-import { verificarLimite, registrarTentativa } from './rate-limit.service.js';
+import { verificarLimite, registrarTentativa } from './rate-limite.service.js';
 
 // -------------------------------------------------------------
 // Lista de senhas proibidas
@@ -41,35 +41,85 @@ const SENHAS_PROIBIDAS = [
 
 function ehSenhaComum(senha) {
   const s = senha.toLowerCase().trim();
+
   if (SENHAS_PROIBIDAS.indexOf(s) !== -1) return true;
+
   if (/^(.)\1+$/.test(s)) return true;
+
   if (/^(012|123|234|345|456|567|678|789|890)+/.test(s)) return true;
+
   if (/^(abc|bcd|cde|def|efg|fgh|ghi|hij|ijk|jkl)/.test(s)) return true;
+
   if (/^(qwerty|asdfgh|zxcvbn)/.test(s)) return true;
+
   return false;
 }
 
 // -------------------------------------------------------------
 // CADASTRO
 // -------------------------------------------------------------
-export async function cadastrar({ nome, email, telefone, whatsapp, senha }) {
-  // Validações
-  if (!nome || nome.trim().length < 3) throw new Error('Informe seu nome completo (mínimo 3 caracteres).');
-  if (!email || !validarEmail(email)) throw new Error('E-mail inválido.');
-  if (!senha || senha.length < 8) throw new Error('A senha deve ter pelo menos 8 caracteres.');
-  if (!/[A-Za-z]/.test(senha) || !/[0-9]/.test(senha)) throw new Error('A senha deve conter letras e números.');
-  if (ehSenhaComum(senha)) throw new Error('Esta senha é muito comum. Escolha uma diferente.');
+export async function cadastrar({
+  nome,
+  email,
+  telefone,
+  whatsapp,
+  senha
+}) {
 
-  // 🔐 Rate limiting
-  const rl = await verificarLimite('cadastro', email.toLowerCase());
-  if (!rl.permitido) {
-    const min = Math.ceil(rl.esperar_segundos / 60);
-    throw new Error(`Muitas tentativas de cadastro. Aguarde ${min} minuto${min > 1 ? 's' : ''}.`);
+  // Validações
+  if (!nome || nome.trim().length < 3) {
+    throw new Error(
+      'Informe seu nome completo (mínimo 3 caracteres).'
+    );
   }
 
+  if (!email || !validarEmail(email)) {
+    throw new Error('E-mail inválido.');
+  }
+
+  if (!senha || senha.length < 8) {
+    throw new Error(
+      'A senha deve ter pelo menos 8 caracteres.'
+    );
+  }
+
+  if (!/[A-Za-z]/.test(senha) || !/[0-9]/.test(senha)) {
+    throw new Error(
+      'A senha deve conter letras e números.'
+    );
+  }
+
+  if (ehSenhaComum(senha)) {
+    throw new Error(
+      'Esta senha é muito comum. Escolha uma diferente.'
+    );
+  }
+
+  // -----------------------------------------------------------
+  // RATE LIMITING
+  // -----------------------------------------------------------
+  const rl = await verificarLimite(
+    'cadastro',
+    email.toLowerCase()
+  );
+
+  if (!rl.permitido) {
+    const min = Math.ceil(
+      rl.esperar_segundos / 60
+    );
+
+    throw new Error(
+      `Muitas tentativas de cadastro. Aguarde ${min} minuto${min > 1 ? 's' : ''}.`
+    );
+  }
+
+  // -----------------------------------------------------------
+  // CRIA USUÁRIO NO SUPABASE AUTH
+  // -----------------------------------------------------------
   const { data, error } = await supabase.auth.signUp({
     email: email.trim().toLowerCase(),
     password: senha,
+
     options: {
       data: {
         nome: nome.trim(),
@@ -80,33 +130,70 @@ export async function cadastrar({ nome, email, telefone, whatsapp, senha }) {
   });
 
   // Registra tentativa (sucesso ou falha)
-  await registrarTentativa('cadastro', email.toLowerCase(), !error);
+  await registrarTentativa(
+    'cadastro',
+    email.toLowerCase(),
+    !error
+  );
 
-  if (error) throw traduzirErro(error);
+  if (error) {
+    throw traduzirErro(error);
+  }
+
   return data;
 }
 
 // -------------------------------------------------------------
 // LOGIN
 // -------------------------------------------------------------
-export async function entrar({ email, senha }) {
-  if (!email || !senha) throw new Error('Preencha e-mail e senha.');
+export async function entrar({
+  email,
+  senha
+}) {
 
-  // 🔐 Rate limiting (verifica por e-mail)
-  const rl = await verificarLimite('login', email.toLowerCase());
-  if (!rl.permitido) {
-    const min = Math.ceil(rl.esperar_segundos / 60);
-    throw new Error(`Muitas tentativas de login. Aguarde ${min} minuto${min > 1 ? 's' : ''}.`);
+  if (!email || !senha) {
+    throw new Error(
+      'Preencha e-mail e senha.'
+    );
   }
 
-  const { data, error } = await supabase.auth.signInWithPassword({
-    email: email.trim().toLowerCase(),
-    password: senha
-  });
+  // -----------------------------------------------------------
+  // RATE LIMITING
+  // -----------------------------------------------------------
+  const rl = await verificarLimite(
+    'login',
+    email.toLowerCase()
+  );
 
-  await registrarTentativa('login', email.toLowerCase(), !error);
+  if (!rl.permitido) {
+    const min = Math.ceil(
+      rl.esperar_segundos / 60
+    );
 
-  if (error) throw traduzirErro(error);
+    throw new Error(
+      `Muitas tentativas de login. Aguarde ${min} minuto${min > 1 ? 's' : ''}.`
+    );
+  }
+
+  // -----------------------------------------------------------
+  // LOGIN SUPABASE
+  // -----------------------------------------------------------
+  const { data, error } =
+    await supabase.auth.signInWithPassword({
+      email: email.trim().toLowerCase(),
+      password: senha
+    });
+
+  await registrarTentativa(
+    'login',
+    email.toLowerCase(),
+    !error
+  );
+
+  if (error) {
+    throw traduzirErro(error);
+  }
+
   return data;
 }
 
@@ -114,29 +201,59 @@ export async function entrar({ email, senha }) {
 // LOGOUT
 // -------------------------------------------------------------
 export async function sair() {
-  const { error } = await supabase.auth.signOut();
-  if (error) throw error;
+
+  const { error } =
+    await supabase.auth.signOut();
+
+  if (error) {
+    throw error;
+  }
 }
 
 // -------------------------------------------------------------
 // SESSÃO
 // -------------------------------------------------------------
 export async function sessaoAtual() {
-  const { data: { session } } = await supabase.auth.getSession();
+
+  const {
+    data: { session }
+  } = await supabase.auth.getSession();
+
   return session;
 }
 
 export async function usuarioAtual() {
-  const { data: { user } } = await supabase.auth.getUser();
+
+  const {
+    data: { user }
+  } = await supabase.auth.getUser();
+
   return user;
 }
 
 export async function perfilAtual() {
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return null;
-  const { data, error } = await supabase
-    .from('profiles').select('*').eq('id', user.id).maybeSingle();
-  if (error) return null;
+
+  const {
+    data: { user }
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return null;
+  }
+
+  const {
+    data,
+    error
+  } = await supabase
+    .from('profiles')
+    .select('*')
+    .eq('id', user.id)
+    .maybeSingle();
+
+  if (error) {
+    return null;
+  }
+
   return data;
 }
 
@@ -144,77 +261,231 @@ export async function perfilAtual() {
 // ATUALIZAR PERFIL
 // -------------------------------------------------------------
 export async function atualizarPerfil(dados) {
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) throw new Error('Usuário não autenticado.');
 
-  const { error } = await supabase
-    .from('profiles')
-    .update({
-      nome: dados.nome ? dados.nome.trim() : null,
-      telefone: dados.telefone ? dados.telefone.trim() : null,
-      whatsapp: dados.whatsapp ? dados.whatsapp.trim() : null
-    })
-    .eq('id', user.id);
+  const {
+    data: { user }
+  } = await supabase.auth.getUser();
 
-  if (error) throw error;
+  if (!user) {
+    throw new Error(
+      'Usuário não autenticado.'
+    );
+  }
+
+  const { error } =
+    await supabase
+      .from('profiles')
+      .update({
+        nome: dados.nome
+          ? dados.nome.trim()
+          : null,
+
+        telefone: dados.telefone
+          ? dados.telefone.trim()
+          : null,
+
+        whatsapp: dados.whatsapp
+          ? dados.whatsapp.trim()
+          : null
+      })
+      .eq('id', user.id);
+
+  if (error) {
+    throw error;
+  }
 }
 
 // -------------------------------------------------------------
 // RECUPERAÇÃO DE SENHA
 // -------------------------------------------------------------
 export async function enviarEmailRecuperacao(email) {
-  if (!email || !validarEmail(email)) throw new Error('E-mail inválido.');
 
-  // 🔐 Rate limiting
-  const rl = await verificarLimite('recuperar', email.toLowerCase());
-  if (!rl.permitido) {
-    const min = Math.ceil(rl.esperar_segundos / 60);
-    throw new Error(`Muitas solicitações. Aguarde ${min} minuto${min > 1 ? 's' : ''}.`);
+  if (!email || !validarEmail(email)) {
+    throw new Error(
+      'E-mail inválido.'
+    );
   }
 
-  const redirectTo = window.location.origin + window.location.pathname.replace('recuperar-senha.html', 'perfil.html');
-  const { error } = await supabase.auth.resetPasswordForEmail(email.trim().toLowerCase(), { redirectTo });
+  // -----------------------------------------------------------
+  // RATE LIMITING
+  // -----------------------------------------------------------
+  const rl = await verificarLimite(
+    'recuperar',
+    email.toLowerCase()
+  );
 
-  await registrarTentativa('recuperar', email.toLowerCase(), !error);
+  if (!rl.permitido) {
 
-  if (error) throw traduzirErro(error);
+    const min = Math.ceil(
+      rl.esperar_segundos / 60
+    );
+
+    throw new Error(
+      `Muitas solicitações. Aguarde ${min} minuto${min > 1 ? 's' : ''}.`
+    );
+  }
+
+  const redirectTo =
+    window.location.origin +
+    window.location.pathname.replace(
+      'recuperar-senha.html',
+      'perfil.html'
+    );
+
+  const { error } =
+    await supabase.auth.resetPasswordForEmail(
+      email.trim().toLowerCase(),
+      {
+        redirectTo
+      }
+    );
+
+  await registrarTentativa(
+    'recuperar',
+    email.toLowerCase(),
+    !error
+  );
+
+  if (error) {
+    throw traduzirErro(error);
+  }
 }
 
 // -------------------------------------------------------------
 // ALTERAR SENHA
 // -------------------------------------------------------------
 export async function alterarSenha(novaSenha) {
-  if (!novaSenha || novaSenha.length < 8) throw new Error('A nova senha deve ter pelo menos 8 caracteres.');
-  if (!/[A-Za-z]/.test(novaSenha) || !/[0-9]/.test(novaSenha)) throw new Error('A nova senha deve conter letras e números.');
-  if (ehSenhaComum(novaSenha)) throw new Error('Esta senha é muito comum. Escolha uma diferente.');
 
-  const { error } = await supabase.auth.updateUser({ password: novaSenha });
-  if (error) throw traduzirErro(error);
+  if (!novaSenha || novaSenha.length < 8) {
+    throw new Error(
+      'A nova senha deve ter pelo menos 8 caracteres.'
+    );
+  }
+
+  if (
+    !/[A-Za-z]/.test(novaSenha) ||
+    !/[0-9]/.test(novaSenha)
+  ) {
+    throw new Error(
+      'A nova senha deve conter letras e números.'
+    );
+  }
+
+  if (ehSenhaComum(novaSenha)) {
+    throw new Error(
+      'Esta senha é muito comum. Escolha uma diferente.'
+    );
+  }
+
+  const { error } =
+    await supabase.auth.updateUser({
+      password: novaSenha
+    });
+
+  if (error) {
+    throw traduzirErro(error);
+  }
 }
 
 // -------------------------------------------------------------
 // É ADMIN?
 // -------------------------------------------------------------
 export async function ehAdmin() {
+
   const perfil = await perfilAtual();
-  return perfil && perfil.role === 'admin';
+
+  return perfil &&
+    perfil.role === 'admin';
 }
 
 // -------------------------------------------------------------
 // HELPERS
 // -------------------------------------------------------------
 function validarEmail(email) {
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(
+    email
+  );
 }
 
 function traduzirErro(err) {
-  const msg = (err && err.message ? err.message : '').toLowerCase();
-  if (msg.includes('invalid login credentials')) return new Error('E-mail ou senha incorretos.');
-  if (msg.includes('email not confirmed')) return new Error('Confirme seu e-mail antes de entrar.');
-  if (msg.includes('user already registered')) return new Error('Este e-mail já está cadastrado. Faça login.');
-  if (msg.includes('password should be at least')) return new Error('A senha deve ter pelo menos 8 caracteres.');
-  if (msg.includes('unable to validate email')) return new Error('E-mail inválido.');
-  if (msg.includes('rate limit')) return new Error('Muitas tentativas. Aguarde alguns minutos.');
-  if (msg.includes('network')) return new Error('Falha de conexão. Verifique sua internet.');
+
+  const msg = (
+    err &&
+    err.message
+      ? err.message
+      : ''
+  ).toLowerCase();
+
+  if (
+    msg.includes(
+      'invalid login credentials'
+    )
+  ) {
+    return new Error(
+      'E-mail ou senha incorretos.'
+    );
+  }
+
+  if (
+    msg.includes(
+      'email not confirmed'
+    )
+  ) {
+    return new Error(
+      'Confirme seu e-mail antes de entrar.'
+    );
+  }
+
+  if (
+    msg.includes(
+      'user already registered'
+    )
+  ) {
+    return new Error(
+      'Este e-mail já está cadastrado. Faça login.'
+    );
+  }
+
+  if (
+    msg.includes(
+      'password should be at least'
+    )
+  ) {
+    return new Error(
+      'A senha deve ter pelo menos 8 caracteres.'
+    );
+  }
+
+  if (
+    msg.includes(
+      'unable to validate email'
+    )
+  ) {
+    return new Error(
+      'E-mail inválido.'
+    );
+  }
+
+  if (
+    msg.includes(
+      'rate limit'
+    )
+  ) {
+    return new Error(
+      'Muitas tentativas. Aguarde alguns minutos.'
+    );
+  }
+
+  if (
+    msg.includes(
+      'network'
+    )
+  ) {
+    return new Error(
+      'Falha de conexão. Verifique sua internet.'
+    );
+  }
+
   return err;
 }
