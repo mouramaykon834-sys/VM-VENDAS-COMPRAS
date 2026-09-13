@@ -64,6 +64,7 @@
       font-size: 14px;
       font-family: inherit;
       outline: none;
+      box-sizing: border-box;
     }
 
     .campo input:focus,
@@ -168,10 +169,6 @@
       color: #334155;
     }
 
-    .registro-acao {
-      text-align: left;
-    }
-
     .badge {
       display: inline-flex;
       align-items: center;
@@ -211,62 +208,28 @@
       display: block;
     }
 
-    .detalhes-grid {
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-      gap: 16px;
+    .detalhes-titulo {
+      font-size: 13px;
+      font-weight: 800;
+      color: #334155;
+      margin-bottom: 10px;
     }
 
-    .detalhe-card {
+    .alteracoes {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .alteracao {
       background: #fff;
       border: 1px solid #e2e8f0;
       border-radius: 10px;
       overflow: hidden;
     }
 
-    .detalhe-card-titulo {
-      padding: 10px 12px;
-      border-bottom: 1px solid #e2e8f0;
-      font-size: 12px;
-      font-weight: 800;
-      color: #475569;
-      background: #f8fafc;
-    }
-
-    .detalhe-card pre {
-      margin: 0;
-      padding: 12px;
-      max-height: 350px;
-      overflow: auto;
-      white-space: pre-wrap;
-      word-break: break-word;
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-      font-size: 11px;
-      line-height: 1.5;
-      color: #334155;
-    }
-
-    .alteracoes {
-      margin-top: 16px;
-    }
-
-    .alteracoes-titulo {
-      font-size: 13px;
-      font-weight: 800;
-      color: #334155;
-      margin-bottom: 8px;
-    }
-
-    .alteracao {
-      background: #fff;
-      border: 1px solid #e2e8f0;
-      border-radius: 9px;
-      margin-bottom: 7px;
-      overflow: hidden;
-    }
-
     .alteracao-campo {
-      padding: 8px 10px;
+      padding: 10px 12px;
       background: #f8fafc;
       border-bottom: 1px solid #e2e8f0;
       font-size: 12px;
@@ -280,7 +243,7 @@
     }
 
     .valor {
-      padding: 9px 10px;
+      padding: 12px;
       min-width: 0;
     }
 
@@ -290,18 +253,38 @@
 
     .valor small {
       display: block;
-      margin-bottom: 4px;
-      color: #94a3b8;
+      margin-bottom: 6px;
       font-size: 10px;
       text-transform: uppercase;
       font-weight: 800;
+      color: #94a3b8;
     }
 
-    .valor pre {
-      padding: 0;
-      max-height: none;
-      overflow: visible;
-      background: transparent;
+    .valor.antes {
+      background: #fffafa;
+    }
+
+    .valor.depois {
+      background: #fafffc;
+    }
+
+    .valor-conteudo {
+      color: #334155;
+      font-size: 13px;
+      line-height: 1.5;
+      word-break: break-word;
+    }
+
+    .valor-vazio {
+      color: #94a3b8;
+      font-style: italic;
+    }
+
+    .mudanca {
+      display: inline-block;
+      margin: 0 5px;
+      color: #94a3b8;
+      font-weight: 700;
     }
 
     .observacao {
@@ -338,8 +321,58 @@
       color: #475569;
     }
 
+    .dados-completos {
+      margin-top: 16px;
+      border-top: 1px dashed #cbd5e1;
+      padding-top: 12px;
+    }
+
+    .dados-completos summary {
+      cursor: pointer;
+      color: #64748b;
+      font-size: 11px;
+      font-weight: 700;
+      user-select: none;
+    }
+
+    .dados-json {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 10px;
+    }
+
+    .json-card {
+      background: #fff;
+      border: 1px solid #e2e8f0;
+      border-radius: 9px;
+      overflow: hidden;
+    }
+
+    .json-titulo {
+      padding: 9px 11px;
+      background: #f8fafc;
+      border-bottom: 1px solid #e2e8f0;
+      font-size: 11px;
+      font-weight: 800;
+      color: #64748b;
+    }
+
+    .json-card pre {
+      margin: 0;
+      padding: 11px;
+      max-height: 300px;
+      overflow: auto;
+      white-space: pre-wrap;
+      word-break: break-word;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 10px;
+      line-height: 1.5;
+      color: #475569;
+    }
+
     .sem-dados {
-      padding: 16px;
+      padding: 14px;
       background: #fff;
       border: 1px solid #e2e8f0;
       border-radius: 9px;
@@ -348,9 +381,9 @@
     }
 
     .vazio {
-      background: #fff;
       padding: 60px 24px;
       text-align: center;
+      background: #fff;
       border-radius: 12px;
       border: 1px solid #e2e8f0;
       color: #64748b;
@@ -395,13 +428,8 @@
         grid-template-columns: 1fr 1fr 30px;
       }
 
-      .registro-data,
-      .registro-tabela,
-      .registro-acao {
-        grid-column: auto;
-      }
-
-      .detalhes-grid {
+      .detalhes-grid,
+      .dados-json {
         grid-template-columns: 1fr;
       }
     }
@@ -438,6 +466,11 @@
       .valor + .valor {
         border-left: 0;
         border-top: 1px solid #e2e8f0;
+      }
+
+      .resultado-info {
+        flex-direction: column;
+        align-items: flex-start;
       }
     }
   </style>
@@ -546,6 +579,7 @@
   <script type="module">
 
     import { renderAdminMenu } from '../assets/js/components/admin-menu.js';
+
     import {
       listarLogs,
       rotuloAcao,
@@ -562,10 +596,18 @@
       pagina: 1
     };
 
+    /*
+     * ============================================================
+     * SEGURANÇA
+     * ============================================================
+     */
+
     function esc(valor) {
+
       if (valor == null) return '';
 
       return String(valor).replace(/[&<>"']/g, function(m) {
+
         return {
           '&': '&amp;',
           '<': '&lt;',
@@ -573,10 +615,228 @@
           '"': '&quot;',
           "'": '&#39;'
         }[m];
+
+      });
+
+    }
+
+    /*
+     * ============================================================
+     * NOMES AMIGÁVEIS
+     * ============================================================
+     */
+
+    const NOMES_CAMPOS = {
+
+      id: 'ID',
+
+      nome: 'Nome',
+      name: 'Nome',
+
+      descricao: 'Descrição',
+      description: 'Descrição',
+
+      preco: 'Preço',
+      price: 'Preço',
+
+      preco_venda: 'Preço de venda',
+      preco_custo: 'Preço de custo',
+
+      estoque: 'Estoque',
+      quantidade: 'Quantidade',
+
+      estoque_minimo: 'Estoque mínimo',
+
+      categoria: 'Categoria',
+      categoria_id: 'Categoria',
+
+      category: 'Categoria',
+      category_id: 'Categoria',
+
+      status: 'Status',
+
+      ativo: 'Ativo',
+      ativo: 'Ativo',
+
+      imagem: 'Imagem',
+      imagem_url: 'Imagem',
+
+      telefone: 'Telefone',
+      celular: 'Celular',
+
+      email: 'E-mail',
+
+      endereco: 'Endereço',
+      numero: 'Número',
+      bairro: 'Bairro',
+      cidade: 'Cidade',
+      estado: 'Estado',
+      cep: 'CEP',
+
+      cpf: 'CPF',
+      cnpj: 'CNPJ',
+
+      unidade: 'Unidade',
+
+      observacao: 'Observação',
+      observacoes: 'Observações',
+
+      forma_pagamento: 'Forma de pagamento',
+      metodo_pagamento: 'Método de pagamento',
+
+      parcelas: 'Parcelas',
+
+      subtotal: 'Subtotal',
+      total: 'Total',
+      frete: 'Frete',
+      desconto: 'Desconto',
+
+      created_at: 'Data de criação',
+      updated_at: 'Última atualização',
+
+      user_id: 'Usuário',
+      user_email: 'E-mail do usuário',
+      user_role: 'Perfil do usuário',
+
+      produto_id: 'Produto',
+      product_id: 'Produto',
+
+      pedido_id: 'Pedido',
+      order_id: 'Pedido'
+    };
+
+    function nomeCampo(campo) {
+
+      if (NOMES_CAMPOS[campo]) {
+        return NOMES_CAMPOS[campo];
+      }
+
+      return String(campo)
+        .replace(/_/g, ' ')
+        .replace(/\b\w/g, function(letra) {
+          return letra.toUpperCase();
+        });
+    }
+
+    /*
+     * ============================================================
+     * FORMATAÇÃO DE VALORES
+     * ============================================================
+     */
+
+    const CAMPOS_MONETARIOS = new Set([
+      'preco',
+      'price',
+      'preco_venda',
+      'preco_custo',
+      'subtotal',
+      'total',
+      'frete',
+      'desconto',
+      'valor'
+    ]);
+
+    const CAMPOS_DATA = new Set([
+      'created_at',
+      'updated_at',
+      'data',
+      'data_inicio',
+      'data_fim'
+    ]);
+
+    function formatarNumero(valor) {
+
+      const numero = Number(valor);
+
+      if (!Number.isFinite(numero)) {
+        return esc(valor);
+      }
+
+      return numero.toLocaleString('pt-BR', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
       });
     }
 
+    function formatarDataValor(valor) {
+
+      if (!valor) return '—';
+
+      const data = new Date(valor);
+
+      if (Number.isNaN(data.getTime())) {
+        return esc(valor);
+      }
+
+      return data.toLocaleString('pt-BR');
+    }
+
+    function formatarValor(valor, campo = '') {
+
+      if (valor === undefined || valor === null || valor === '') {
+
+        return '<span class="valor-vazio">Não informado</span>';
+
+      }
+
+      if (
+        CAMPOS_MONETARIOS.has(campo) &&
+        typeof valor !== 'object'
+      ) {
+
+        return `R$ ${formatarNumero(valor)}`;
+
+      }
+
+      if (
+        CAMPOS_DATA.has(campo) &&
+        typeof valor === 'string'
+      ) {
+
+        return formatarDataValor(valor);
+
+      }
+
+      if (typeof valor === 'boolean') {
+
+        return valor ? 'Sim' : 'Não';
+
+      }
+
+      if (typeof valor === 'number') {
+
+        return esc(
+          valor.toLocaleString('pt-BR')
+        );
+
+      }
+
+      if (typeof valor === 'object') {
+
+        try {
+
+          return `
+            <pre style="
+              margin:0;
+              white-space:pre-wrap;
+              font-family:inherit;
+              font-size:12px;
+            ">${esc(JSON.stringify(valor, null, 2))}</pre>
+          `;
+
+        } catch {
+
+          return esc(String(valor));
+
+        }
+
+      }
+
+      return esc(valor);
+    }
+
     function formatarData(data) {
+
       if (!data) return '—';
 
       const d = new Date(data);
@@ -591,44 +851,39 @@
       });
     }
 
-    function formatarValor(valor) {
-
-      if (valor === undefined) {
-        return '—';
-      }
-
-      if (valor === null) {
-        return 'null';
-      }
-
-      if (typeof valor === 'object') {
-        try {
-          return JSON.stringify(valor, null, 2);
-        } catch {
-          return String(valor);
-        }
-      }
-
-      return String(valor);
-    }
-
-    function valorCurto(valor) {
-      const texto = formatarValor(valor);
-
-      if (texto.length > 180) {
-        return texto.substring(0, 180) + '…';
-      }
-
-      return texto;
-    }
+    /*
+     * ============================================================
+     * COMPARAÇÃO
+     * ============================================================
+     */
 
     function normalizarObjeto(valor) {
 
-      if (!valor || typeof valor !== 'object') {
+      if (
+        !valor ||
+        typeof valor !== 'object' ||
+        Array.isArray(valor)
+      ) {
+
         return {};
+
       }
 
       return valor;
+    }
+
+    function valoresIguais(a, b) {
+
+      try {
+
+        return JSON.stringify(a) === JSON.stringify(b);
+
+      } catch {
+
+        return String(a) === String(b);
+
+      }
+
     }
 
     function obterAlteracoes(antes, depois) {
@@ -648,47 +903,61 @@
         const valorAntes = a[campo];
         const valorDepois = d[campo];
 
-        const antesTexto = formatarValor(valorAntes);
-        const depoisTexto = formatarValor(valorDepois);
+        if (!valoresIguais(valorAntes, valorDepois)) {
 
-        if (antesTexto !== depoisTexto) {
           alteracoes.push({
             campo,
             antes: valorAntes,
             depois: valorDepois
           });
+
         }
 
       });
 
       return alteracoes.sort(function(x, y) {
-        return x.campo.localeCompare(y.campo);
+
+        return nomeCampo(x.campo)
+          .localeCompare(nomeCampo(y.campo));
+
       });
+
     }
+
+    /*
+     * ============================================================
+     * ALTERAÇÕES DE EDIÇÃO
+     * ============================================================
+     */
 
     function montarAlteracoes(log) {
 
       if (log.acao === 'editado') {
 
-        const alteracoes = obterAlteracoes(
-          log.dados_antes,
-          log.dados_depois
-        );
+        const alteracoes =
+          obterAlteracoes(
+            log.dados_antes,
+            log.dados_depois
+          );
 
         if (!alteracoes.length) {
+
           return `
             <div class="sem-dados">
-              Não foram encontradas diferenças entre os dados anteriores
-              e posteriores deste registro.
+              Não foram encontradas diferenças entre os dados
+              anteriores e posteriores deste registro.
             </div>
           `;
+
         }
 
         return `
+          <div class="detalhes-titulo">
+            Alterações realizadas
+            (${alteracoes.length})
+          </div>
+
           <div class="alteracoes">
-            <div class="alteracoes-titulo">
-              Alterações realizadas (${alteracoes.length})
-            </div>
 
             ${alteracoes.map(function(item) {
 
@@ -696,19 +965,35 @@
                 <div class="alteracao">
 
                   <div class="alteracao-campo">
-                    ${esc(item.campo)}
+                    ${esc(nomeCampo(item.campo))}
                   </div>
 
                   <div class="alteracao-valores">
 
-                    <div class="valor">
+                    <div class="valor antes">
+
                       <small>Antes</small>
-                      <pre>${esc(valorCurto(item.antes))}</pre>
+
+                      <div class="valor-conteudo">
+                        ${formatarValor(
+                          item.antes,
+                          item.campo
+                        )}
+                      </div>
+
                     </div>
 
-                    <div class="valor">
+                    <div class="valor depois">
+
                       <small>Depois</small>
-                      <pre>${esc(valorCurto(item.depois))}</pre>
+
+                      <div class="valor-conteudo">
+                        ${formatarValor(
+                          item.depois,
+                          item.campo
+                        )}
+                      </div>
+
                     </div>
 
                   </div>
@@ -722,43 +1007,212 @@
         `;
       }
 
+      /*
+       * ==========================================================
+       * CRIAÇÃO
+       * ==========================================================
+       */
+
       if (log.acao === 'criado') {
 
-        return `
-          <div class="alteracoes">
-            <div class="alteracoes-titulo">
-              Dados registrados
-            </div>
+        const dados =
+          normalizarObjeto(log.dados_depois);
 
-            <div class="detalhe-card">
-              <pre>${esc(formatarValor(log.dados_depois))}</pre>
+        const campos =
+          Object.keys(dados);
+
+        if (!campos.length) {
+
+          return `
+            <div class="sem-dados">
+              Não há detalhes adicionais disponíveis para este registro.
             </div>
+          `;
+
+        }
+
+        return `
+          <div class="detalhes-titulo">
+            Dados registrados
+          </div>
+
+          <div class="alteracoes">
+
+            ${campos.map(function(campo) {
+
+              return `
+                <div class="alteracao">
+
+                  <div class="alteracao-campo">
+                    ${esc(nomeCampo(campo))}
+                  </div>
+
+                  <div class="valor depois">
+                    <div class="valor-conteudo">
+                      ${formatarValor(
+                        dados[campo],
+                        campo
+                      )}
+                    </div>
+                  </div>
+
+                </div>
+              `;
+
+            }).join('')}
+
           </div>
         `;
       }
+
+      /*
+       * ==========================================================
+       * EXCLUSÃO
+       * ==========================================================
+       */
 
       if (log.acao === 'excluido') {
 
-        return `
-          <div class="alteracoes">
-            <div class="alteracoes-titulo">
-              Dados antes da exclusão
-            </div>
+        const dados =
+          normalizarObjeto(log.dados_antes);
 
-            <div class="detalhe-card">
-              <pre>${esc(formatarValor(log.dados_antes))}</pre>
+        const campos =
+          Object.keys(dados);
+
+        if (!campos.length) {
+
+          return `
+            <div class="sem-dados">
+              Não há detalhes adicionais disponíveis para este registro.
             </div>
+          `;
+
+        }
+
+        return `
+          <div class="detalhes-titulo">
+            Dados antes da exclusão
+          </div>
+
+          <div class="alteracoes">
+
+            ${campos.map(function(campo) {
+
+              return `
+                <div class="alteracao">
+
+                  <div class="alteracao-campo">
+                    ${esc(nomeCampo(campo))}
+                  </div>
+
+                  <div class="valor antes">
+                    <div class="valor-conteudo">
+                      ${formatarValor(
+                        dados[campo],
+                        campo
+                      )}
+                    </div>
+                  </div>
+
+                </div>
+              `;
+
+            }).join('')}
+
           </div>
         `;
       }
 
-      return '';
+      return `
+        <div class="sem-dados">
+          Nenhum detalhe disponível para esta ação.
+        </div>
+      `;
     }
 
-    function montarDetalhes(log) {
+    /*
+     * ============================================================
+     * DADOS COMPLETOS
+     * ============================================================
+     */
 
-      const antes = log.dados_antes;
-      const depois = log.dados_depois;
+    function montarDadosCompletos(log) {
+
+      if (
+        !log.dados_antes &&
+        !log.dados_depois
+      ) {
+
+        return '';
+
+      }
+
+      return `
+        <details class="dados-completos">
+
+          <summary>
+            Ver dados completos em formato técnico
+          </summary>
+
+          <div class="dados-json">
+
+            ${
+              log.dados_antes
+                ? `
+                  <div class="json-card">
+
+                    <div class="json-titulo">
+                      DADOS ANTES
+                    </div>
+
+                    <pre>${esc(
+                      JSON.stringify(
+                        log.dados_antes,
+                        null,
+                        2
+                      )
+                    )}</pre>
+
+                  </div>
+                `
+                : ''
+            }
+
+            ${
+              log.dados_depois
+                ? `
+                  <div class="json-card">
+
+                    <div class="json-titulo">
+                      DADOS DEPOIS
+                    </div>
+
+                    <pre>${esc(
+                      JSON.stringify(
+                        log.dados_depois,
+                        null,
+                        2
+                      )
+                    )}</pre>
+
+                  </div>
+                `
+                : ''
+            }
+
+          </div>
+
+        </details>
+      `;
+    }
+
+    /*
+     * ============================================================
+     * DETALHES
+     * ============================================================
+     */
+
+    function montarDetalhes(log) {
 
       return `
         <div class="registro-detalhes">
@@ -769,8 +1223,13 @@
             log.observacao
               ? `
                 <div class="observacao">
+
                   <strong>Observação</strong>
-                  <span>${esc(log.observacao)}</span>
+
+                  <span>
+                    ${esc(log.observacao)}
+                  </span>
+
                 </div>
               `
               : ''
@@ -805,42 +1264,27 @@
 
           </div>
 
-          ${
-            log.acao === 'editado'
-              ? `
-                <div class="detalhes-grid" style="margin-top:16px;">
-
-                  <div class="detalhe-card">
-                    <div class="detalhe-card-titulo">
-                      DADOS ANTES
-                    </div>
-
-                    <pre>${esc(formatarValor(antes))}</pre>
-                  </div>
-
-                  <div class="detalhe-card">
-                    <div class="detalhe-card-titulo">
-                      DADOS DEPOIS
-                    </div>
-
-                    <pre>${esc(formatarValor(depois))}</pre>
-                  </div>
-
-                </div>
-              `
-              : ''
-          }
+          ${montarDadosCompletos(log)}
 
         </div>
       `;
     }
+
+    /*
+     * ============================================================
+     * REGISTRO
+     * ============================================================
+     */
 
     function montarRegistro(log, index) {
 
       const cor = corAcao(log.acao);
 
       return `
-        <article class="registro" data-index="${index}">
+        <article
+          class="registro"
+          data-index="${index}"
+        >
 
           <div
             class="registro-cabecalho"
@@ -854,13 +1298,18 @@
             </div>
 
             <div class="registro-usuario">
+
               <strong>
-                ${esc(log.user_email || 'Usuário não identificado')}
+                ${esc(
+                  log.user_email ||
+                  'Usuário não identificado'
+                )}
               </strong>
 
               <small>
                 ${esc(log.user_role || '—')}
               </small>
+
             </div>
 
             <div class="registro-tabela">
@@ -882,9 +1331,16 @@
             </div>
 
             <div class="registro-id">
-              <code title="${esc(log.registro_id || '')}">
-                ${esc((log.registro_id || '—').substring(0, 12))}
+
+              <code
+                title="${esc(log.registro_id || '')}"
+              >
+                ${esc(
+                  (log.registro_id || '—')
+                    .substring(0, 12)
+                )}
               </code>
+
             </div>
 
             <div class="seta">
@@ -899,50 +1355,89 @@
       `;
     }
 
+    /*
+     * ============================================================
+     * ABRIR / FECHAR
+     * ============================================================
+     */
+
     function ativarRegistros() {
 
-      document.querySelectorAll('.registro').forEach(function(registro) {
+      document
+        .querySelectorAll('.registro')
+        .forEach(function(registro) {
 
-        const cabecalho =
-          registro.querySelector('.registro-cabecalho');
+          const cabecalho =
+            registro.querySelector(
+              '.registro-cabecalho'
+            );
 
-        function alternar() {
+          function alternar() {
 
-          const aberto =
-            registro.classList.toggle('aberto');
+            const aberto =
+              registro.classList.toggle(
+                'aberto'
+              );
 
-          cabecalho.setAttribute(
-            'aria-expanded',
-            aberto ? 'true' : 'false'
-          );
-        }
+            cabecalho.setAttribute(
+              'aria-expanded',
+              aberto ? 'true' : 'false'
+            );
 
-        cabecalho.addEventListener('click', alternar);
-
-        cabecalho.addEventListener('keydown', function(e) {
-
-          if (e.key === 'Enter' || e.key === ' ') {
-            e.preventDefault();
-            alternar();
           }
+
+          cabecalho.addEventListener(
+            'click',
+            alternar
+          );
+
+          cabecalho.addEventListener(
+            'keydown',
+            function(e) {
+
+              if (
+                e.key === 'Enter' ||
+                e.key === ' '
+              ) {
+
+                e.preventDefault();
+                alternar();
+
+              }
+
+            }
+          );
 
         });
 
-      });
-
     }
+
+    /*
+     * ============================================================
+     * ACESSO
+     * ============================================================
+     */
 
     async function verificarAcesso() {
 
       const { supabase } =
-        await import('../assets/js/supabase.js');
+        await import(
+          '../assets/js/supabase.js'
+        );
 
       const sessao =
         await supabase.auth.getSession();
 
-      if (!sessao.data || !sessao.data.session) {
-        location.href = '../login.html';
+      if (
+        !sessao.data ||
+        !sessao.data.session
+      ) {
+
+        location.href =
+          '../login.html';
+
         return false;
+
       }
 
       const usuario =
@@ -955,7 +1450,10 @@
           .eq('id', usuario.id)
           .maybeSingle();
 
-      if (!perfil.data || perfil.data.role !== 'admin') {
+      if (
+        !perfil.data ||
+        perfil.data.role !== 'admin'
+      ) {
 
         el.innerHTML = `
           <div class="erro">
@@ -968,6 +1466,12 @@
 
       return true;
     }
+
+    /*
+     * ============================================================
+     * CARREGAR
+     * ============================================================
+     */
 
     async function carregar() {
 
@@ -994,10 +1498,13 @@
           el.innerHTML = `
             <div class="vazio">
 
-              <strong>Nenhum registro encontrado</strong>
+              <strong>
+                Nenhum registro encontrado
+              </strong>
 
               <p>
-                Nenhuma ação foi encontrada com os filtros selecionados.
+                Nenhuma ação foi encontrada
+                com os filtros selecionados.
               </p>
 
             </div>
@@ -1008,18 +1515,22 @@
 
         info.innerHTML = `
           <span>
-            ${resultado.total} registro(s) encontrado(s)
+            ${resultado.total}
+            registro(s) encontrado(s)
           </span>
 
           <span>
-            Página ${resultado.pagina} de ${resultado.totalPaginas}
+            Página ${resultado.pagina}
+            de ${resultado.totalPaginas}
           </span>
         `;
 
         el.innerHTML = `
           <div class="auditoria-lista">
 
-            ${resultado.logs.map(montarRegistro).join('')}
+            ${resultado.logs
+              .map(montarRegistro)
+              .join('')}
 
           </div>
         `;
@@ -1030,20 +1541,34 @@
 
       } catch (erro) {
 
-        console.error('[auditoria]', erro);
+        console.error(
+          '[auditoria]',
+          erro
+        );
 
         el.innerHTML = `
           <div class="erro">
             Erro ao carregar auditoria:
-            ${esc(erro.message || erro)}
+            ${esc(
+              erro.message || erro
+            )}
           </div>
         `;
       }
     }
 
+    /*
+     * ============================================================
+     * PAGINAÇÃO
+     * ============================================================
+     */
+
     function montarPaginacao(resultado) {
 
-      if (resultado.totalPaginas <= 1) {
+      if (
+        resultado.totalPaginas <= 1
+      ) {
+
         return;
       }
 
@@ -1059,10 +1584,14 @@
             ← Anterior
           </button>
         `;
+
       }
 
       const inicio =
-        Math.max(1, resultado.pagina - 2);
+        Math.max(
+          1,
+          resultado.pagina - 2
+        );
 
       const fim =
         Math.min(
@@ -1070,19 +1599,31 @@
           resultado.pagina + 2
         );
 
-      for (let i = inicio; i <= fim; i++) {
+      for (
+        let i = inicio;
+        i <= fim;
+        i++
+      ) {
 
         html += `
           <button
-            class="btn ${i === resultado.pagina ? '' : 'btn-secundario'}"
+            class="btn ${
+              i === resultado.pagina
+                ? ''
+                : 'btn-secundario'
+            }"
             data-p="${i}"
           >
             ${i}
           </button>
         `;
+
       }
 
-      if (resultado.pagina < resultado.totalPaginas) {
+      if (
+        resultado.pagina <
+        resultado.totalPaginas
+      ) {
 
         html += `
           <button
@@ -1092,91 +1633,129 @@
             Próxima →
           </button>
         `;
+
       }
 
       pag.innerHTML = html;
 
-      pag.querySelectorAll('[data-p]').forEach(function(botao) {
+      pag
+        .querySelectorAll('[data-p]')
+        .forEach(function(botao) {
 
-        botao.addEventListener('click', function() {
+          botao.addEventListener(
+            'click',
+            function() {
 
-          estado.pagina =
-            Number(botao.dataset.p);
+              estado.pagina =
+                Number(
+                  botao.dataset.p
+                );
 
-          carregar();
+              carregar();
 
-          window.scrollTo({
-            top: 0,
-            behavior: 'smooth'
-          });
+              window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+              });
+
+            }
+          );
 
         });
 
-      });
-
     }
+
+    /*
+     * ============================================================
+     * FILTROS
+     * ============================================================
+     */
 
     document
       .getElementById('form-filtros')
-      .addEventListener('submit', function(e) {
+      .addEventListener(
+        'submit',
+        function(e) {
 
-        e.preventDefault();
+          e.preventDefault();
 
-        const f = e.target;
+          const f = e.target;
 
-        estado.filtros = {};
+          estado.filtros = {};
 
-        if (f.usuario.value.trim()) {
-          estado.filtros.usuario =
-            f.usuario.value.trim();
+          if (f.usuario.value.trim()) {
+
+            estado.filtros.usuario =
+              f.usuario.value.trim();
+
+          }
+
+          if (f.tabela.value) {
+
+            estado.filtros.tabela =
+              f.tabela.value;
+
+          }
+
+          if (f.acao.value) {
+
+            estado.filtros.acao =
+              f.acao.value;
+
+          }
+
+          if (f.dataInicio.value) {
+
+            estado.filtros.dataInicio =
+              f.dataInicio.value;
+
+          }
+
+          if (f.dataFim.value) {
+
+            estado.filtros.dataFim =
+              f.dataFim.value;
+
+          }
+
+          estado.pagina = 1;
+
+          carregar();
+
         }
-
-        if (f.tabela.value) {
-          estado.filtros.tabela =
-            f.tabela.value;
-        }
-
-        if (f.acao.value) {
-          estado.filtros.acao =
-            f.acao.value;
-        }
-
-        if (f.dataInicio.value) {
-          estado.filtros.dataInicio =
-            f.dataInicio.value;
-        }
-
-        if (f.dataFim.value) {
-          estado.filtros.dataFim =
-            f.dataFim.value;
-        }
-
-        estado.pagina = 1;
-
-        carregar();
-
-      });
+      );
 
     document
       .getElementById('btn-limpar')
-      .addEventListener('click', function() {
+      .addEventListener(
+        'click',
+        function() {
 
-        document
-          .getElementById('form-filtros')
-          .reset();
+          document
+            .getElementById('form-filtros')
+            .reset();
 
-        estado.filtros = {};
-        estado.pagina = 1;
+          estado.filtros = {};
+          estado.pagina = 1;
 
-        carregar();
+          carregar();
 
-      });
+        }
+      );
+
+    /*
+     * ============================================================
+     * INICIALIZAÇÃO
+     * ============================================================
+     */
 
     (async function iniciar() {
 
       try {
 
-        renderAdminMenu('auditoria');
+        renderAdminMenu(
+          'auditoria'
+        );
 
         const acesso =
           await verificarAcesso();
@@ -1187,12 +1766,17 @@
 
       } catch (erro) {
 
-        console.error('[auditoria:init]', erro);
+        console.error(
+          '[auditoria:init]',
+          erro
+        );
 
         el.innerHTML = `
           <div class="erro">
             Erro ao iniciar auditoria:
-            ${esc(erro.message || erro)}
+            ${esc(
+              erro.message || erro
+            )}
           </div>
         `;
 
