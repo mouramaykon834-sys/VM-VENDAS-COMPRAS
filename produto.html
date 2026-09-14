@@ -167,37 +167,109 @@
       });
 
       // =====================================================
-      // BOTÕES
+      // CARRINHO / CONTROLE DE ESTOQUE
       // =====================================================
-      document.getElementById('btn-comprar').onclick = function() {
-        const c = JSON.parse(localStorage.getItem('carrinho') || '[]');
-        const idx = c.findIndex(function(i) { return i.id === p.id; });
-        if (idx >= 0) c[idx].quantidade += 1;
-        else c.push({ id: p.id, nome: p.nome, preco: p.precoFinal, imagem: p.imagemPrincipal, quantidade: 1 });
-        localStorage.setItem('carrinho', JSON.stringify(c));
-        location.href = './carrinho.html';
-      };
+      const estoqueDisponivel = Math.max(0, Number(p.estoque) || 0);
+      const btnComprar = document.getElementById('btn-comprar');
+      const btnCarrinho = document.getElementById('btn-carrinho');
 
-      document.getElementById('btn-carrinho').onclick = function() {
+      function lerCarrinho() {
         try {
-          const c = JSON.parse(localStorage.getItem('carrinho') || '[]');
-          const idx = c.findIndex(function(i) { return i.id === p.id; });
-          if (idx >= 0) c[idx].quantidade += 1;
-          else c.push({ id: p.id, nome: p.nome, preco: p.precoFinal, imagem: p.imagemPrincipal, quantidade: 1 });
-          localStorage.setItem('carrinho', JSON.stringify(c));
+          const dados = JSON.parse(localStorage.getItem('carrinho') || '[]');
+          return Array.isArray(dados) ? dados : [];
+        } catch (e) {
+          return [];
+        }
+      }
 
-          const total = c.reduce(function(s, i) { return s + (i.quantidade || 0); }, 0);
-          const badge = document.getElementById('badge-carrinho');
-          if (badge) {
-            if (total > 0) { badge.textContent = total; badge.classList.remove('oculto'); }
-            else badge.classList.add('oculto');
+      function salvarCarrinho(itens) {
+        localStorage.setItem('carrinho', JSON.stringify(itens));
+      }
+
+      function atualizarBadge() {
+        const c = lerCarrinho();
+        const total = c.reduce(function(s, i) { return s + (Number(i.quantidade) || 0); }, 0);
+        const badge = document.getElementById('badge-carrinho');
+        if (!badge) return;
+        if (total > 0) {
+          badge.textContent = total;
+          badge.classList.remove('oculto');
+        } else {
+          badge.classList.add('oculto');
+        }
+      }
+
+      function mostrarSemEstoque() {
+        mostrarToast('⚠️ Sem estoque', 'Este produto não possui unidades disponíveis.', 'alerta');
+      }
+
+      function adicionarUmaUnidade(redirecionar) {
+        try {
+          if (estoqueDisponivel <= 0) {
+            mostrarSemEstoque();
+            return false;
           }
 
-          mostrarToast('✅ Adicionado ao carrinho', p.nome);
+          const c = lerCarrinho();
+          const idx = c.findIndex(function(i) { return i.id === p.id; });
+          const atual = idx >= 0 ? Math.max(0, Number(c[idx].quantidade) || 0) : 0;
+
+          if (atual >= estoqueDisponivel) {
+            mostrarToast(
+              '⚠️ Limite de estoque',
+              'Você já adicionou todas as unidades disponíveis deste produto.',
+              'alerta'
+            );
+            return false;
+          }
+
+          const item = {
+            id: p.id,
+            nome: p.nome,
+            preco: p.precoFinal,
+            imagem: p.imagemPrincipal,
+            quantidade: atual + 1,
+            estoque: estoqueDisponivel
+          };
+
+          if (idx >= 0) c[idx] = Object.assign({}, c[idx], item);
+          else c.push(item);
+
+          salvarCarrinho(c);
+          atualizarBadge();
+
+          if (redirecionar) {
+            location.href = './carrinho.html';
+          } else {
+            mostrarToast('✅ Adicionado ao carrinho', p.nome, 'sucesso');
+          }
+
+          return true;
         } catch (e) {
           alert('Erro ao adicionar: ' + e.message);
+          return false;
         }
+      }
+
+      if (estoqueDisponivel <= 0) {
+        [btnComprar, btnCarrinho].forEach(function(btn) {
+          if (!btn) return;
+          btn.disabled = true;
+          btn.title = 'Produto sem estoque';
+          btn.style.opacity = '0.6';
+          btn.style.cursor = 'not-allowed';
+        });
+      }
+
+      btnComprar.onclick = function() {
+        adicionarUmaUnidade(true);
       };
+
+      btnCarrinho.onclick = function() {
+        adicionarUmaUnidade(false);
+      };
+
+      atualizarBadge();
 
       document.getElementById('btn-proposta').onclick = async function() {
         const { supabase } = await import('./assets/js/supabase.js');
