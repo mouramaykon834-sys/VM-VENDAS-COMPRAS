@@ -1209,3 +1209,564 @@ html[data-tema="escuro"] .resumo {
   .carrossel__botao { padding: 9px 16px; font-size: 13px; }
   .carrossel__bolinhas { bottom: 10px; }
 }
+/* =============================================================
+   TELAS DE USUÁRIO — FAVORITOS, PROPOSTAS, PEDIDOS, CHAT, ETC
+   ============================================================= */
+
+/* =============================================================
+   FAVORITOS
+   ============================================================= */
+
+.favoritos-grid {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(4, 1fr);
+}
+
+@media (min-width: 1440px) {
+  .favoritos-grid { grid-template-columns: repeat(5, 1fr); }
+}
+@media (max-width: 1024px) {
+  .favoritos-grid { grid-template-columns: repeat(3, 1fr); }
+}
+@media (max-width: 768px) {
+  .favoritos-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 480px) {
+  .favoritos-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+}
+
+/* =============================================================
+   PROPOSTAS — LISTA
+   ============================================================= */
+
+.proposta-card {
+  display: grid;
+  grid-template-columns: 80px 1fr auto;
+  gap: 16px;
+  align-items: center;
+  padding: 16px;
+  background: #fff;
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio-md);
+  transition: border-color .15s, box-shadow .15s;
+  margin-bottom: 12px;
+}
+.proposta-card:hover {
+  border-color: var(--cor-borda-escura);
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+}
+html[data-tema="escuro"] .proposta-card {
+  background: #1e293b;
+  border-color: #334155;
+}
+
+.proposta-card__img {
+  width: 80px;
+  height: 80px;
+  border-radius: var(--raio-md);
+  object-fit: cover;
+  background: var(--cor-fundo-suave);
+  display: block;
+}
+
+.proposta-card__info {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.proposta-card__numero {
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--cor-texto);
+}
+
+.proposta-card__produto {
+  font-size: 13px;
+  color: var(--cor-texto-suave);
+  text-decoration: none;
+}
+.proposta-card__produto:hover {
+  color: var(--cor-principal);
+  text-decoration: none;
+}
+
+.proposta-card__valores {
+  font-size: 13px;
+  color: var(--cor-texto);
+  line-height: 1.5;
+}
+
+.proposta-card__lado {
+  text-align: right;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: flex-end;
+}
+
+.proposta-card__data {
+  font-size: 11px;
+  color: var(--cor-texto-suave);
+}
+
+@media (max-width: 640px) {
+  .proposta-card {
+    grid-template-columns: 64px 1fr;
+    padding: 12px;
+  }
+  .proposta-card__img { width: 64px; height: 64px; }
+  .proposta-card__lado {
+    grid-column: 1 / -1;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    margin-top: 8px;
+  }
+}
+
+/* =============================================================
+   PEDIDOS
+   ============================================================= */
+
+.pedido-card {
+  padding: 20px;
+  background: #fff;
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio-md);
+  margin-bottom: 14px;
+  transition: border-color .15s, box-shadow .15s;
+}
+.pedido-card:hover {
+  border-color: var(--cor-borda-escura);
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+}
+html[data-tema="escuro"] .pedido-card {
+  background: #1e293b;
+  border-color: #334155;
+}
+
+.pedido-card__cabecalho {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+}
+
+.pedido-card__numero {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--cor-texto);
+  margin-bottom: 4px;
+}
+
+.pedido-card__data {
+  font-size: 12px;
+  color: var(--cor-texto-suave);
+}
+
+.pedido-card__itens {
+  font-size: 13px;
+  color: var(--cor-texto-suave);
+  line-height: 1.6;
+  padding: 12px 0;
+  border-top: 1px solid var(--cor-borda);
+  border-bottom: 1px solid var(--cor-borda);
+  margin-bottom: 14px;
+}
+
+.pedido-card__rodape {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.pedido-card__total {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--cor-secundaria);
+}
+
+/* =============================================================
+   CHAT — LISTA DE CONVERSAS
+   ============================================================= */
+
+.chat-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.chat-item {
+  display: grid;
+  grid-template-columns: 56px 1fr auto;
+  gap: 14px;
+  align-items: center;
+  padding: 14px 16px;
+  background: #fff;
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio-md);
+  text-decoration: none;
+  color: inherit;
+  transition: border-color .15s, box-shadow .15s;
+}
+.chat-item:hover {
+  border-color: var(--cor-principal);
+  box-shadow: 0 2px 8px rgba(14, 165, 233, 0.08);
+  text-decoration: none;
+}
+html[data-tema="escuro"] .chat-item {
+  background: #1e293b;
+  border-color: #334155;
+}
+
+.chat-item__avatar {
+  width: 56px;
+  height: 56px;
+  border-radius: var(--raio-md);
+  background: var(--cor-fundo-suave);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  flex-shrink: 0;
+  font-size: 22px;
+  color: var(--cor-texto-suave);
+  font-weight: 700;
+}
+.chat-item__avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.chat-item__info {
+  min-width: 0;
+}
+.chat-item__titulo {
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--cor-texto);
+  margin-bottom: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.chat-item__msg {
+  font-size: 13px;
+  color: var(--cor-texto-suave);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.chat-item__lado {
+  text-align: right;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: flex-end;
+}
+.chat-item__data {
+  font-size: 11px;
+  color: var(--cor-texto-suave);
+}
+
+@media (max-width: 640px) {
+  .chat-item {
+    grid-template-columns: 48px 1fr;
+    gap: 10px;
+    padding: 12px;
+  }
+  .chat-item__avatar { width: 48px; height: 48px; font-size: 18px; }
+  .chat-item__lado {
+    grid-column: 1 / -1;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    margin-top: 4px;
+  }
+}
+
+/* =============================================================
+   CONVERSA (chat individual)
+   ============================================================= */
+
+.chat-wrap {
+  background: #fff;
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio-md);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 240px);
+}
+html[data-tema="escuro"] .chat-wrap {
+  background: #1e293b;
+  border-color: #334155;
+}
+
+.chat-header {
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--cor-borda);
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+html[data-tema="escuro"] .chat-header {
+  background: #1e293b;
+  border-color: #334155;
+}
+.chat-header strong {
+  font-size: 15px;
+  color: var(--cor-texto);
+}
+.chat-header small {
+  font-size: 12px;
+  color: var(--cor-texto-suave);
+}
+
+.chat-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px 18px;
+  background: var(--cor-fundo-suave);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+html[data-tema="escuro"] .chat-body {
+  background: #0f172a;
+}
+
+.msg {
+  max-width: 75%;
+  padding: 10px 14px;
+  border-radius: 14px;
+  font-size: 14px;
+  line-height: 1.45;
+  word-wrap: break-word;
+  position: relative;
+}
+.msg--me {
+  background: var(--cor-principal);
+  color: #fff;
+  align-self: flex-end;
+  border-bottom-right-radius: 4px;
+}
+.msg--other {
+  background: #fff;
+  color: var(--cor-texto);
+  align-self: flex-start;
+  border: 1px solid var(--cor-borda);
+  border-bottom-left-radius: 4px;
+}
+html[data-tema="escuro"] .msg--other {
+  background: #1e293b;
+  border-color: #334155;
+}
+
+.msg__hora {
+  font-size: 10px;
+  opacity: .7;
+  margin-top: 6px;
+  display: block;
+}
+
+.msg img {
+  max-width: 100%;
+  border-radius: 8px;
+  margin-top: 6px;
+  display: block;
+}
+
+.chat-input {
+  padding: 14px 18px;
+  border-top: 1px solid var(--cor-borda);
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  background: #fff;
+}
+html[data-tema="escuro"] .chat-input {
+  background: #1e293b;
+  border-color: #334155;
+}
+
+.chat-input input[type="text"] {
+  flex: 1;
+  padding: 10px 14px;
+  border: 1px solid var(--cor-borda);
+  border-radius: 8px;
+  font-size: 14px;
+  background: #fff;
+}
+html[data-tema="escuro"] .chat-input input[type="text"] {
+  background: #0f172a;
+  border-color: #475569;
+  color: #f8fafc;
+}
+
+.chat-input input[type="file"] { display: none; }
+
+/* =============================================================
+   NOTIFICAÇÕES
+   ============================================================= */
+
+.notif-card {
+  display: block;
+  padding: 16px 18px;
+  background: #fff;
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio-md);
+  margin-bottom: 10px;
+  text-decoration: none;
+  color: inherit;
+  transition: border-color .15s, box-shadow .15s;
+}
+.notif-card:hover {
+  border-color: var(--cor-borda-escura);
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+  text-decoration: none;
+}
+html[data-tema="escuro"] .notif-card {
+  background: #1e293b;
+  border-color: #334155;
+}
+
+.notif-card.nao-lida {
+  border-left: 4px solid var(--cor-principal);
+  background: #f0f9ff;
+}
+html[data-tema="escuro"] .notif-card.nao-lida {
+  background: rgba(14, 165, 233, 0.08);
+}
+
+.notif-card__topo {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 6px;
+}
+.notif-card__titulo {
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--cor-texto);
+}
+.notif-card__data {
+  font-size: 11px;
+  color: var(--cor-texto-suave);
+  white-space: nowrap;
+}
+.notif-card__msg {
+  font-size: 13px;
+  color: var(--cor-texto-suave);
+  line-height: 1.5;
+}
+
+/* =============================================================
+   PERFIL / CONTA
+   ============================================================= */
+
+.tabs {
+  display: flex;
+  gap: 4px;
+  border-bottom: 1px solid var(--cor-borda);
+  margin-bottom: 24px;
+}
+.tab {
+  padding: 12px 20px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--cor-texto-suave);
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  transition: color .15s, border-color .15s;
+}
+.tab:hover {
+  color: var(--cor-principal);
+}
+.tab.ativo {
+  color: var(--cor-principal);
+  border-bottom-color: var(--cor-principal);
+}
+
+.perfil-card {
+  background: #fff;
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio-md);
+  padding: 24px;
+}
+html[data-tema="escuro"] .perfil-card {
+  background: #1e293b;
+  border-color: #334155;
+}
+
+/* =============================================================
+   PROPOSTA DETALHE
+   ============================================================= */
+
+.proposta-detalhe {
+  background: #fff;
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio-md);
+  padding: 24px;
+  margin-bottom: 16px;
+}
+html[data-tema="escuro"] .proposta-detalhe {
+  background: #1e293b;
+  border-color: #334155;
+}
+
+.proposta-detalhe__topo {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--cor-borda);
+  flex-wrap: wrap;
+}
+
+.proposta-produto {
+  display: grid;
+  grid-template-columns: 80px 1fr;
+  gap: 16px;
+  align-items: start;
+  padding: 16px 0;
+}
+.proposta-produto__img {
+  width: 80px;
+  height: 80px;
+  border-radius: var(--raio-md);
+  object-fit: cover;
+  background: var(--cor-fundo-suave);
+  display: block;
+}
+.proposta-produto__info strong {
+  display: block;
+  font-size: 16px;
+  color: var(--cor-texto);
+  margin-bottom: 6px;
+}
+.proposta-produto__info div {
+  font-size: 13px;
+  color: var(--cor-texto-suave);
+  line-height: 1.7;
+}
+.proposta-produto__info strong.valor {
+  color: var(--cor-principal);
+}
