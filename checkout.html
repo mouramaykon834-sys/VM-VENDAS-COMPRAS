@@ -1,1705 +1,876 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Finalizar pedido — Minha Loja</title>
+<link rel="stylesheet" href="./assets/css/tokens.css" />
+<link rel="stylesheet" href="./assets/css/base.css" />
+<link rel="stylesheet" href="./assets/css/layout.css" />
+<link rel="stylesheet" href="./assets/css/components.css" />
+<link rel="stylesheet" href="./assets/css/store.css" />
 
-  <title>Finalizar pedido — Minha Loja</title>
+<style>
+/* =============================================================
+   CHECKOUT — estilos específicos (adicional, isolado)
+   ============================================================= */
 
-  <link rel="stylesheet" href="./assets/css/tokens.css" />
-  <link rel="stylesheet" href="./assets/css/base.css" />
-  <link rel="stylesheet" href="./assets/css/layout.css" />
-  <link rel="stylesheet" href="./assets/css/components.css" />
-  <link rel="stylesheet" href="./assets/css/store.css" />
+.checkout-grid {
+  display: grid;
+  grid-template-columns: 1fr 360px;
+  gap: 28px;
+  align-items: start;
+}
+
+.checkout-secao {
+  background: #fff;
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio-card);
+  padding: 24px;
+  margin-bottom: 18px;
+}
+html[data-tema="escuro"] .checkout-secao {
+  background: #1e293b;
+  border-color: #334155;
+}
+
+.checkout-secao__titulo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--cor-texto);
+  margin: 0 0 18px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--cor-borda);
+}
+
+.checkout-secao__numero {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--cor-principal);
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+/* Caixa de frete */
+.checkout-frete {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  background: var(--cor-fundo-suave);
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio-md);
+  margin-top: 8px;
+  transition: border-color .15s, background .15s;
+}
+html[data-tema="escuro"] .checkout-frete {
+  background: #0f172a;
+  border-color: #334155;
+}
+.checkout-frete.carregando {
+  border-color: var(--cor-principal);
+  background: rgba(14, 165, 233, 0.05);
+}
+.checkout-frete.ok {
+  border-color: #86efac;
+  background: rgba(22, 163, 74, 0.05);
+}
+.checkout-frete.erro {
+  border-color: #fca5a5;
+  background: rgba(220, 38, 38, 0.05);
+}
+
+.checkout-frete__icone {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--cor-principal);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.checkout-frete__info {
+  flex: 1;
+  min-width: 0;
+}
+.checkout-frete__info strong {
+  display: block;
+  font-size: 14px;
+  color: var(--cor-texto);
+  margin-bottom: 2px;
+}
+.checkout-frete__info small {
+  font-size: 12px;
+  color: var(--cor-texto-suave);
+}
+
+/* Resumo lateral */
+.checkout-resumo {
+  background: #fff;
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio-card);
+  padding: 24px;
+  position: sticky;
+  top: calc(var(--altura-header) + 16px);
+}
+html[data-tema="escuro"] .checkout-resumo {
+  background: #1e293b;
+  border-color: #334155;
+}
+
+.checkout-resumo__titulo {
+  font-size: 16px;
+  font-weight: 700;
+  margin: 0 0 18px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--cor-borda);
+}
+
+.checkout-resumo__itens {
+  max-height: 280px;
+  overflow-y: auto;
+  margin-bottom: 16px;
+  padding-right: 4px;
+}
+
+.checkout-resumo__item {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--cor-borda);
+  font-size: 13px;
+}
+.checkout-resumo__item:last-child {
+  border-bottom: none;
+}
+
+.checkout-resumo__item-info {
+  flex: 1;
+  min-width: 0;
+}
+.checkout-resumo__item-info strong {
+  display: block;
+  font-size: 13px;
+  color: var(--cor-texto);
+  margin-bottom: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.checkout-resumo__item-info small {
+  color: var(--cor-texto-suave);
+  font-size: 12px;
+}
+.checkout-resumo__item-valor {
+  font-weight: 600;
+  color: var(--cor-texto);
+  white-space: nowrap;
+}
+
+.checkout-resumo__linha {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  color: var(--cor-texto-suave);
+  padding: 6px 0;
+}
+.checkout-resumo__linha strong {
+  color: var(--cor-texto);
+}
+
+.checkout-resumo__total {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-top: 14px;
+  padding-top: 16px;
+  border-top: 2px solid var(--cor-borda);
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--cor-texto-suave);
+}
+.checkout-resumo__total strong {
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--cor-secundaria);
+  letter-spacing: -0.02em;
+}
+
+@media (max-width: 900px) {
+  .checkout-grid { grid-template-columns: 1fr; }
+  .checkout-resumo { position: static; }
+}
+
+@media (max-width: 640px) {
+  .checkout-secao { padding: 18px; }
+  .checkout-resumo { padding: 18px; }
+  .checkout-resumo__total strong { font-size: 22px; }
+}
+</style>
 </head>
 
 <body>
 
-  <div id="header"></div>
+<div id="header"></div>
 
+<main class="conteudo">
+<div class="container">
 
-  <main class="conteudo">
+<div class="migalhas">
+<a href="./index.html">Início</a>
+<a href="./carrinho.html">Carrinho</a>
+<span>Finalizar</span>
+</div>
 
-    <div class="container" style="max-width:900px;">
+<h1 class="pagina-titulo">Finalizar pedido</h1>
 
-      <div class="migalhas">
-        <a href="./index.html">Início</a>
-        <a href="./carrinho.html">Carrinho</a>
-        <span>Finalizar</span>
+<div id="conteudo-checkout">
+<div class="carregando">
+<div class="spinner spinner--lg"></div>
+</div>
+</div>
+
+</div>
+</main>
+
+<div id="footer"></div>
+
+<script type="module">
+
+import { renderHeader } from './assets/js/components/header.js';
+import { renderFooter } from './assets/js/components/footer.js';
+import { iniciarConfiguracoes } from './assets/js/services/settings.service.js';
+import { supabase } from './assets/js/supabase.js';
+import { criarPedido } from './assets/js/services/orders.service.js';
+
+import {
+  listarMetodosPagamento,
+  calcularParcelas,
+  formatarMetodo,
+  formatarParcela,
+  aplicarDescontoMetodo,
+  formatarReais
+} from './assets/js/services/payment.service.js';
+
+import {
+  calcularFrete,
+  textoPrazo,
+  formatarFrete,
+  mascaraCEP
+} from './assets/js/services/delivery.service.js';
+
+await iniciarConfiguracoes();
+await renderHeader('carrinho');
+await renderFooter();
+
+const el = document.getElementById('conteudo-checkout');
+
+/* ==========================================================
+   HELPERS
+   ========================================================== */
+
+function lerCarrinho() {
+  try {
+    return JSON.parse(localStorage.getItem('carrinho') || '[]');
+  } catch {
+    return [];
+  }
+}
+
+function esc(s) {
+  return s == null
+    ? ''
+    : String(s).replace(
+        /[&<>"']/g,
+        m => ({
+          '&': '&amp;',
+          '<': '&lt;',
+          '>': '&gt;',
+          '"': '&quot;',
+          "'": '&#39;'
+        }[m])
+      );
+}
+
+function dinheiro(valor) {
+  return Number(valor || 0)
+    .toFixed(2)
+    .replace('.', ',');
+}
+
+/* ==========================================================
+   TOAST (usa classes do Bloco A)
+   ========================================================== */
+function toast(titulo, mensagem, tipo) {
+  tipo = tipo || 'info';
+
+  let area = document.querySelector('.toast-area');
+  if (!area) {
+    area = document.createElement('div');
+    area.className = 'toast-area';
+    document.body.appendChild(area);
+  }
+
+  const t = document.createElement('div');
+  t.className = 'toast toast--' + tipo;
+  t.innerHTML =
+    '<div class="toast__titulo">' + esc(titulo) + '</div>' +
+    (mensagem ? '<div class="toast__msg">' + esc(mensagem) + '</div>' : '');
+
+  area.appendChild(t);
+  requestAnimationFrame(() => t.classList.add('visivel'));
+
+  setTimeout(() => {
+    t.classList.remove('visivel');
+    setTimeout(() => t.remove(), 300);
+  }, 3500);
+}
+
+/* ==========================================================
+   ESTADO
+   ========================================================== */
+
+let itens = [];
+let subtotal = 0;
+let frete = 0;
+let desconto = 0;
+let taxa = 0;
+let total = 0;
+let metodosPagamento = [];
+let metodoSelecionado = null;
+let parcelasSelecionadas = 1;
+let resultadoFrete = null;
+
+/* ==========================================================
+   INICIALIZAÇÃO
+   ========================================================== */
+
+async function init() {
+  itens = lerCarrinho();
+
+  if (!itens.length) {
+    el.innerHTML = `
+      <div class="estado-vazio">
+        <div class="estado-vazio__icone">🛒</div>
+        <div class="estado-vazio__titulo">Seu carrinho está vazio</div>
+        <p class="estado-vazio__descricao">
+          Adicione produtos para continuar com o pedido.
+        </p>
+        <div class="estado-vazio__acoes">
+          <a href="./produtos.html" class="btn btn--principal">Ver produtos</a>
+        </div>
       </div>
+    `;
+    return;
+  }
 
-      <h1 class="pagina-titulo">
-        Finalizar pedido
-      </h1>
+  const { data: { user } } = await supabase.auth.getUser();
 
+  if (!user) {
+    el.innerHTML = `
+      <div class="estado-vazio">
+        <div class="estado-vazio__icone">🔒</div>
+        <div class="estado-vazio__titulo">Faça login para continuar</div>
+        <p class="estado-vazio__descricao">
+          Você precisa estar logado para finalizar o pedido.
+        </p>
+        <div class="estado-vazio__acoes">
+          <a href="./login.html?redirect=checkout.html" class="btn btn--principal">Fazer login</a>
+          <a href="./cadastro.html" class="btn btn--contorno">Criar conta</a>
+        </div>
+      </div>
+    `;
+    return;
+  }
 
-      <div id="conteudo-checkout">
+  const perfilResponse = await supabase
+    .from('profiles')
+    .select('*')
+    .eq('id', user.id)
+    .maybeSingle();
 
-        <div class="carregando">
-          <div class="spinner spinner--lg"></div>
+  const perfil = perfilResponse.data || {};
+
+  subtotal = itens.reduce(
+    (s, i) => s + Number(i.preco || 0) * Number(i.quantidade || 0),
+    0
+  );
+
+  try {
+    metodosPagamento = await listarMetodosPagamento();
+  } catch (erro) {
+    console.warn('Não foi possível carregar métodos de pagamento:', erro);
+    metodosPagamento = [];
+  }
+
+  render(perfil, user);
+}
+
+/* ==========================================================
+   RENDER
+   ========================================================== */
+
+function render(perfil, user) {
+  el.innerHTML = `
+    <div class="checkout-grid">
+
+      <!-- FORMULÁRIO -->
+      <form id="form-checkout">
+
+        <!-- 1. CONTATO -->
+        <div class="checkout-secao">
+          <h2 class="checkout-secao__titulo">
+            <span class="checkout-secao__numero">1</span>
+            Dados de contato
+          </h2>
+
+          <div class="campo">
+            <label>Nome completo</label>
+            <input type="text" id="nome" value="${esc(perfil.nome || '')}" required />
+          </div>
+
+          <div class="campo-grupo" style="gap:12px;">
+            <div class="campo" style="flex:1;">
+              <label>Telefone</label>
+              <input type="tel" id="telefone" value="${esc(perfil.telefone || '')}" />
+            </div>
+            <div class="campo" style="flex:1;">
+              <label>WhatsApp</label>
+              <input type="tel" id="whatsapp" value="${esc(perfil.whatsapp || '')}" />
+            </div>
+          </div>
+
+          <div class="campo">
+            <label>E-mail</label>
+            <input type="email" id="email" value="${esc(user.email || '')}" required />
+          </div>
         </div>
 
-      </div>
+        <!-- 2. ENDEREÇO -->
+        <div class="checkout-secao">
+          <h2 class="checkout-secao__titulo">
+            <span class="checkout-secao__numero">2</span>
+            Endereço de entrega
+          </h2>
+
+          <div class="campo">
+            <label>Endereço</label>
+            <input type="text" id="endereco" placeholder="Rua, número, complemento" />
+          </div>
+
+          <div class="campo-grupo" style="gap:12px;">
+            <div class="campo" style="flex:2;">
+              <label>Cidade</label>
+              <input type="text" id="cidade" />
+            </div>
+            <div class="campo" style="flex:1;">
+              <label>Estado</label>
+              <input type="text" id="estado" maxlength="2" placeholder="MA" />
+            </div>
+            <div class="campo" style="flex:1;">
+              <label>CEP</label>
+              <input type="text" id="cep" placeholder="00000-000" />
+            </div>
+          </div>
+
+          <!-- FRETE -->
+          <div id="box-frete" class="checkout-frete">
+            <div class="checkout-frete__icone">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="1" y="3" width="15" height="13"></rect>
+                <polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon>
+                <circle cx="5.5" cy="18.5" r="2.5"></circle>
+                <circle cx="18.5" cy="18.5" r="2.5"></circle>
+              </svg>
+            </div>
+            <div class="checkout-frete__info">
+              <strong id="frete-valor">Informe o CEP para calcular o frete</strong>
+              <small id="frete-prazo"></small>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3. PAGAMENTO -->
+        <div class="checkout-secao">
+          <h2 class="checkout-secao__titulo">
+            <span class="checkout-secao__numero">3</span>
+            Forma de pagamento
+          </h2>
+
+          <div class="campo">
+            <label>Método de pagamento</label>
+            <select id="payment-method">
+              <option value="">Selecione uma forma de pagamento</option>
+              ${metodosPagamento
+                .map(m => {
+                  const metodo = formatarMetodo(m);
+                  const descontoTexto = metodo.descontoTexto
+                    ? ` — ${metodo.descontoTexto}`
+                    : '';
+                  return `<option value="${esc(m.id)}">
+                    ${esc(metodo.emoji)} ${esc(m.nome || metodo.tipo)}${esc(descontoTexto)}
+                  </option>`;
+                })
+                .join('')}
+            </select>
+          </div>
+
+          <div class="campo" id="campo-parcelas" style="display:none;">
+            <label>Parcelamento</label>
+            <select id="parcelas"></select>
+          </div>
+
+          <div id="resumo-pagamento" style="display:none; margin-top:8px; padding:12px; border-radius:8px; background:var(--cor-fundo-suave); font-size:13px;"></div>
+        </div>
+
+        <!-- OBSERVAÇÕES -->
+        <div class="checkout-secao">
+          <h2 class="checkout-secao__titulo">
+            Observações do pedido
+          </h2>
+          <div class="campo" style="margin-bottom:0;">
+            <textarea id="obs" rows="3" placeholder="Alguma observação sobre o pedido? (opcional)"></textarea>
+          </div>
+        </div>
+
+      </form>
+
+      <!-- RESUMO -->
+      <aside class="checkout-resumo">
+        <h2 class="checkout-resumo__titulo">Resumo do pedido</h2>
+
+        <div class="checkout-resumo__itens">
+          ${itens
+            .map(
+              i => `
+            <div class="checkout-resumo__item">
+              <div class="checkout-resumo__item-info">
+                <strong>${esc(i.nome)}</strong>
+                <small>${Number(i.quantidade)} × R$ ${dinheiro(i.preco)}</small>
+              </div>
+              <div class="checkout-resumo__item-valor">
+                R$ ${dinheiro(Number(i.preco || 0) * Number(i.quantidade || 0))}
+              </div>
+            </div>
+          `
+            )
+            .join('')}
+        </div>
+
+        <div class="checkout-resumo__linha">
+          <span>Subtotal</span>
+          <strong id="resumo-subtotal">R$ ${dinheiro(subtotal)}</strong>
+        </div>
+
+        <div class="checkout-resumo__linha">
+          <span>Frete</span>
+          <strong id="resumo-frete">R$ 0,00</strong>
+        </div>
+
+        <div class="checkout-resumo__linha" id="linha-desconto" style="display:none;">
+          <span>Desconto</span>
+          <strong id="resumo-desconto">- R$ 0,00</strong>
+        </div>
+
+        <div class="checkout-resumo__linha" id="linha-taxa" style="display:none;">
+          <span>Taxa</span>
+          <strong id="resumo-taxa">R$ 0,00</strong>
+        </div>
+
+        <div class="checkout-resumo__total">
+          <span>Total</span>
+          <strong id="resumo-total">R$ ${dinheiro(subtotal)}</strong>
+        </div>
+
+        <button id="btn-finalizar" type="button" class="btn btn--principal btn--bloco btn--lg mt-4">
+          Confirmar pedido
+        </button>
+
+      </aside>
 
     </div>
+  `;
 
-  </main>
+  /* ========================================================
+     ELEMENTOS
+     ======================================================== */
+  const cepInput = document.getElementById('cep');
+  const paymentSelect = document.getElementById('payment-method');
+  const parcelasSelect = document.getElementById('parcelas');
+  const campoParcelas = document.getElementById('campo-parcelas');
+  const resumoPagamento = document.getElementById('resumo-pagamento');
+  const boxFrete = document.getElementById('box-frete');
 
+  mascaraCEP(cepInput);
 
-  <div id="footer"></div>
+  /* ========================================================
+     ATUALIZAR RESUMO
+     ======================================================== */
+  function atualizarResumo() {
+    desconto = 0;
+    taxa = 0;
 
-
-  <script type="module">
-
-    import { renderHeader }
-      from './assets/js/components/header.js';
-
-    import { renderFooter }
-      from './assets/js/components/footer.js';
-
-    import { iniciarConfiguracoes }
-      from './assets/js/services/settings.service.js';
-
-    import { supabase }
-      from './assets/js/supabase.js';
-
-    import { criarPedido }
-      from './assets/js/services/orders.service.js';
-
-    import {
-      listarMetodosPagamento,
-      calcularParcelas,
-      formatarMetodo,
-      formatarParcela,
-      aplicarDescontoMetodo,
-      formatarReais
-    }
-      from './assets/js/services/payment.service.js';
-
-    import {
-      calcularFrete,
-      textoPrazo,
-      formatarFrete,
-      mascaraCEP
-    }
-      from './assets/js/services/delivery.service.js';
-
-
-    await iniciarConfiguracoes();
-
-    await renderHeader('carrinho');
-
-    await renderFooter();
-
-
-    const el =
-      document.getElementById('conteudo-checkout');
-
-
-    /* ==========================================================
-       FUNÇÕES AUXILIARES
-       ========================================================== */
-
-    function lerCarrinho() {
-
-      try {
-
-        return JSON.parse(
-          localStorage.getItem('carrinho') || '[]'
-        );
-
-      } catch {
-
-        return [];
-
-      }
-
+    if (metodoSelecionado) {
+      const calculo = aplicarDescontoMetodo(subtotal + frete, metodoSelecionado);
+      desconto = Number(calculo.desconto || 0);
+      taxa = Number(calculo.taxa || 0);
     }
 
+    total = subtotal + frete - desconto + taxa;
+    if (total < 0) total = 0;
 
-    function esc(s) {
+    document.getElementById('resumo-subtotal').textContent = formatarReais(subtotal);
+    document.getElementById('resumo-frete').textContent =
+      frete > 0 ? formatarReais(frete) : 'Frete grátis';
 
-      return s == null
-        ? ''
-        : String(s).replace(
-            /[&<>"']/g,
-            m => ({
-              '&':'&amp;',
-              '<':'&lt;',
-              '>':'&gt;',
-              '"':'&quot;',
-              "'":'&#39;'
-            }[m])
-          );
-
+    const linhaDesconto = document.getElementById('linha-desconto');
+    if (desconto > 0) {
+      linhaDesconto.style.display = 'flex';
+      document.getElementById('resumo-desconto').textContent = '- ' + formatarReais(desconto);
+    } else {
+      linhaDesconto.style.display = 'none';
     }
 
-
-    function dinheiro(valor) {
-
-      return Number(valor || 0)
-        .toFixed(2)
-        .replace('.', ',');
-
+    const linhaTaxa = document.getElementById('linha-taxa');
+    if (taxa > 0) {
+      linhaTaxa.style.display = 'flex';
+      document.getElementById('resumo-taxa').textContent = formatarReais(taxa);
+    } else {
+      linhaTaxa.style.display = 'none';
     }
 
+    document.getElementById('resumo-total').textContent = formatarReais(total);
+  }
 
-    /* ==========================================================
-       ESTADO DO CHECKOUT
-       ========================================================== */
+  /* ========================================================
+     CALCULAR FRETE
+     ======================================================== */
+  let timerFrete = null;
 
-    let itens = [];
+  async function atualizarFrete() {
+    const cep = cepInput.value.replace(/\D/g, '');
 
-    let subtotal = 0;
+    if (cep.length !== 8) {
+      resultadoFrete = null;
+      frete = 0;
+      boxFrete.className = 'checkout-frete';
+      document.getElementById('frete-valor').textContent = 'Informe o CEP para calcular o frete';
+      document.getElementById('frete-prazo').textContent = '';
+      atualizarResumo();
+      return;
+    }
 
-    let frete = 0;
+    boxFrete.className = 'checkout-frete carregando';
+    document.getElementById('frete-valor').textContent = 'Calculando...';
+    document.getElementById('frete-prazo').textContent = '';
 
-    let desconto = 0;
+    try {
+      resultadoFrete = await calcularFrete(cep, subtotal);
 
-    let taxa = 0;
-
-    let total = 0;
-
-    let metodosPagamento = [];
-
-    let metodoSelecionado = null;
-
-    let parcelasSelecionadas = 1;
-
-    let resultadoFrete = null;
-
-
-    /* ==========================================================
-       INICIALIZAÇÃO
-       ========================================================== */
-
-    async function init() {
-
-      itens = lerCarrinho();
-
-
-      if (!itens.length) {
-
-        el.innerHTML = `
-
-          <div class="estado-vazio">
-
-            <div class="estado-vazio__titulo">
-              Carrinho vazio
-            </div>
-
-            <a
-              href="./produtos.html"
-              class="btn btn--principal"
-            >
-              Ver produtos
-            </a>
-
-          </div>
-
-        `;
-
+      if (!resultadoFrete || !resultadoFrete.encontrado) {
+        frete = 0;
+        boxFrete.className = 'checkout-frete erro';
+        document.getElementById('frete-valor').textContent = 'Frete não disponível';
+        document.getElementById('frete-prazo').textContent =
+          resultadoFrete?.motivo || 'Não foi possível calcular o frete.';
+        atualizarResumo();
         return;
-
       }
 
-
-      const {
-        data: { user }
-      } = await supabase.auth.getUser();
-
-
-      if (!user) {
-
-        el.innerHTML = `
-
-          <div class="estado-vazio">
-
-            <div class="estado-vazio__titulo">
-              Faça login para continuar
-            </div>
-
-            <p class="estado-vazio__descricao">
-              Você precisa estar logado para finalizar o pedido.
-            </p>
-
-            <a
-              href="./login.html?redirect=checkout.html"
-              class="btn btn--principal"
-            >
-              Fazer login
-            </a>
-
-            <a
-              href="./cadastro.html"
-              class="btn btn--contorno"
-            >
-              Criar conta
-            </a>
-
-          </div>
-
-        `;
-
-        return;
-
-      }
-
-
-      const perfilResponse =
-        await supabase
-          .from('profiles')
-          .select('*')
-          .eq('id', user.id)
-          .maybeSingle();
-
-
-      const perfil =
-        perfilResponse.data || {};
-
-
-      /*
-       * O subtotal mostrado inicialmente é apenas visual.
-       *
-       * O valor definitivo será recalculado pelo banco
-       * através da RPC finalizar_venda.
-       */
-
-      subtotal = itens.reduce(
-        (s, i) =>
-          s +
-          Number(i.preco || 0) *
-          Number(i.quantidade || 0),
-        0
-      );
-
-
-      /* ========================================================
-         CARREGAR MÉTODOS DE PAGAMENTO
-         ======================================================== */
-
-      try {
-
-        metodosPagamento =
-          await listarMetodosPagamento();
-
-      } catch (erro) {
-
-        console.warn(
-          'Não foi possível carregar métodos de pagamento:',
-          erro
-        );
-
-        metodosPagamento = [];
-
-      }
-
-
-      /* ========================================================
-         RENDER
-         ======================================================== */
-
-      el.innerHTML = `
-
-        <div
-          style="
-            display:grid;
-            grid-template-columns:1fr 320px;
-            gap:24px;
-            align-items:start;
-          "
-        >
-
-
-          <!-- ==================================================
-               FORMULÁRIO
-               ================================================== -->
-
-          <form
-            id="form-checkout"
-            class="cartao"
-            style="padding:24px;"
-          >
-
-
-            <!-- CONTATO -->
-
-            <h2
-              style="
-                margin-bottom:16px;
-                font-size:16px;
-              "
-            >
-              Dados de contato
-            </h2>
-
-
-            <div class="campo">
-
-              <label>
-                Nome completo
-              </label>
-
-              <input
-                type="text"
-                id="nome"
-                value="${esc(perfil.nome || '')}"
-                required
-              />
-
-            </div>
-
-
-            <div
-              class="campo-grupo"
-              style="gap:12px;"
-            >
-
-              <div
-                class="campo"
-                style="flex:1;"
-              >
-
-                <label>
-                  Telefone
-                </label>
-
-                <input
-                  type="tel"
-                  id="telefone"
-                  value="${esc(perfil.telefone || '')}"
-                />
-
-              </div>
-
-
-              <div
-                class="campo"
-                style="flex:1;"
-              >
-
-                <label>
-                  WhatsApp
-                </label>
-
-                <input
-                  type="tel"
-                  id="whatsapp"
-                  value="${esc(perfil.whatsapp || '')}"
-                />
-
-              </div>
-
-            </div>
-
-
-            <div class="campo">
-
-              <label>
-                E-mail
-              </label>
-
-              <input
-                type="email"
-                id="email"
-                value="${esc(user.email || '')}"
-                required
-              />
-
-            </div>
-
-
-            <!-- =================================================
-                 ENDEREÇO
-                 ================================================= -->
-
-            <h2
-              style="
-                margin:24px 0 16px;
-                font-size:16px;
-              "
-            >
-              Endereço de entrega
-            </h2>
-
-
-            <div class="campo">
-
-              <label>
-                Endereço
-              </label>
-
-              <input
-                type="text"
-                id="endereco"
-                placeholder="Rua, número, complemento"
-              />
-
-            </div>
-
-
-            <div
-              class="campo-grupo"
-              style="gap:12px;"
-            >
-
-              <div
-                class="campo"
-                style="flex:2;"
-              >
-
-                <label>
-                  Cidade
-                </label>
-
-                <input
-                  type="text"
-                  id="cidade"
-                />
-
-              </div>
-
-
-              <div
-                class="campo"
-                style="flex:1;"
-              >
-
-                <label>
-                  Estado
-                </label>
-
-                <input
-                  type="text"
-                  id="estado"
-                  maxlength="2"
-                  placeholder="MA"
-                />
-
-              </div>
-
-
-              <div
-                class="campo"
-                style="flex:1;"
-              >
-
-                <label>
-                  CEP
-                </label>
-
-                <input
-                  type="text"
-                  id="cep"
-                  placeholder="00000-000"
-                />
-
-              </div>
-
-            </div>
-
-
-            <!-- =================================================
-                 FRETE
-                 ================================================= -->
-
-            <div
-              id="box-frete"
-              style="
-                margin-top:8px;
-                padding:14px;
-                border:1px solid var(--cor-borda);
-                border-radius:8px;
-              "
-            >
-
-              <div
-                style="
-                  display:flex;
-                  justify-content:space-between;
-                  gap:12px;
-                "
-              >
-
-                <strong>
-                  Entrega
-                </strong>
-
-                <span id="frete-valor">
-                  Informe o CEP
-                </span>
-
-              </div>
-
-
-              <div
-                id="frete-prazo"
-                style="
-                  margin-top:6px;
-                  font-size:13px;
-                  color:var(--cor-texto-suave);
-                "
-              >
-              </div>
-
-            </div>
-
-
-            <!-- =================================================
-                 PAGAMENTO
-                 ================================================= -->
-
-            <h2
-              style="
-                margin:24px 0 16px;
-                font-size:16px;
-              "
-            >
-              Forma de pagamento
-            </h2>
-
-
-            <div class="campo">
-
-              <label>
-                Método de pagamento
-              </label>
-
-              <select
-                id="payment-method"
-              >
-
-                <option value="">
-                  Selecione uma forma de pagamento
-                </option>
-
-                ${
-                  metodosPagamento
-                    .map(m => {
-
-                      const metodo =
-                        formatarMetodo(m);
-
-                      const descontoTexto =
-                        metodo.descontoTexto
-                          ? ` — ${metodo.descontoTexto}`
-                          : '';
-
-                      return `
-
-                        <option
-                          value="${esc(m.id)}"
-                        >
-                          ${esc(metodo.emoji)}
-                          ${esc(m.nome || metodo.tipo)}
-                          ${esc(descontoTexto)}
-                        </option>
-
-                      `;
-
-                    })
-                    .join('')
-                }
-
-              </select>
-
-            </div>
-
-
-            <div
-              class="campo"
-              id="campo-parcelas"
-              style="display:none;"
-            >
-
-              <label>
-                Parcelamento
-              </label>
-
-              <select
-                id="parcelas"
-              >
-
-              </select>
-
-            </div>
-
-
-            <div
-              id="resumo-pagamento"
-              style="
-                display:none;
-                margin-top:8px;
-                padding:12px;
-                border-radius:8px;
-                background:var(--cor-fundo-suave);
-                font-size:13px;
-              "
-            >
-            </div>
-
-
-            <!-- OBSERVAÇÕES -->
-
-            <div
-              class="campo"
-              style="margin-top:24px;"
-            >
-
-              <label>
-                Observações do pedido (opcional)
-              </label>
-
-              <textarea
-                id="obs"
-                rows="3"
-                placeholder="Observações sobre o pedido"
-              ></textarea>
-
-            </div>
-
-          </form>
-
-
-          <!-- ==================================================
-               RESUMO
-               ================================================== -->
-
-          <aside
-            class="cartao"
-            style="
-              padding:24px;
-              position:sticky;
-              top:80px;
-            "
-          >
-
-            <h2
-              style="
-                margin-bottom:16px;
-                font-size:16px;
-              "
-            >
-              Resumo do pedido
-            </h2>
-
-
-            ${
-              itens
-                .map(i => `
-
-                  <div
-                    style="
-                      display:flex;
-                      gap:8px;
-                      padding:8px 0;
-                      border-bottom:1px solid var(--cor-borda);
-                      font-size:13px;
-                    "
-                  >
-
-                    <div style="flex:1;">
-
-                      <div
-                        style="font-weight:600;"
-                      >
-                        ${esc(i.nome)}
-                      </div>
-
-                      <div
-                        style="
-                          color:var(--cor-texto-suave);
-                        "
-                      >
-                        ${Number(i.quantidade)}
-                        ×
-                        R$ ${dinheiro(i.preco)}
-                      </div>
-
-                    </div>
-
-
-                    <div
-                      style="font-weight:700;"
-                    >
-                      R$
-                      ${
-                        dinheiro(
-                          Number(i.preco || 0) *
-                          Number(i.quantidade || 0)
-                        )
-                      }
-                    </div>
-
-                  </div>
-
-                `)
-                .join('')
-            }
-
-
-            <!-- SUBTOTAL -->
-
-            <div
-              style="
-                display:flex;
-                justify-content:space-between;
-                margin-top:16px;
-                font-size:14px;
-              "
-            >
-
-              <span>
-                Subtotal
-              </span>
-
-              <strong id="resumo-subtotal">
-                R$ ${dinheiro(subtotal)}
-              </strong>
-
-            </div>
-
-
-            <!-- FRETE -->
-
-            <div
-              style="
-                display:flex;
-                justify-content:space-between;
-                margin-top:8px;
-                font-size:14px;
-              "
-            >
-
-              <span>
-                Frete
-              </span>
-
-              <strong id="resumo-frete">
-                R$ 0,00
-              </strong>
-
-            </div>
-
-
-            <!-- DESCONTO -->
-
-            <div
-              id="linha-desconto"
-              style="
-                display:none;
-                justify-content:space-between;
-                margin-top:8px;
-                font-size:14px;
-              "
-            >
-
-              <span>
-                Desconto
-              </span>
-
-              <strong id="resumo-desconto">
-                - R$ 0,00
-              </strong>
-
-            </div>
-
-
-            <!-- TAXA -->
-
-            <div
-              id="linha-taxa"
-              style="
-                display:none;
-                justify-content:space-between;
-                margin-top:8px;
-                font-size:14px;
-              "
-            >
-
-              <span>
-                Taxa
-              </span>
-
-              <strong id="resumo-taxa">
-                R$ 0,00
-              </strong>
-
-            </div>
-
-
-            <!-- TOTAL -->
-
-            <div
-              class="resumo__total"
-              style="
-                margin-top:16px;
-                padding-top:16px;
-              "
-            >
-
-              <span>
-                Total
-              </span>
-
-              <span id="resumo-total">
-                R$ ${dinheiro(subtotal)}
-              </span>
-
-            </div>
-
-
-            <button
-              id="btn-finalizar"
-              type="button"
-              class="btn btn--principal btn--bloco btn--lg mt-4"
-            >
-              Confirmar pedido
-            </button>
-
-
-            <div
-              id="msg"
-              style="margin-top:12px;"
-            >
-            </div>
-
-          </aside>
-
-        </div>
-
-      `;
-
-
-      /* ========================================================
-         ELEMENTOS
-         ======================================================== */
-
-      const cepInput =
-        document.getElementById('cep');
-
-      const paymentSelect =
-        document.getElementById('payment-method');
-
-      const parcelasSelect =
-        document.getElementById('parcelas');
-
-      const campoParcelas =
-        document.getElementById('campo-parcelas');
-
-      const resumoPagamento =
-        document.getElementById('resumo-pagamento');
-
-
-      /* ========================================================
-         MÁSCARA CEP
-         ======================================================== */
-
-      mascaraCEP(cepInput);
-
-
-      /* ========================================================
-         ATUALIZAR RESUMO
-         ======================================================== */
-
-      function atualizarResumo() {
-
-        desconto = 0;
-
-        taxa = 0;
-
-
-        if (metodoSelecionado) {
-
-          const calculo =
-            aplicarDescontoMetodo(
-              subtotal + frete,
-              metodoSelecionado
-            );
-
-          desconto =
-            Number(calculo.desconto || 0);
-
-          taxa =
-            Number(calculo.taxa || 0);
-
-        }
-
-
-        total =
-          subtotal +
-          frete -
-          desconto +
-          taxa;
-
-
-        if (total < 0) {
-          total = 0;
-        }
-
-
-        document.getElementById(
-          'resumo-subtotal'
-        ).textContent =
-          formatarReais(subtotal);
-
-
-        document.getElementById(
-          'resumo-frete'
-        ).textContent =
-          frete > 0
-            ? formatarReais(frete)
-            : 'Frete grátis';
-
-
-        const linhaDesconto =
-          document.getElementById(
-            'linha-desconto'
-          );
-
-
-        if (desconto > 0) {
-
-          linhaDesconto.style.display =
-            'flex';
-
-          document.getElementById(
-            'resumo-desconto'
-          ).textContent =
-            '- ' + formatarReais(desconto);
-
-        } else {
-
-          linhaDesconto.style.display =
-            'none';
-
-        }
-
-
-        const linhaTaxa =
-          document.getElementById(
-            'linha-taxa'
-          );
-
-
-        if (taxa > 0) {
-
-          linhaTaxa.style.display =
-            'flex';
-
-          document.getElementById(
-            'resumo-taxa'
-          ).textContent =
-            formatarReais(taxa);
-
-        } else {
-
-          linhaTaxa.style.display =
-            'none';
-
-        }
-
-
-        document.getElementById(
-          'resumo-total'
-        ).textContent =
-          formatarReais(total);
-
-      }
-
-
-      /* ========================================================
-         CALCULAR FRETE
-         ======================================================== */
-
-      let timerFrete = null;
-
-
-      async function atualizarFrete() {
-
-        const cep =
-          cepInput.value.replace(/\D/g, '');
-
-
-        if (cep.length !== 8) {
-
-          resultadoFrete = null;
-
-          frete = 0;
-
-          document.getElementById(
-            'frete-valor'
-          ).textContent =
-            'Informe o CEP';
-
-          document.getElementById(
-            'frete-prazo'
-          ).textContent =
-            '';
-
-          atualizarResumo();
-
-          return;
-
-        }
-
-
-        document.getElementById(
-          'frete-valor'
-        ).textContent =
-          'Calculando...';
-
-
-        document.getElementById(
-          'frete-prazo'
-        ).textContent =
-          '';
-
-
-        try {
-
-          resultadoFrete =
-            await calcularFrete(
-              cep,
-              subtotal
-            );
-
-
-          if (
-            !resultadoFrete ||
-            !resultadoFrete.encontrado
-          ) {
-
-            frete = 0;
-
-            document.getElementById(
-              'frete-valor'
-            ).textContent =
-              'Não disponível';
-
-            document.getElementById(
-              'frete-prazo'
-            ).textContent =
-              resultadoFrete?.motivo ||
-              'Não foi possível calcular o frete.';
-
-            atualizarResumo();
-
-            return;
-
-          }
-
-
-          frete =
-            Number(
-              resultadoFrete.valor ||
-              resultadoFrete.frete ||
-              0
-            );
-
-
-          document.getElementById(
-            'frete-valor'
-          ).textContent =
-            formatarFrete(frete);
-
-
-          document.getElementById(
-            'frete-prazo'
-          ).textContent =
-            textoPrazo(resultadoFrete);
-
-
-          atualizarResumo();
-
-        } catch (erro) {
-
-          console.error(
-            'Erro no frete:',
-            erro
-          );
-
-          frete = 0;
-
-          document.getElementById(
-            'frete-valor'
-          ).textContent =
-            'Erro ao calcular';
-
-          document.getElementById(
-            'frete-prazo'
-          ).textContent =
-            'Tente novamente.';
-
-          atualizarResumo();
-
-        }
-
-      }
-
-
-      cepInput.addEventListener(
-        'input',
-        () => {
-
-          clearTimeout(timerFrete);
-
-          timerFrete =
-            setTimeout(
-              atualizarFrete,
-              500
-            );
-
-        }
-      );
-
-
-      cepInput.addEventListener(
-        'blur',
-        atualizarFrete
-      );
-
-
-      /* ========================================================
-         SELECIONAR MÉTODO DE PAGAMENTO
-         ======================================================== */
-
-      paymentSelect.addEventListener(
-        'change',
-        async () => {
-
-          const id =
-            paymentSelect.value;
-
-
-          metodoSelecionado =
-            metodosPagamento.find(
-              m => String(m.id) === String(id)
-            ) || null;
-
-
-          parcelasSelecionadas = 1;
-
-
-          if (!metodoSelecionado) {
-
-            campoParcelas.style.display =
-              'none';
-
-            resumoPagamento.style.display =
-              'none';
-
-            parcelasSelect.innerHTML =
-              '';
-
-            atualizarResumo();
-
-            return;
-
-          }
-
-
-          /* ----------------------------------------------------
-             Calcular parcelas
-             ---------------------------------------------------- */
-
-          try {
-
-            const valorBase =
-              subtotal + frete;
-
-
-            const opcoes =
-              await calcularParcelas(
-                metodoSelecionado.id,
-                valorBase
-              );
-
-
-            if (
-              Array.isArray(opcoes) &&
-              opcoes.length
-            ) {
-
-              parcelasSelect.innerHTML =
-                opcoes
-                  .map(
-                    opcao => `
-
-                      <option
-                        value="${Number(opcao.parcelas)}"
-                      >
-                        ${esc(
-                          formatarParcela(opcao)
-                        )}
-                      </option>
-
-                    `
-                  )
-                  .join('');
-
-
-              campoParcelas.style.display =
-                'block';
-
-
-              parcelasSelecionadas =
-                Number(
-                  opcoes[0].parcelas || 1
-                );
-
-
-              parcelasSelect.value =
-                String(parcelasSelecionadas);
-
-
-            } else {
-
-              campoParcelas.style.display =
-                'none';
-
-            }
-
-
-          } catch (erro) {
-
-            console.warn(
-              'Não foi possível calcular parcelas:',
-              erro
-            );
-
-            campoParcelas.style.display =
-              'none';
-
-          }
-
-
-          atualizarResumo();
-
-
-          /* ----------------------------------------------------
-             Resumo do método
-             ---------------------------------------------------- */
-
-          resumoPagamento.style.display =
-            'block';
-
-
-          resumoPagamento.innerHTML = `
-
-            <strong>
-              ${esc(
-                metodoSelecionado.nome ||
-                metodoSelecionado.tipo ||
-                'Pagamento'
-              )}
-            </strong>
-
-            <div style="margin-top:4px;">
-
-              Valor:
-              ${formatarReais(total)}
-
-            </div>
-
-          `;
-
-        }
-      );
-
-
-      /* ========================================================
-         ALTERAÇÃO DE PARCELAS
-         ======================================================== */
-
-      parcelasSelect.addEventListener(
-        'change',
-        () => {
-
-          parcelasSelecionadas =
-            Number(
-              parcelasSelect.value || 1
-            );
-
-          atualizarResumo();
-
-        }
-      );
-
-
-      /* ========================================================
-         FINALIZAR
-         ======================================================== */
-
-      document
-        .getElementById('btn-finalizar')
-        .onclick = async (e) => {
-
-          e.preventDefault();
-
-
-          const btn =
-            e.currentTarget;
-
-          const msg =
-            document.getElementById('msg');
-
-
-          /* ----------------------------------------------------
-             Evitar duplo clique
-             ---------------------------------------------------- */
-
-          if (btn.disabled) {
-            return;
-          }
-
-
-          /* ----------------------------------------------------
-             Dados
-             ---------------------------------------------------- */
-
-          const nome =
-            document
-              .getElementById('nome')
-              .value
-              .trim();
-
-
-          const telefone =
-            document
-              .getElementById('telefone')
-              .value
-              .trim();
-
-
-          const whatsapp =
-            document
-              .getElementById('whatsapp')
-              .value
-              .trim();
-
-
-          const email =
-            document
-              .getElementById('email')
-              .value
-              .trim();
-
-
-          const enderecoTexto =
-            document
-              .getElementById('endereco')
-              .value
-              .trim();
-
-
-          const cidade =
-            document
-              .getElementById('cidade')
-              .value
-              .trim();
-
-
-          const estado =
-            document
-              .getElementById('estado')
-              .value
-              .trim()
-              .toUpperCase();
-
-
-          const cep =
-            document
-              .getElementById('cep')
-              .value
-              .trim();
-
-
-          const observacoes =
-            document
-              .getElementById('obs')
-              .value
-              .trim();
-
-
-          /* ----------------------------------------------------
-             Validações
-             ---------------------------------------------------- */
-
-          if (!nome || !email) {
-
-            msg.innerHTML = `
-
-              <div class="alerta alerta--erro">
-                Preencha nome e e-mail.
-              </div>
-
-            `;
-
-            return;
-
-          }
-
-
-          if (cep.replace(/\D/g, '').length !== 8) {
-
-            msg.innerHTML = `
-
-              <div class="alerta alerta--erro">
-                Informe um CEP válido.
-              </div>
-
-            `;
-
-            return;
-
-          }
-
-
-          if (
-            !metodoSelecionado &&
-            metodosPagamento.length
-          ) {
-
-            msg.innerHTML = `
-
-              <div class="alerta alerta--erro">
-                Selecione uma forma de pagamento.
-              </div>
-
-            `;
-
-            return;
-
-          }
-
-
-          if (
-            resultadoFrete &&
-            resultadoFrete.encontrado === false
-          ) {
-
-            msg.innerHTML = `
-
-              <div class="alerta alerta--erro">
-                Não foi possível calcular o frete para este CEP.
-              </div>
-
-            `;
-
-            return;
-
-          }
-
-
-          /* ----------------------------------------------------
-             Bloquear botão
-             ---------------------------------------------------- */
-
-          btn.disabled = true;
-
-          btn.textContent =
-            'Processando pedido...';
-
-
-          msg.innerHTML =
-            '';
-
-
-          /* ----------------------------------------------------
-             Dados enviados ao service
-             ---------------------------------------------------- */
-
-          const dadosContato = {
-
-            nome,
-
-            nome_contato:
-              nome,
-
-            telefone,
-
-            whatsapp,
-
-            email,
-
-            endereco: {
-
-              endereco:
-                enderecoTexto,
-
-              cidade,
-
-              estado,
-
-              cep
-
-            },
-
-            cep,
-
-            payment_method_id:
-              metodoSelecionado?.id ||
-              null,
-
-            payment_method_nome:
-              metodoSelecionado?.nome ||
-              metodoSelecionado?.tipo ||
-              '',
-
-            parcelas:
-              parcelasSelecionadas,
-
-            delivery_zone_id:
-              resultadoFrete?.delivery_zone_id ||
-              resultadoFrete?.zona_id ||
-              null,
-
-            frete,
-
-            desconto,
-
-          };
-
-
-          /* ----------------------------------------------------
-             Criar pedido
-             ---------------------------------------------------- */
-
-          try {
-
-            const pedido =
-              await criarPedido({
-
-                itens,
-
-                dadosContato,
-
-                observacoes
-
-              });
-
-
-            /* --------------------------------------------------
-               Limpar carrinho somente após sucesso
-               -------------------------------------------------- */
-
-            localStorage.removeItem(
-              'carrinho'
-            );
-
-
-            msg.innerHTML = `
-
-              <div class="alerta alerta--sucesso">
-
-                ✅ Pedido
-                <strong>
-                  ${esc(
-                    pedido.numero ||
-                    pedido.id
-                  )}
-                </strong>
-                criado com sucesso!
-
-                <br>
-
-                Total:
-                ${formatarReais(pedido.total)}
-
-              </div>
-
-            `;
-
-
-            btn.textContent =
-              'Pedido enviado!';
-
-
-            /* --------------------------------------------------
-               Ir para pedidos
-               -------------------------------------------------- */
-
-            setTimeout(
-              () => {
-
-                location.href =
-                  './pedidos.html';
-
-              },
-              2000
-            );
-
-
-          } catch (err) {
-
-            console.error(
-              'Erro ao finalizar pedido:',
-              err
-            );
-
-
-            msg.innerHTML = `
-
-              <div class="alerta alerta--erro">
-
-                ❌
-                ${esc(
-                  err.message ||
-                  'Não foi possível finalizar o pedido.'
-                )}
-
-              </div>
-
-            `;
-
-
-            btn.disabled = false;
-
-            btn.textContent =
-              'Confirmar pedido';
-
-          }
-
-        };
-
-
-      /* ========================================================
-         RESUMO INICIAL
-         ======================================================== */
+      frete = Number(resultadoFrete.valor || resultadoFrete.frete || 0);
+
+      boxFrete.className = 'checkout-frete ok';
+      document.getElementById('frete-valor').textContent = formatarFrete(frete);
+      document.getElementById('frete-prazo').textContent = textoPrazo(resultadoFrete);
 
       atualizarResumo();
+    } catch (erro) {
+      console.error('Erro no frete:', erro);
+      frete = 0;
+      boxFrete.className = 'checkout-frete erro';
+      document.getElementById('frete-valor').textContent = 'Erro ao calcular';
+      document.getElementById('frete-prazo').textContent = 'Tente novamente.';
+      atualizarResumo();
+    }
+  }
 
+  cepInput.addEventListener('input', () => {
+    clearTimeout(timerFrete);
+    timerFrete = setTimeout(atualizarFrete, 500);
+  });
+  cepInput.addEventListener('blur', atualizarFrete);
+
+  /* ========================================================
+     MÉTODO DE PAGAMENTO
+     ======================================================== */
+  paymentSelect.addEventListener('change', async () => {
+    const id = paymentSelect.value;
+    metodoSelecionado = metodosPagamento.find(m => String(m.id) === String(id)) || null;
+    parcelasSelecionadas = 1;
+
+    if (!metodoSelecionado) {
+      campoParcelas.style.display = 'none';
+      resumoPagamento.style.display = 'none';
+      parcelasSelect.innerHTML = '';
+      atualizarResumo();
+      return;
     }
 
+    try {
+      const valorBase = subtotal + frete;
+      const opcoes = await calcularParcelas(metodoSelecionado.id, valorBase);
 
-    /* ==========================================================
-       INICIAR
-       ========================================================== */
+      if (Array.isArray(opcoes) && opcoes.length) {
+        parcelasSelect.innerHTML = opcoes
+          .map(
+            opcao => `<option value="${Number(opcao.parcelas)}">
+              ${esc(formatarParcela(opcao))}
+            </option>`
+          )
+          .join('');
 
-    init().catch(
-      erro => {
-
-        console.error(
-          'Erro ao inicializar checkout:',
-          erro
-        );
-
-
-        el.innerHTML = `
-
-          <div class="alerta alerta--erro">
-
-            Não foi possível carregar o checkout.
-
-          </div>
-
-        `;
-
+        campoParcelas.style.display = 'block';
+        parcelasSelecionadas = Number(opcoes[0].parcelas || 1);
+        parcelasSelect.value = String(parcelasSelecionadas);
+      } else {
+        campoParcelas.style.display = 'none';
       }
-    );
+    } catch (erro) {
+      console.warn('Não foi possível calcular parcelas:', erro);
+      campoParcelas.style.display = 'none';
+    }
 
-  </script>
+    atualizarResumo();
+
+    resumoPagamento.style.display = 'block';
+    resumoPagamento.innerHTML = `
+      <strong>${esc(metodoSelecionado.nome || metodoSelecionado.tipo || 'Pagamento')}</strong>
+      <div style="margin-top:4px;">Valor: ${formatarReais(total)}</div>
+    `;
+  });
+
+  parcelasSelect.addEventListener('change', () => {
+    parcelasSelecionadas = Number(parcelasSelect.value || 1);
+    atualizarResumo();
+  });
+
+  /* ========================================================
+     FINALIZAR
+     ======================================================== */
+  document.getElementById('btn-finalizar').onclick = async (e) => {
+    e.preventDefault();
+
+    const btn = e.currentTarget;
+    if (btn.disabled) return;
+
+    const nome = document.getElementById('nome').value.trim();
+    const telefone = document.getElementById('telefone').value.trim();
+    const whatsapp = document.getElementById('whatsapp').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const enderecoTexto = document.getElementById('endereco').value.trim();
+    const cidade = document.getElementById('cidade').value.trim();
+    const estado = document.getElementById('estado').value.trim().toUpperCase();
+    const cep = document.getElementById('cep').value.trim();
+    const observacoes = document.getElementById('obs').value.trim();
+
+    if (!nome || !email) {
+      toast('❌ Preencha nome e e-mail', '', 'erro');
+      return;
+    }
+
+    if (cep.replace(/\D/g, '').length !== 8) {
+      toast('❌ CEP inválido', 'Informe um CEP válido para continuar.', 'erro');
+      return;
+    }
+
+    if (!metodoSelecionado && metodosPagamento.length) {
+      toast('❌ Selecione o pagamento', 'Escolha uma forma de pagamento.', 'erro');
+      return;
+    }
+
+    if (resultadoFrete && resultadoFrete.encontrado === false) {
+      toast('❌ Frete indisponível', 'Não foi possível calcular o frete para este CEP.', 'erro');
+      return;
+    }
+
+    btn.disabled = true;
+    btn.classList.add('btn--carregando');
+
+    const dadosContato = {
+      nome,
+      nome_contato: nome,
+      telefone,
+      whatsapp,
+      email,
+      endereco: { endereco: enderecoTexto, cidade, estado, cep },
+      cep,
+      payment_method_id: metodoSelecionado?.id || null,
+      payment_method_nome:
+        metodoSelecionado?.nome || metodoSelecionado?.tipo || '',
+      parcelas: parcelasSelecionadas,
+      delivery_zone_id:
+        resultadoFrete?.delivery_zone_id || resultadoFrete?.zona_id || null,
+      frete,
+      desconto
+    };
+
+    try {
+      const pedido = await criarPedido({ itens, dadosContato, observacoes });
+
+      localStorage.removeItem('carrinho');
+
+      toast(
+        '✅ Pedido ' + (pedido.numero || pedido.id) + ' criado!',
+        'Redirecionando para seus pedidos...',
+        'sucesso'
+      );
+
+      setTimeout(() => {
+        location.href = './pedidos.html';
+      }, 1800);
+
+    } catch (err) {
+      console.error('Erro ao finalizar pedido:', err);
+      toast('❌ Erro ao finalizar', err.message || 'Tente novamente.', 'erro');
+
+      btn.disabled = false;
+      btn.classList.remove('btn--carregando');
+    }
+  };
+
+  /* ========================================================
+     RESUMO INICIAL
+     ======================================================== */
+  atualizarResumo();
+}
+
+/* ==========================================================
+   INICIAR
+   ========================================================== */
+
+init().catch(erro => {
+  console.error('Erro ao inicializar checkout:', erro);
+  el.innerHTML = `
+    <div class="alerta alerta--erro">
+      Não foi possível carregar o checkout. Tente novamente.
+    </div>
+  `;
+});
+
+</script>
 
 </body>
 </html>
