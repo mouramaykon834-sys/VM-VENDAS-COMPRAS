@@ -38,12 +38,81 @@
     const el = document.getElementById('conteudo-carrinho');
 
     function ler() {
-      try { return JSON.parse(localStorage.getItem('carrinho') || '[]'); } catch { return []; }
+      try {
+        const dados = JSON.parse(localStorage.getItem('carrinho') || '[]');
+        return Array.isArray(dados) ? dados : [];
+      } catch {
+        return [];
+      }
     }
-    function salvar(itens) { localStorage.setItem('carrinho', JSON.stringify(itens)); }
 
-    function render() {
-      const itens = ler();
+    function salvar(itens) {
+      localStorage.setItem('carrinho', JSON.stringify(itens));
+    }
+
+    async function sincronizarEstoques(itens) {
+      if (!itens.length) return itens;
+
+      try {
+        const { supabase } = await import('./assets/js/supabase.js');
+        const ids = Array.from(new Set(itens.map(i => i.id).filter(Boolean)));
+        if (!ids.length) return itens;
+
+        const { data, error } = await supabase
+          .from('products')
+          .select('id, estoque, status, preco, preco_promocional')
+          .in('id', ids);
+
+        if (error) throw error;
+
+        const mapa = new Map((data || []).map(p => [String(p.id), p]));
+        let alterou = false;
+
+        const atualizados = itens
+          .map(function(item) {
+            const p = mapa.get(String(item.id));
+            if (!p) {
+              alterou = true;
+              return null;
+            }
+
+            const estoque = Math.max(0, Number(p.estoque) || 0);
+            const quantidadeAtual = Math.max(1, Number(item.quantidade) || 1);
+
+            let quantidade = Math.min(quantidadeAtual, estoque);
+
+            if (estoque <= 0 || p.status === 'oculto' || p.status === 'vendido' || p.status === 'indisponivel') {
+              alterou = true;
+              return null;
+            }
+
+            if (quantidade !== quantidadeAtual || Number(item.estoque) !== estoque) {
+              alterou = true;
+            }
+
+            const temPromo = p.preco_promocional != null &&
+              Number(p.preco_promocional) > 0 &&
+              Number(p.preco_promocional) < Number(p.preco);
+
+            return Object.assign({}, item, {
+              quantidade: quantidade,
+              estoque: estoque,
+              preco: temPromo ? Number(p.preco_promocional) : Number(p.preco)
+            });
+          })
+          .filter(Boolean);
+
+        if (alterou) salvar(atualizados);
+        return atualizados;
+      } catch (e) {
+        console.warn('[carrinho] Não foi possível sincronizar estoque:', e);
+        return itens;
+      }
+    }
+
+    async function render() {
+      let itens = ler();
+      itens = await sincronizarEstoques(itens);
 
       if (!itens.length) {
         el.innerHTML = `
@@ -55,12 +124,17 @@
         return;
       }
 
-      const subtotal = itens.reduce((s, i) => s + i.preco * i.quantidade, 0);
+      const subtotal = itens.reduce((s, i) => s + Number(i.preco) * Number(i.quantidade), 0);
 
       el.innerHTML = `
         <div class="carrinho">
           <div class="carrinho__lista">
-            ${itens.map((i, idx) => `
+            ${itens.map((i, idx) => {
+              const estoque = Math.max(0, Number(i.estoque) || 0);
+              const quantidade = Math.min(Math.max(1, Number(i.quantidade) || 1), estoque);
+              const limiteAtingido = quantidade >= estoque;
+
+              return `
               <div class="carrinho__item">
                 ${i.imagem
                   ? `<img src="${i.imagem}" alt="" class="carrinho__item-img" />`
@@ -68,20 +142,23 @@
                 <div class="carrinho__item-info">
                   <a href="./produto.html?id=${i.id}" class="carrinho__item-nome">${esc(i.nome)}</a>
                   <div class="carrinho__item-preco">R$ ${Number(i.preco).toFixed(2)}</div>
+                  <div style="font-size:12px;color:#64748b;margin-top:4px;">Estoque disponível: ${estoque}</div>
                   <button class="carrinho__item-remover" data-rm="${idx}">Remover</button>
                 </div>
                 <div class="carrinho__item-acoes">
                   <div class="carrinho__quantidade">
                     <button class="btn btn--fantasma btn--sm" data-menos="${idx}">−</button>
-                    <input type="number" min="1" value="${i.quantidade}" data-qtd="${idx}" />
-                    <button class="btn btn--fantasma btn--sm" data-mais="${idx}">+</button>
+                    <input type="number" min="1" max="${estoque}" value="${quantidade}" data-qtd="${idx}" />
+                    <button class="btn btn--fantasma btn--sm" data-mais="${idx}" ${limiteAtingido ? 'disabled title="Limite de estoque atingido"' : ''}>+</button>
                   </div>
+                  ${limiteAtingido ? '<div style="margin-top:6px;font-size:12px;color:#b45309;text-align:right;">Limite de estoque atingido</div>' : ''}
                   <div style="margin-top:8px;text-align:right;font-weight:700;">
-                    R$ ${(i.preco * i.quantidade).toFixed(2)}
+                    R$ ${(Number(i.preco) * quantidade).toFixed(2)}
                   </div>
                 </div>
               </div>
-            `).join('')}
+              `;
+            }).join('')}
           </div>
 
           <aside class="resumo">
@@ -106,21 +183,111 @@
 
       // Eventos
       el.querySelectorAll('[data-rm]').forEach(b => b.onclick = () => {
-        const i = ler(); i.splice(Number(b.dataset.rm), 1); salvar(i); render();
+        const i = ler();
+        const idx = Number(b.dataset.rm);
+        if (!i[idx]) return;
+        i.splice(idx, 1);
+        salvar(i);
+        render();
       });
-      el.querySelectorAll('[data-mais]').forEach(b => b.onclick = () => {
-        const i = ler(); i[Number(b.dataset.mais)].quantidade++; salvar(i); render();
+
+      el.querySelectorAll('[data-mais]').forEach(b => b.onclick = async () => {
+        const i = ler();
+        const idx = Number(b.dataset.mais);
+        if (!i[idx]) return;
+
+        const estoque = await consultarEstoque(i[idx].id);
+        const atual = Math.max(0, Number(i[idx].quantidade) || 0);
+
+        if (estoque <= 0) {
+          i.splice(idx, 1);
+          salvar(i);
+          render();
+          return;
+        }
+
+        if (atual >= estoque) {
+          i[idx].quantidade = estoque;
+          i[idx].estoque = estoque;
+          salvar(i);
+          render();
+          mostrarAvisoEstoque();
+          return;
+        }
+
+        i[idx].quantidade = atual + 1;
+        i[idx].estoque = estoque;
+        salvar(i);
+        render();
       });
+
       el.querySelectorAll('[data-menos]').forEach(b => b.onclick = () => {
-        const i = ler(); const idx = Number(b.dataset.menos);
-        if (i[idx].quantidade > 1) i[idx].quantidade--; else i.splice(idx, 1);
-        salvar(i); render();
+        const i = ler();
+        const idx = Number(b.dataset.menos);
+        if (!i[idx]) return;
+        if (i[idx].quantidade > 1) i[idx].quantidade--;
+        else i.splice(idx, 1);
+        salvar(i);
+        render();
       });
-      el.querySelectorAll('[data-qtd]').forEach(inp => inp.onchange = (e) => {
-        const i = ler(); const idx = Number(e.target.dataset.qtd);
-        const v = Math.max(1, Number(e.target.value) || 1);
-        i[idx].quantidade = v; salvar(i); render();
+
+      el.querySelectorAll('[data-qtd]').forEach(inp => inp.onchange = async (e) => {
+        const i = ler();
+        const idx = Number(e.target.dataset.qtd);
+        if (!i[idx]) return;
+
+        const estoque = await consultarEstoque(i[idx].id);
+        if (estoque <= 0) {
+          i.splice(idx, 1);
+          salvar(i);
+          render();
+          return;
+        }
+
+        let v = Math.max(1, Number(e.target.value) || 1);
+        if (v > estoque) {
+          v = estoque;
+          mostrarAvisoEstoque();
+        }
+
+        i[idx].quantidade = v;
+        i[idx].estoque = estoque;
+        salvar(i);
+        render();
       });
+    }
+
+    async function consultarEstoque(productId) {
+      try {
+        const { supabase } = await import('./assets/js/supabase.js');
+        const { data, error } = await supabase
+          .from('products')
+          .select('estoque')
+          .eq('id', productId)
+          .maybeSingle();
+
+        if (error) throw error;
+        return Math.max(0, Number(data && data.estoque) || 0);
+      } catch (e) {
+        console.warn('[carrinho] erro ao consultar estoque:', e);
+        return 0;
+      }
+    }
+
+    function mostrarAvisoEstoque() {
+      let area = document.querySelector('.toast-area-carrinho');
+      if (!area) {
+        area = document.createElement('div');
+        area.className = 'toast-area-carrinho';
+        area.style.cssText = 'position:fixed;top:20px;right:20px;z-index:99999;display:flex;flex-direction:column;gap:10px;pointer-events:none;max-width:calc(100% - 40px);';
+        document.body.appendChild(area);
+      }
+
+      const toast = document.createElement('div');
+      toast.style.cssText = 'background:#fef3c7;color:#92400e;border-left:4px solid #f59e0b;padding:12px 16px;border-radius:10px;box-shadow:0 8px 20px rgba(15,23,42,.15);font-family:system-ui,sans-serif;font-size:14px;min-width:240px;';
+      toast.innerHTML = '<div style="font-weight:700;margin-bottom:2px;">⚠️ Limite de estoque</div><div style="font-size:12px;opacity:.85;">A quantidade foi limitada ao estoque disponível.</div>';
+      area.appendChild(toast);
+      setTimeout(function() { toast.remove(); }, 3000);
     }
 
     function esc(s) {
