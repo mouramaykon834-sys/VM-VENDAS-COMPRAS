@@ -68,7 +68,7 @@ export async function iniciarCarrossel() {
   // HTML dos slides
   const slidesHTML = slides.map(function(s, i) {
     const bg = s.imagem_url
-      ? 'style="background-image: linear-gradient(rgba(15,23,42,.35), rgba(15,23,42,.55)), url(' + escapeAttr(s.imagem_url) + '); background-size: cover; background-position: center;"'
+      ? 'style="background-image: url(' + escapeAttr(s.imagem_url) + ');"'
       : '';
 
     const botaoHTML = (s.texto_botao && s.link_botao)
