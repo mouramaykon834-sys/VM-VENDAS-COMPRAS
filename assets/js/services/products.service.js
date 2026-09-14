@@ -10,7 +10,7 @@ export async function listarProdutos({ filtros = {}, ordenar = 'recentes', pagin
 
   let query = supabase
     .from('products')
-    .select('id, nome, slug, descricao_curta, preco, preco_promocional, condicao, estoque, status, destaque, marca, sku, created_at, categoria_id, categories ( id, nome, slug ), product_images ( url, principal, ordem )', { count: 'exact' });
+    .select('id, nome, slug, descricao_curta, preco, preco_promocional, condicao, estoque, status, destaque, marca, sku, created_at, categoria_id, garantia_padrao_meses, garantia_padrao_descricao, garantias_estendidas, categories ( id, nome, slug ), product_images ( url, principal, ordem )', { count: 'exact' });
 
   query = query.neq('status', 'oculto');
 
@@ -48,21 +48,25 @@ export async function buscarProduto(id) {
     .select('*, categories ( id, nome, slug ), product_images ( id, url, principal, ordem, alt )')
     .eq('id', id)
     .maybeSingle();
+
   if (error) throw error;
   if (!data) return null;
+
   return normalizarProduto(data, true);
 }
 
 // DESTAQUES — pega produtos marcados como destaque
 export async function listarDestaques(limite) {
   limite = limite || 8;
+
   const { data, error } = await supabase
     .from('products')
-    .select('id, nome, slug, descricao_curta, preco, preco_promocional, condicao, estoque, status, marca, created_at, categories ( id, nome, slug ), product_images ( url, principal, ordem )')
+    .select('id, nome, slug, descricao_curta, preco, preco_promocional, condicao, estoque, status, marca, created_at, garantia_padrao_meses, garantia_padrao_descricao, garantias_estendidas, categories ( id, nome, slug ), product_images ( url, principal, ordem )')
     .neq('status', 'oculto')
     .eq('destaque', true)
     .order('created_at', { ascending: false })
     .limit(limite);
+
   if (error) throw error;
   return (data || []).map(normalizarProduto);
 }
@@ -70,12 +74,14 @@ export async function listarDestaques(limite) {
 // NOVIDADES — produtos recentes
 export async function listarRecentes(limite) {
   limite = limite || 8;
+
   const { data, error } = await supabase
     .from('products')
-    .select('id, nome, slug, descricao_curta, preco, preco_promocional, condicao, estoque, status, marca, created_at, categories ( id, nome, slug ), product_images ( url, principal, ordem )')
+    .select('id, nome, slug, descricao_curta, preco, preco_promocional, condicao, estoque, status, marca, created_at, garantia_padrao_meses, garantia_padrao_descricao, garantias_estendidas, categories ( id, nome, slug ), product_images ( url, principal, ordem )')
     .neq('status', 'oculto')
     .order('created_at', { ascending: false })
     .limit(limite);
+
   if (error) throw error;
   return (data || []).map(normalizarProduto);
 }
@@ -83,13 +89,15 @@ export async function listarRecentes(limite) {
 // OFERTAS — apenas produtos com preço promocional válido
 export async function listarOfertas(limite) {
   limite = limite || 8;
+
   const { data, error } = await supabase
     .from('products')
-    .select('id, nome, slug, descricao_curta, preco, preco_promocional, condicao, estoque, status, marca, created_at, categories ( id, nome, slug ), product_images ( url, principal, ordem )')
+    .select('id, nome, slug, descricao_curta, preco, preco_promocional, condicao, estoque, status, marca, created_at, garantia_padrao_meses, garantia_padrao_descricao, garantias_estendidas, categories ( id, nome, slug ), product_images ( url, principal, ordem )')
     .neq('status', 'oculto')
     .not('preco_promocional', 'is', null)
     .order('created_at', { ascending: false })
     .limit(limite);
+
   if (error) throw error;
 
   return (data || [])
@@ -104,6 +112,7 @@ export async function listarCategorias() {
     .eq('ativo', true)
     .order('ordem', { ascending: true })
     .order('nome', { ascending: true });
+
   if (error) throw error;
   return data || [];
 }
@@ -115,6 +124,7 @@ function normalizarProduto(p, completo) {
     return (a.ordem || 0) - (b.ordem || 0);
   });
   const imagemPrincipal = (imgs.find(x => x.principal) || imgs[0] || {}).url || null;
+
   const temPromo = p.preco_promocional != null && Number(p.preco_promocional) > 0 && Number(p.preco_promocional) < Number(p.preco);
   const precoFinal = temPromo ? Number(p.preco_promocional) : Number(p.preco);
 
@@ -138,7 +148,12 @@ function normalizarProduto(p, completo) {
     categoriaId: p.categoria_id || (p.categories ? p.categories.id : null),
     imagemPrincipal: imagemPrincipal,
     imagens: imgs,
-    createdAt: p.created_at
+    createdAt: p.created_at,
+
+    // GARANTIAS
+    garantia_padrao_meses: Number(p.garantia_padrao_meses) || 0,
+    garantia_padrao_descricao: p.garantia_padrao_descricao || null,
+    garantias_estendidas: Array.isArray(p.garantias_estendidas) ? p.garantias_estendidas : []
   };
 
   if (completo) {
@@ -147,6 +162,7 @@ function normalizarProduto(p, completo) {
     base.especificacoes = p.especificacoes || {};
     base.caracteristicas = p.caracteristicas || [];
   }
+
   return base;
 }
 
