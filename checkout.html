@@ -174,6 +174,22 @@ html[data-tema="escuro"] .checkout-resumo {
   color: var(--cor-texto-suave);
   font-size: 12px;
 }
+.checkout-resumo__item-garantia {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #166534;
+  background: #dcfce7;
+  padding: 2px 6px;
+  border-radius: 5px;
+  margin-top: 3px;
+}
+html[data-tema="escuro"] .checkout-resumo__item-garantia {
+  background: rgba(22, 163, 74, 0.15);
+  color: #86efac;
+}
 .checkout-resumo__item-valor {
   font-weight: 600;
   color: var(--cor-texto);
@@ -312,7 +328,7 @@ function dinheiro(valor) {
 }
 
 /* ==========================================================
-   TOAST (usa classes do Bloco A)
+   TOAST
    ========================================================== */
 function toast(titulo, mensagem, tipo) {
   tipo = tipo || 'info';
@@ -560,6 +576,9 @@ function render(perfil, user) {
               <div class="checkout-resumo__item-info">
                 <strong>${esc(i.nome)}</strong>
                 <small>${Number(i.quantidade)} × R$ ${dinheiro(i.preco)}</small>
+                ${i.garantia_estendida
+                  ? `<div class="checkout-resumo__item-garantia">🛡️ Garantia +${i.garantia_estendida.meses} meses</div>`
+                  : ''}
               </div>
               <div class="checkout-resumo__item-valor">
                 R$ ${dinheiro(Number(i.preco || 0) * Number(i.quantidade || 0))}
@@ -831,6 +850,24 @@ function render(perfil, user) {
       const pedido = await criarPedido({ itens, dadosContato, observacoes });
 
       localStorage.removeItem('carrinho');
+
+      // ============================================================
+      // GERAR GARANTIAS NO BANCO (padrão + estendida)
+      // ============================================================
+      try {
+        if (pedido && pedido.order_id) {
+          const { error: errGarantias } = await supabase.rpc('gerar_garantias_do_pedido', {
+            p_order_id: pedido.order_id
+          });
+
+          if (errGarantias) {
+            console.warn('[garantias] erro ao gerar:', errGarantias.message);
+          }
+        }
+      } catch (e) {
+        console.warn('[garantias] não foi possível gerar:', e);
+        // Não bloqueia o fluxo — o pedido já foi criado
+      }
 
       toast(
         '✅ Pedido ' + (pedido.numero || pedido.id) + ' criado!',
