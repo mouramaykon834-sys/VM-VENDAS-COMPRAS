@@ -4,75 +4,77 @@
 
 :root {
   /* Cores da marca */
-  --cor-principal:    #0ea5e9;
+  --cor-principal: #0ea5e9;
   --cor-principal-escura: #0284c7;
   --cor-principal-clara: #7dd3fc;
-  --cor-secundaria:   #0f172a;
-  --cor-destaque:     #f59e0b;
+  --cor-secundaria: #0f172a;
+  --cor-destaque: #f59e0b;
   --cor-destaque-escura: #d97706;
 
   /* Cores de fundo e texto */
-  --cor-fundo:        #ffffff;
-  --cor-fundo-suave:  #f8fafc;
-  --cor-texto:        #0f172a;
-  --cor-texto-suave:  #64748b;
-  --cor-borda:        #e2e8f0;
+  --cor-fundo: #ffffff;
+  --cor-fundo-suave: #f8fafc;
+  --cor-texto: #0f172a;
+  --cor-texto-suave: #64748b;
+  --cor-borda: #e2e8f0;
   --cor-borda-escura: #cbd5e1;
 
   /* Cores semânticas */
-  --cor-sucesso:      #16a34a;
+  --cor-sucesso: #16a34a;
   --cor-sucesso-escura: #15803d;
-  --cor-alerta:       #f59e0b;
-  --cor-erro:         #dc2626;
-  --cor-erro-escura:  #b91c1c;
-  --cor-info:         #0ea5e9;
+  --cor-alerta: #f59e0b;
+  --cor-erro: #dc2626;
+  --cor-erro-escura: #b91c1c;
+  --cor-info: #0ea5e9;
 
   /* Tipografia */
   --fonte-principal: system-ui, -apple-system, "Segoe UI", Roboto,
-                     "Helvetica Neue", Arial, sans-serif;
-  --fonte-titulo:    var(--fonte-principal);
-  --fonte-mono:      ui-monospace, "SF Mono", Menlo, Monaco,
-                     "Cascadia Code", Consolas, monospace;
+    "Helvetica Neue", Arial, sans-serif;
+  --fonte-titulo: var(--fonte-principal);
+  --fonte-mono: ui-monospace, "SF Mono", Menlo, Monaco,
+    "Cascadia Code", Consolas, monospace;
 
-  --texto-xs:   12px;
-  --texto-sm:   14px;
+  --texto-xs: 12px;
+  --texto-sm: 14px;
   --texto-base: 16px;
-  --texto-lg:   18px;
-  --texto-xl:   20px;
-  --texto-2xl:  24px;
-  --texto-3xl:  30px;
-  --texto-4xl:  36px;
+  --texto-lg: 18px;
+  --texto-xl: 20px;
+  --texto-2xl: 24px;
+  --texto-3xl: 30px;
+  --texto-4xl: 36px;
 
-  --peso-normal:   400;
-  --peso-medio:    500;
+  --peso-normal: 400;
+  --peso-medio: 500;
   --peso-semibold: 600;
-  --peso-bold:     700;
+  --peso-bold: 700;
 
   --linha-apertada: 1.25;
-  --linha-normal:   1.5;
-  --linha-solta:    1.75;
+  --linha-normal: 1.5;
+  --linha-solta: 1.75;
 
   /* Espaçamentos */
-  --esp-1:  4px;
-  --esp-2:  8px;
-  --esp-3:  12px;
-  --esp-4:  16px;
-  --esp-5:  20px;
-  --esp-6:  24px;
-  --esp-8:  32px;
+  --esp-1: 4px;
+  --esp-2: 8px;
+  --esp-3: 12px;
+  --esp-4: 16px;
+  --esp-5: 20px;
+  --esp-6: 24px;
+  --esp-8: 32px;
   --esp-10: 40px;
   --esp-12: 48px;
   --esp-16: 64px;
+  --esp-20: 80px;
+  --esp-24: 96px;
 
   /* Raios */
-  --raio-sm:   6px;
-  --raio-md:   8px;
-  --raio-lg:   12px;
-  --raio-xl:   16px;
+  --raio-sm: 6px;
+  --raio-md: 8px;
+  --raio-lg: 12px;
+  --raio-xl: 16px;
   --raio-full: 9999px;
 
   --raio-botao: var(--raio-md);
-  --raio-card:  var(--raio-lg);
+  --raio-card: var(--raio-lg);
   --raio-input: var(--raio-md);
 
   /* Sombras */
@@ -82,34 +84,35 @@
   --sombra-xl: 0 20px 40px rgba(15, 23, 42, 0.12);
 
   /* Transições */
-  --transicao-rapida:  120ms ease;
+  --transicao-rapida: 120ms ease;
   --transicao-normal: 200ms ease;
-  --transicao-lenta:  320ms ease;
+  --transicao-lenta: 320ms ease;
 
   /* Layout */
-  --largura-maxima:     1280px;
-  --largura-conteudo:   1080px;
-  --altura-header:      72px;
-  --altura-header-mob:  60px;
+  --largura-maxima: 1440px;
+  --largura-maxima-xl: 1440px;
+  --largura-conteudo: 1200px;
+  --altura-header: 72px;
+  --altura-header-mob: 60px;
 
   /* Z-index */
-  --z-base:      1;
-  --z-dropdown:  100;
-  --z-sticky:    200;
-  --z-overlay:   900;
-  --z-modal:     1000;
-  --z-toast:     1100;
+  --z-base: 1;
+  --z-dropdown: 100;
+  --z-sticky: 200;
+  --z-overlay: 900;
+  --z-modal: 1000;
+  --z-toast: 1100;
 
   /* Botões — padrões */
-  --botao-altura:      44px;
-  --botao-altura-sm:   36px;
-  --botao-altura-lg:   52px;
-  --botao-pad-x:       18px;
-  --botao-pad-x-sm:    12px;
-  --botao-pad-x-lg:    24px;
-  --botao-fonte:       15px;
-  --botao-fonte-sm:    13px;
-  --botao-fonte-lg:    16px;
+  --botao-altura: 44px;
+  --botao-altura-sm: 36px;
+  --botao-altura-lg: 52px;
+  --botao-pad-x: 18px;
+  --botao-pad-x-sm: 12px;
+  --botao-pad-x-lg: 24px;
+  --botao-fonte: 15px;
+  --botao-fonte-sm: 13px;
+  --botao-fonte-lg: 16px;
 
   /* Foco */
   --anel-foco: 0 0 0 3px rgba(14, 165, 233, 0.35);
@@ -121,19 +124,19 @@
    ============================================================= */
 
 html[data-tema="escuro"] {
-  --cor-fundo:        #0f172a;
-  --cor-fundo-suave:  #1e293b;
+  --cor-fundo: #0f172a;
+  --cor-fundo-suave: #1e293b;
 
   /* TEXTO PRINCIPAL — SEMPRE CLARO */
-  --cor-texto:        #f8fafc;
-  --cor-texto-suave:  #cbd5e1;
+  --cor-texto: #f8fafc;
+  --cor-texto-suave: #cbd5e1;
 
   /* BORDAS */
-  --cor-borda:        #334155;
+  --cor-borda: #334155;
   --cor-borda-escura: #475569;
 
   /* COR SECUNDÁRIA */
-  --cor-secundaria:   #f8fafc;
+  --cor-secundaria: #f8fafc;
 
   /* SOMBRAS */
   --sombra-sm: 0 1px 2px rgba(0, 0, 0, 0.30);
@@ -327,7 +330,6 @@ html[data-tema="escuro"] button {
   color: inherit;
 }
 
-
 /* Botões que possuem fundo próprio continuam preservados */
 
 html[data-tema="escuro"] .btn-primary,
@@ -430,4 +432,26 @@ html[data-modo="mobile"] .nav-inferior {
 
 html[data-modo="desktop"] body {
   min-width: 1280px;
+}
+
+
+/* =============================================================
+   TELAS GRANDES — APROVEITAMENTO DE ESPAÇO
+   =============================================================
+   Ajustes progressivos para monitores grandes.
+   Mobile e tablet não são afetados.
+   ============================================================= */
+
+@media (min-width: 1600px) {
+  :root {
+    --largura-maxima: 1440px;
+    --esp-16: 72px;
+  }
+}
+
+@media (min-width: 1920px) {
+  :root {
+    --largura-maxima: 1440px;
+    --esp-16: 80px;
+  }
 }
