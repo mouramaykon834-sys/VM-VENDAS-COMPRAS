@@ -8,6 +8,7 @@ import { aplicarModoSalvo, alternarModo, modoAtual, iconeModo, tituloModo } from
 
 export async function renderHeader(ativo) {
   ativo = ativo || '';
+
   const el = document.getElementById('header');
   if (!el) return;
 
@@ -24,16 +25,22 @@ export async function renderHeader(ativo) {
   el.innerHTML =
     '<header class="cabecalho">' +
       '<div class="container cabecalho__interno">' +
+
         '<a href="./index.html" class="cabecalho__logo" id="header-logo"><span id="header-logo-nome">Minha Loja</span></a>' +
 
         '<form class="cabecalho__busca" role="search" id="form-busca">' +
           '<svg class="cabecalho__busca-icone" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>' +
-          '<input type="search" name="q" placeholder="O que você procura?" aria-label="Buscar produtos">' +
+          '<input type="search" name="q" placeholder="O que você está procurando?" aria-label="Buscar produtos">' +
+          '<button type="submit" class="cabecalho__busca-btn" aria-label="Buscar">' +
+            '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>' +
+          '</button>' +
         '</form>' +
 
         '<nav class="cabecalho__acoes" aria-label="Ações do usuário">' +
-          '<button type="button" class="cabecalho__acao" id="btn-tema" title="Alternar tema">' + iconeTema + '</button>' +
-          '<button type="button" class="cabecalho__acao" id="btn-modo" title="' + tituloModo(modo) + '">' + iconeModo(modo) + '</button>' +
+
+          '<button type="button" class="cabecalho__acao" id="btn-tema" title="Alternar tema">' + iconeTema + '<span class="cabecalho__acao-texto">Tema</span></button>' +
+
+          '<button type="button" class="cabecalho__acao" id="btn-modo" title="' + tituloModo(modo) + '">' + iconeModo(modo) + '<span class="cabecalho__acao-texto">Modo</span></button>' +
 
           '<a href="./favoritos.html" class="cabecalho__acao" title="Favoritos">' +
             '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>' +
@@ -64,8 +71,39 @@ export async function renderHeader(ativo) {
             '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>' +
             '<span class="cabecalho__acao-texto" id="header-conta-texto">Entrar</span>' +
           '</a>' +
+
         '</nav>' +
+
       '</div>' +
+
+      '<div class="cabecalho__nav">' +
+        '<div class="container cabecalho__nav-interno">' +
+
+          '<nav class="cabecalho__nav-lista" aria-label="Categorias rápidas">' +
+
+            '<a href="./produtos.html" class="cabecalho__nav-item cabecalho__nav-item--destaque">' +
+              '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>' +
+              'Todas as categorias' +
+            '</a>' +
+
+            '<a href="./produtos.html?ordenar=menor-preco" class="cabecalho__nav-item">Ofertas</a>' +
+
+            '<a href="./produtos.html" class="cabecalho__nav-item">Destaques</a>' +
+
+            '<a href="./produtos.html" class="cabecalho__nav-item">Mais vendidos</a>' +
+
+            '<a href="./produtos.html?ordenar=recentes" class="cabecalho__nav-item">Novidades</a>' +
+
+          '</nav>' +
+
+          '<div class="cabecalho__nav-info">' +
+            '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg>' +
+            'Entrega para todo o Brasil' +
+          '</div>' +
+
+        '</div>' +
+      '</div>' +
+
     '</header>';
 
   // Busca
@@ -86,9 +124,12 @@ export async function renderHeader(ativo) {
       const novo = atual === 'escuro' ? 'claro' : 'escuro';
       document.documentElement.setAttribute('data-tema', novo);
       try { localStorage.setItem('vm-tema', novo); } catch (e) {}
-      btnTema.innerHTML = novo === 'escuro'
-        ? '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>'
-        : '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>';
+      const iconeEl = btnTema.querySelector('svg');
+      if (iconeEl) {
+        iconeEl.outerHTML = novo === 'escuro'
+          ? '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>'
+          : '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>';
+      }
     });
   }
 
@@ -97,7 +138,8 @@ export async function renderHeader(ativo) {
   if (btnModo) {
     btnModo.addEventListener('click', function() {
       const novo = alternarModo();
-      btnModo.innerHTML = iconeModo(novo);
+      const iconeEl = btnModo.querySelector('svg');
+      if (iconeEl) iconeEl.outerHTML = iconeModo(novo);
       btnModo.title = tituloModo(novo);
     });
   }
@@ -108,6 +150,7 @@ export async function renderHeader(ativo) {
     const visual = cfg.visual || {};
     const company = cfg.company || {};
     const nomeLoja = company.nome_fantasia || company.nome_empresa || 'Minha Loja';
+
     const logoEl = document.getElementById('header-logo');
     if (visual.logo_url) {
       logoEl.innerHTML = '<img src="' + visual.logo_url + '" alt="" loading="eager" />';
@@ -163,13 +206,16 @@ export async function renderHeader(ativo) {
 function aplicarTemaSalvo() {
   try {
     const salvo = localStorage.getItem('vm-tema');
-    if (salvo === 'escuro') document.documentElement.setAttribute('data-tema', 'escuro');
+    if (salvo === 'escuro')
+      document.documentElement.setAttribute('data-tema', 'escuro');
   } catch (e) {}
 }
 
 function comTimeout(p, ms) {
   ms = ms || 5000;
-  return Promise.race([p, new Promise(function(_, rej) { setTimeout(function() { rej(new Error('timeout')); }, ms); })]);
+  return Promise.race([p, new Promise(function(_, rej) {
+    setTimeout(function() { rej(new Error('timeout')); }, ms);
+  })]);
 }
 
 function atualizarBadge(id, valor) {
