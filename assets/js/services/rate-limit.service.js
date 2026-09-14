@@ -10,13 +10,13 @@ import { supabase } from '../supabase.js';
 // CONFIGURAÇÕES DE LIMITES POR AÇÃO
 // -------------------------------------------------------------
 const LIMITES = {
-  login:        { max: 5,  janela: 900 },  // 5 tentativas em 15 min
-  cadastro:     { max: 3,  janela: 3600 }, // 3 cadastros em 1 hora
-  recuperar:    { max: 3,  janela: 3600 }, // 3 recuperações em 1 hora
-  proposta:     { max: 5,  janela: 3600 }, // 5 propostas em 1 hora
-  mensagem:     { max: 20, janela: 3600 }, // 20 mensagens em 1 hora
-  contato:      { max: 5,  janela: 3600 }, // 5 mensagens de contato em 1 hora
-  pedido:       { max: 10, janela: 3600 }  // 10 pedidos em 1 hora
+  login: { max: 5, janela: 900 }, // 5 tentativas em 15 min
+  cadastro: { max: 3, janela: 3600 }, // 3 cadastros em 1 hora
+  recuperar: { max: 3, janela: 3600 }, // 3 recuperações em 1 hora
+  proposta: { max: 5, janela: 3600 }, // 5 propostas em 1 hora
+  mensagem: { max: 20, janela: 3600 }, // 20 mensagens em 1 hora
+  contato: { max: 5, janela: 3600 }, // 5 mensagens de contato em 1 hora
+  pedido: { max: 10, janela: 3600 } // 10 pedidos em 1 hora
 };
 
 // -------------------------------------------------------------
@@ -31,7 +31,6 @@ export async function verificarLimite(acao, chave = null) {
       return { permitido: true, restantes: 999, esperar_segundos: 0 };
     }
 
-    // Chave = identificação (e-mail, IP, etc.)
     const chaveFinal = chave || await gerarChaveUsuario();
 
     const r = await supabase.rpc('verificar_rate_limit', {
@@ -94,7 +93,6 @@ async function gerarChaveUsuario() {
     const { data: { user } } = await supabase.auth.getUser();
     if (user) return user.id;
 
-    // Se não estiver logado, usa um identificador anônimo
     let anonId = localStorage.getItem('vm_anon_id');
     if (!anonId) {
       anonId = 'anon_' + Math.random().toString(36).slice(2, 15) + '_' + Date.now();
@@ -107,7 +105,7 @@ async function gerarChaveUsuario() {
 }
 
 // -------------------------------------------------------------
-// Helper: mostra alerta amigável se bloqueado
+// Helper: formata tempo de espera
 // -------------------------------------------------------------
 export function formatarEspera(segundos) {
   if (segundos < 60) return `${segundos} segundos`;
