@@ -25,6 +25,141 @@
   border-bottom: 1px dashed #dc2626;
   cursor: help;
 }
+
+/* =============================================================
+   SELO DE GARANTIA PADRÃO
+   ============================================================= */
+.selo-garantia {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #ecfdf5, #d1fae5);
+  border: 1px solid #86efac;
+  color: #166534;
+  font-size: 13px;
+  font-weight: 600;
+  margin-top: 12px;
+}
+.selo-garantia__icone {
+  font-size: 16px;
+  line-height: 1;
+}
+.selo-garantia__texto strong {
+  color: #065f46;
+}
+
+/* =============================================================
+   GARANTIA ESTENDIDA (radio buttons)
+   ============================================================= */
+.garantia-estendida {
+  margin-top: 18px;
+  padding: 16px;
+  border: 1px solid var(--cor-borda);
+  border-radius: 12px;
+  background: var(--cor-fundo-suave);
+}
+html[data-tema="escuro"] .garantia-estendida {
+  background: #0f172a;
+  border-color: #334155;
+}
+
+.garantia-estendida__titulo {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--cor-texto);
+  margin-bottom: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.garantia-estendida__opcao {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border: 1px solid var(--cor-borda);
+  border-radius: 8px;
+  background: #fff;
+  cursor: pointer;
+  margin-bottom: 8px;
+  transition: border-color .15s, background .15s;
+}
+html[data-tema="escuro"] .garantia-estendida__opcao {
+  background: #1e293b;
+  border-color: #334155;
+}
+.garantia-estendida__opcao:last-child {
+  margin-bottom: 0;
+}
+.garantia-estendida__opcao:hover {
+  border-color: var(--cor-principal);
+}
+.garantia-estendida__opcao.selecionada {
+  border-color: var(--cor-principal);
+  background: #f0f9ff;
+}
+html[data-tema="escuro"] .garantia-estendida__opcao.selecionada {
+  background: rgba(14, 165, 233, 0.1);
+}
+
+.garantia-estendida__opcao input[type="radio"] {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--cor-principal);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.garantia-estendida__info {
+  flex: 1;
+  min-width: 0;
+}
+
+.garantia-estendida__titulo-opcao {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--cor-texto);
+  margin-bottom: 2px;
+}
+
+.garantia-estendida__desc {
+  font-size: 12px;
+  color: var(--cor-texto-suave);
+}
+
+.garantia-estendida__preco {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--cor-sucesso);
+  white-space: nowrap;
+}
+
+/* Preço atualizado (com garantia) */
+.produto__preco-garantia-aviso {
+  display: none;
+  margin-top: 10px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  background: rgba(14, 165, 233, 0.1);
+  border: 1px solid rgba(14, 165, 233, 0.3);
+  font-size: 13px;
+  color: #075985;
+}
+html[data-tema="escuro"] .produto__preco-garantia-aviso {
+  background: rgba(14, 165, 233, 0.15);
+  color: #7dd3fc;
+}
+.produto__preco-garantia-aviso.visivel {
+  display: block;
+}
+.produto__preco-garantia-aviso strong {
+  color: var(--cor-principal);
+}
 </style>
 </head>
 <body>
@@ -49,6 +184,8 @@ await renderFooter();
 })();
 
 let imagensUrls = [];
+let produtoAtual = null;
+let garantiaSelecionada = null; // null = sem garantia | { meses, preco, descricao }
 
 (async () => {
 const params = new URLSearchParams(location.search);
@@ -72,6 +209,7 @@ renderNaoEncontrado('Produto não encontrado.');
 
 async function renderProduto(p, mod) {
 document.title = p.nome + ' — Minha Loja';
+produtoAtual = p;
 const disp = mod.rotuloDisponibilidade(p);
 const cond = mod.rotuloCondicao(p.condicao);
 const imagens = (p.imagens && p.imagens.length) ? p.imagens : [{ url: null }];
@@ -86,8 +224,8 @@ const img = p.imagemPrincipal
 : '<div class="produto-card__sem-imagem">📦</div>';
 
 const preco = p.temPromo
-? '<div class="produto__preco-antigo">R$ ' + p.preco.toFixed(2) + '</div><div class="produto__preco produto__preco--promo">R$ ' + p.precoPromocional.toFixed(2) + '</div>'
-: '<div class="produto__preco">R$ ' + p.preco.toFixed(2) + '</div>';
+? '<div class="produto__preco-antigo">R$ ' + p.preco.toFixed(2) + '</div><div class="produto__preco produto__preco--promo" id="preco-principal">R$ ' + p.precoPromocional.toFixed(2) + '</div>'
+: '<div class="produto__preco" id="preco-principal">R$ ' + p.preco.toFixed(2) + '</div>';
 
 const miniaturas = imagens.length > 1
 ? '<div class="galeria__miniaturas" id="galeria-miniaturas">' + imagens.map(function(img, i) {
@@ -95,6 +233,59 @@ return '<button class="galeria__miniatura ' + (i === 0 ? 'ativa' : '') + '" data
 }).join('') + '</div>'
 : '';
 
+// ============================================================
+// SELO DE GARANTIA PADRÃO
+// ============================================================
+let seloGarantiaHTML = '';
+if (p.garantia_padrao_meses && p.garantia_padrao_meses > 0) {
+const desc = p.garantia_padrao_descricao
+? ' — ' + esc(p.garantia_padrao_descricao)
+: '';
+seloGarantiaHTML = `
+<div class="selo-garantia">
+<span class="selo-garantia__icone">🛡️</span>
+<span class="selo-garantia__texto">
+<strong>Garantia padrão de ${p.garantia_padrao_meses} ${p.garantia_padrao_meses === 1 ? 'mês' : 'meses'}</strong>${desc}
+</span>
+</div>`;
+}
+
+// ============================================================
+// GARANTIAS ESTENDIDAS (radio buttons)
+// ============================================================
+let garantiaEstendidaHTML = '';
+const garantias = Array.isArray(p.garantias_estendidas) ? p.garantias_estendidas : [];
+
+if (garantias.length > 0) {
+garantiaEstendidaHTML = `
+<div class="garantia-estendida" id="bloco-garantia">
+<div class="garantia-estendida__titulo">🛡️ Estender garantia</div>
+
+<label class="garantia-estendida__opcao selecionada" data-garantia-idx="-1">
+<input type="radio" name="garantia" value="-1" checked />
+<div class="garantia-estendida__info">
+<div class="garantia-estendida__titulo-opcao">Sem garantia estendida</div>
+<div class="garantia-estendida__desc">Manter apenas a garantia padrão</div>
+</div>
+<div class="garantia-estendida__preco">Grátis</div>
+</label>
+
+${garantias.map((g, i) => `
+<label class="garantia-estendida__opcao" data-garantia-idx="${i}">
+<input type="radio" name="garantia" value="${i}" />
+<div class="garantia-estendida__info">
+<div class="garantia-estendida__titulo-opcao">+${g.meses} ${g.meses === 1 ? 'mês' : 'meses'}</div>
+${g.descricao ? `<div class="garantia-estendida__desc">${esc(g.descricao)}</div>` : ''}
+</div>
+<div class="garantia-estendida__preco">+ R$ ${Number(g.preco).toFixed(2)}</div>
+</label>
+`).join('')}
+</div>`;
+}
+
+// ============================================================
+// HTML FINAL
+// ============================================================
 const el = document.getElementById('conteudo-produto');
 el.innerHTML =
 '<div class="migalhas"><a href="./index.html">Início</a><span><a href="./produtos.html">Produtos</a></span><span>' + esc(p.nome) + '</span></div>' +
@@ -122,9 +313,13 @@ miniaturas +
 
 (p.descricaoCurta ? '<p class="produto__descricao-curta">' + esc(p.descricaoCurta) + '</p>' : '') +
 
+seloGarantiaHTML +
+
 '<div class="produto__preco-bloco">' + preco +
-'<div class="produto__parcelas">Em até <strong>3x</strong> de R$ ' + (p.precoFinal / 3).toFixed(2) + ' sem juros</div>' +
+'<div class="produto__preco-garantia-aviso" id="aviso-garantia"></div>' +
 '</div>' +
+
+garantiaEstendidaHTML +
 
 '<div class="produto__acoes">' +
 '<div class="produto__acoes-linha">' +
@@ -156,7 +351,9 @@ console.warn('[produto] preview não carregado:', e);
 }
 }
 
+// ==========================================================
 // GALERIA
+// ==========================================================
 const principal = document.getElementById('galeria-principal');
 if (principal) {
 principal.onclick = function() {
@@ -179,37 +376,144 @@ abrirGaleriaFull(idx);
 };
 });
 
-// BOTÕES
+// ==========================================================
+// GARANTIA ESTENDIDA — escolha
+// ==========================================================
+document.querySelectorAll('.garantia-estendida__opcao').forEach(function(label) {
+label.onclick = function(e) {
+// Se clicou no próprio radio, deixa o comportamento padrão
+document.querySelectorAll('.garantia-estendida__opcao').forEach(function(x) {
+x.classList.remove('selecionada');
+});
+label.classList.add('selecionada');
+
+const input = label.querySelector('input[type="radio"]');
+if (input && !input.checked) input.checked = true;
+
+const idx = Number(label.dataset.garantiaIdx);
+if (idx >= 0 && garantias[idx]) {
+garantiaSelecionada = {
+meses: Number(garantias[idx].meses),
+preco: Number(garantias[idx].preco),
+descricao: garantias[idx].descricao || ''
+};
+} else {
+garantiaSelecionada = null;
+}
+
+atualizarPrecoComGarantia();
+};
+});
+
+// ==========================================================
+// ATUALIZAR PREÇO COM GARANTIA
+// ==========================================================
+function atualizarPrecoComGarantia() {
+const precoEl = document.getElementById('preco-principal');
+const avisoEl = document.getElementById('aviso-garantia');
+
+if (!precoEl) return;
+
+const precoBase = p.temPromo ? p.precoPromocional : p.preco;
+
+if (garantiaSelecionada) {
+const total = precoBase + garantiaSelecionada.preco;
+precoEl.innerHTML = 'R$ ' + total.toFixed(2);
+
+if (avisoEl) {
+avisoEl.classList.add('visivel');
+avisoEl.innerHTML = '🛡️ Inclui garantia estendida de <strong>+' + garantiaSelecionada.meses + ' meses</strong> por R$ ' + garantiaSelecionada.preco.toFixed(2);
+}
+} else {
+precoEl.innerHTML = p.temPromo
+? 'R$ ' + p.precoPromocional.toFixed(2)
+: 'R$ ' + p.preco.toFixed(2);
+
+if (avisoEl) {
+avisoEl.classList.remove('visivel');
+avisoEl.innerHTML = '';
+}
+}
+}
+
+// ==========================================================
+// BOTÕES DE COMPRA
+// ==========================================================
 document.getElementById('btn-comprar').onclick = function() {
-const c = JSON.parse(localStorage.getItem('carrinho') || '[]');
-const idx = c.findIndex(function(i) { return i.id === p.id; });
-if (idx >= 0) c[idx].quantidade += 1;
-else c.push({ id: p.id, nome: p.nome, preco: p.precoFinal, imagem: p.imagemPrincipal, quantidade: 1 });
-localStorage.setItem('carrinho', JSON.stringify(c));
+adicionarAoCarrinho(p, garantiaSelecionada);
 location.href = './carrinho.html';
 };
 
 document.getElementById('btn-carrinho').onclick = function() {
+adicionarAoCarrinho(p, garantiaSelecionada);
+atualizarBadgeCarrinho();
+mostrarToast('✅ Adicionado ao carrinho', p.nome);
+};
+
+// ==========================================================
+// ADICIONAR AO CARRINHO (com garantia opcional)
+// ==========================================================
+function adicionarAoCarrinho(produto, garantia) {
 try {
 const c = JSON.parse(localStorage.getItem('carrinho') || '[]');
-const idx = c.findIndex(function(i) { return i.id === p.id; });
-if (idx >= 0) c[idx].quantidade += 1;
-else c.push({ id: p.id, nome: p.nome, preco: p.precoFinal, imagem: p.imagemPrincipal, quantidade: 1 });
-localStorage.setItem('carrinho', JSON.stringify(c));
+const precoBase = produto.temPromo ? produto.precoPromocional : produto.preco;
+const precoFinal = precoBase + (garantia ? garantia.preco : 0);
 
+// Chave única: produto + garantia (se tiver)
+const chaveGarantia = garantia ? (garantia.meses + '_' + garantia.preco) : 'sem';
+
+const idx = c.findIndex(function(i) {
+if (i.id !== produto.id) return false;
+const iChave = i.garantia_estendida
+? (i.garantia_estendida.meses + '_' + i.garantia_estendida.preco)
+: 'sem';
+return iChave === chaveGarantia;
+});
+
+if (idx >= 0) {
+c[idx].quantidade += 1;
+} else {
+const item = {
+id: produto.id,
+nome: produto.nome,
+preco: precoFinal,
+preco_base: precoBase,
+imagem: produto.imagemPrincipal,
+quantidade: 1
+};
+
+if (garantia) {
+item.garantia_estendida = {
+meses: garantia.meses,
+preco: garantia.preco,
+descricao: garantia.descricao || ''
+};
+}
+
+c.push(item);
+}
+
+localStorage.setItem('carrinho', JSON.stringify(c));
+} catch (e) {
+console.error('[carrinho] erro:', e);
+}
+}
+
+function atualizarBadgeCarrinho() {
+try {
+const c = JSON.parse(localStorage.getItem('carrinho') || '[]');
 const total = c.reduce(function(s, i) { return s + (i.quantidade || 0); }, 0);
 const badge = document.getElementById('badge-carrinho');
 if (badge) {
 if (total > 0) { badge.textContent = total; badge.classList.remove('oculto'); }
 else badge.classList.add('oculto');
 }
-
-mostrarToast('✅ Adicionado ao carrinho', p.nome);
-} catch (e) {
-alert('Erro ao adicionar: ' + e.message);
+} catch (e) {}
 }
-};
 
+// ==========================================================
+// PROPOSTA, CHAT, WHATSAPP (mantido igual)
+// ==========================================================
 document.getElementById('btn-proposta').onclick = async function() {
 const { supabase } = await import('./assets/js/supabase.js');
 const r = await supabase.auth.getUser();
@@ -240,8 +544,12 @@ const link = await abrirWhatsapp({ tipo: 'produto', produto: p });
 if (!link) { mostrarAviso('WhatsApp não configurado', 'O administrador ainda não cadastrou o WhatsApp da loja.', 'Fechar', '#'); }
 } catch (e) { mostrarAviso('Erro', 'Não foi possível abrir o WhatsApp.', 'Fechar', '#'); }
 };
-}
 
+} // fim renderProduto
+
+/* ============================================================
+   HELPERS DE UI
+   ============================================================ */
 function mostrarToast(titulo, mensagem) {
 let area = document.querySelector('.toast-area-cart');
 if (!area) {
