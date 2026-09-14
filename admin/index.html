@@ -1,156 +1,921 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="robots" content="noindex, nofollow" />
-  <title>Dashboard — Admin</title>
-  <link rel="stylesheet" href="../assets/css/admin.css" />
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="robots" content="noindex, nofollow" />
+<title>Dashboard — Admin</title>
+<link rel="stylesheet" href="../assets/css/admin.css" />
+
+<style>
+/* =============================================================
+   DASHBOARD — estilos específicos
+   ============================================================= */
+
+.dash {
+  padding: 24px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+/* Cabeçalho */
+.dash-topo {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 28px;
+}
+
+.dash-topo__texto h2 {
+  font-size: 24px;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0 0 4px;
+  letter-spacing: -0.01em;
+}
+
+.dash-topo__texto p {
+  font-size: 14px;
+  color: #64748b;
+  margin: 0;
+}
+
+.dash-topo__acoes {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.dash-topo__acoes select {
+  padding: 10px 14px;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  font-size: 14px;
+  background: #fff;
+  color: #0f172a;
+  cursor: pointer;
+  font-family: inherit;
+  transition: border-color .15s;
+}
+.dash-topo__acoes select:hover {
+  border-color: #0ea5e9;
+}
+
+.dash-topo__acoes .btn-loja {
+  padding: 10px 16px;
+  border: 1px solid #0ea5e9;
+  border-radius: 10px;
+  color: #0ea5e9;
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 600;
+  background: #fff;
+  transition: all .15s;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.dash-topo__acoes .btn-loja:hover {
+  background: #0ea5e9;
+  color: #fff;
+  text-decoration: none;
+}
+
+/* Filtro personalizado */
+.dash-filtro-custom {
+  display: none;
+  margin-bottom: 20px;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 16px;
+}
+.dash-filtro-custom.visivel {
+  display: block;
+}
+.dash-filtro-custom__interno {
+  display: flex;
+  gap: 12px;
+  align-items: end;
+  flex-wrap: wrap;
+}
+.dash-filtro-custom label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  color: #64748b;
+  margin-bottom: 4px;
+}
+.dash-filtro-custom input[type="date"] {
+  padding: 9px 12px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 14px;
+  font-family: inherit;
+}
+
+/* Grid de KPIs */
+.dash-grid {
+  display: grid;
+  gap: 16px;
+  margin-bottom: 24px;
+  grid-template-columns: repeat(4, 1fr);
+}
+
+@media (max-width: 1200px) {
+  .dash-grid { grid-template-columns: repeat(3, 1fr); }
+}
+@media (max-width: 900px) {
+  .dash-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 560px) {
+  .dash-grid { grid-template-columns: 1fr; }
+}
+
+/* KPI Card */
+.dash-kpi {
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  transition: transform .15s, box-shadow .15s, border-color .15s;
+  text-decoration: none;
+  color: inherit;
+  position: relative;
+  overflow: hidden;
+}
+.dash-kpi:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08);
+  border-color: #cbd5e1;
+}
+.dash-kpi.clicavel:hover {
+  border-color: #0ea5e9;
+}
+
+.dash-kpi__topo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.dash-kpi__icone {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+/* Cores dos ícones por categoria */
+.dash-kpi__icone--azul { background: #dbeafe; color: #1e40af; }
+.dash-kpi__icone--verde { background: #dcfce7; color: #166534; }
+.dash-kpi__icone--amarelo { background: #fef3c7; color: #92400e; }
+.dash-kpi__icone--laranja { background: #ffedd5; color: #9a3412; }
+.dash-kpi__icone--roxo { background: #f3e8ff; color: #6b21a8; }
+.dash-kpi__icone--vermelho { background: #fee2e2; color: #991b1b; }
+.dash-kpi__icone--cinza { background: #f1f5f9; color: #475569; }
+
+.dash-kpi__rotulo {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: #64748b;
+}
+
+.dash-kpi__valor {
+  font-size: 26px;
+  font-weight: 700;
+  line-height: 1.1;
+  color: #0f172a;
+  letter-spacing: -0.02em;
+}
+
+.dash-kpi__nota {
+  font-size: 12px;
+  color: #94a3b8;
+}
+
+/* Card destaque — Lucro bruto */
+.dash-destaque {
+  background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+  border: 1px solid #86efac;
+  border-radius: 14px;
+  padding: 28px;
+  margin-bottom: 24px;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 24px;
+  align-items: center;
+}
+.dash-destaque.negativo {
+  background: linear-gradient(135deg, #fef2f2, #fee2e2);
+  border-color: #fca5a5;
+}
+
+.dash-destaque__rotulo {
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #166534;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+.dash-destaque.negativo .dash-destaque__rotulo {
+  color: #991b1b;
+}
+
+.dash-destaque__valor {
+  font-size: 40px;
+  font-weight: 700;
+  color: #166534;
+  line-height: 1;
+  letter-spacing: -0.03em;
+}
+.dash-destaque.negativo .dash-destaque__valor {
+  color: #dc2626;
+}
+
+.dash-destaque__nota {
+  margin-top: 8px;
+  font-size: 13px;
+  color: #166534;
+  opacity: 0.8;
+}
+.dash-destaque.negativo .dash-destaque__nota {
+  color: #991b1b;
+}
+
+.dash-destaque__icone {
+  width: 72px;
+  height: 72px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+}
+
+/* Seções */
+.dash-secao {
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  overflow: hidden;
+  margin-bottom: 24px;
+}
+
+.dash-secao__titulo {
+  padding: 18px 22px;
+  border-bottom: 1px solid #e2e8f0;
+  font-size: 15px;
+  font-weight: 700;
+  color: #0f172a;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.dash-secao__titulo small {
+  font-size: 12px;
+  font-weight: 500;
+  color: #94a3b8;
+}
+
+.dash-secao__titulo a {
+  font-size: 12px;
+  font-weight: 600;
+  color: #0ea5e9;
+  text-decoration: none;
+  transition: color .15s;
+}
+.dash-secao__titulo a:hover {
+  color: #0284c7;
+}
+
+.dash-secao__vazio {
+  padding: 32px 22px;
+  text-align: center;
+  color: #94a3b8;
+  font-size: 14px;
+}
+
+/* Ranking de produtos */
+.dash-ranking {
+  display: flex;
+  flex-direction: column;
+}
+
+.dash-ranking__item {
+  display: grid;
+  grid-template-columns: 36px 1fr auto auto;
+  gap: 14px;
+  align-items: center;
+  padding: 14px 22px;
+  border-bottom: 1px solid #f1f5f9;
+  transition: background .15s;
+}
+.dash-ranking__item:last-child {
+  border-bottom: none;
+}
+.dash-ranking__item:hover {
+  background: #f8fafc;
+}
+
+.dash-ranking__posicao {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  background: #f1f5f9;
+  color: #475569;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+}
+.dash-ranking__item:nth-child(1) .dash-ranking__posicao {
+  background: #fef3c7;
+  color: #92400e;
+}
+.dash-ranking__item:nth-child(2) .dash-ranking__posicao {
+  background: #e2e8f0;
+  color: #475569;
+}
+.dash-ranking__item:nth-child(3) .dash-ranking__posicao {
+  background: #ffedd5;
+  color: #9a3412;
+}
+
+.dash-ranking__nome {
+  font-size: 14px;
+  font-weight: 600;
+  color: #0f172a;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dash-ranking__qtd {
+  font-size: 13px;
+  color: #64748b;
+  white-space: nowrap;
+}
+
+.dash-ranking__total {
+  font-size: 14px;
+  font-weight: 700;
+  color: #16a34a;
+  white-space: nowrap;
+}
+
+/* Conversas recentes */
+.dash-conversas {
+  display: flex;
+  flex-direction: column;
+}
+.dash-conversas__item {
+  display: grid;
+  grid-template-columns: 40px 1fr auto;
+  gap: 12px;
+  align-items: center;
+  padding: 14px 22px;
+  border-bottom: 1px solid #f1f5f9;
+  text-decoration: none;
+  color: inherit;
+  transition: background .15s;
+}
+.dash-conversas__item:last-child {
+  border-bottom: none;
+}
+.dash-conversas__item:hover {
+  background: #f8fafc;
+  text-decoration: none;
+}
+
+.dash-conversas__avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #0ea5e9, #0284c7);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.dash-conversas__info strong {
+  display: block;
+  font-size: 14px;
+  color: #0f172a;
+  margin-bottom: 2px;
+}
+.dash-conversas__info small {
+  font-size: 12px;
+  color: #64748b;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  display: block;
+}
+
+.dash-conversas__lado {
+  text-align: right;
+}
+.dash-conversas__lado small {
+  font-size: 11px;
+  color: #94a3b8;
+}
+
+.dash-conversas__badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 8px;
+  border-radius: 999px;
+  background: #dc2626;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  margin-top: 4px;
+}
+
+/* Loading */
+.dash-loading {
+  padding: 60px 20px;
+  text-align: center;
+  color: #64748b;
+}
+.dash-loading__spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid #e2e8f0;
+  border-top-color: #0ea5e9;
+  border-radius: 50%;
+  margin: 0 auto 12px;
+  animation: spin .7s linear infinite;
+}
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@media (max-width: 700px) {
+  .dash-destaque {
+    grid-template-columns: 1fr;
+    padding: 22px;
+  }
+  .dash-destaque__valor { font-size: 32px; }
+  .dash-destaque__icone { display: none; }
+  .dash-ranking__item {
+    grid-template-columns: 32px 1fr;
+    gap: 10px;
+  }
+  .dash-ranking__qtd,
+  .dash-ranking__total {
+    grid-column: 2;
+    font-size: 12px;
+  }
+}
+</style>
 </head>
 <body>
 
-  <div class="admin-layout">
-    <aside class="admin-sidebar" id="admin-sidebar"></aside>
-    <div class="admin-sidebar-overlay" id="admin-sidebar-overlay"></div>
+<div class="admin-layout">
+  <aside class="admin-sidebar" id="admin-sidebar"></aside>
+  <div class="admin-sidebar-overlay" id="admin-sidebar-overlay"></div>
 
-    <main class="admin-main">
-      <header class="admin-topbar">
-        <button id="admin-menu-btn" class="admin-topbar__menu-btn" aria-label="Abrir menu">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <line x1="3" y1="6" x2="21" y2="6"/>
-            <line x1="3" y1="12" x2="21" y2="12"/>
-            <line x1="3" y1="18" x2="21" y2="18"/>
-          </svg>
-        </button>
-        <h1 class="admin-topbar__titulo">Dashboard</h1>
-        <div class="admin-topbar__acoes">
-          <select id="filtro-periodo" style="padding:8px 12px;border:1px solid #e2e8f0;border-radius:8px;font-size:14px;">
-            <option value="hoje">Hoje</option>
-            <option value="7dias">Últimos 7 dias</option>
-            <option value="mes" selected>Este mês</option>
-            <option value="mes_anterior">Mês anterior</option>
-            <option value="personalizado">Personalizado</option>
-          </select>
-          <a href="../index.html" style="padding:8px 14px;border:1px solid #0ea5e9;border-radius:8px;color:#0ea5e9;text-decoration:none;font-size:13px;font-weight:600;">Ver loja</a>
+  <main class="admin-main">
+    <header class="admin-topbar">
+      <button id="admin-menu-btn" class="admin-topbar__menu-btn" aria-label="Abrir menu">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="3" y1="6" x2="21" y2="6"/>
+          <line x1="3" y1="12" x2="21" y2="12"/>
+          <line x1="3" y1="18" x2="21" y2="18"/>
+        </svg>
+      </button>
+      <h1 class="admin-topbar__titulo">Dashboard</h1>
+    </header>
+
+    <div class="admin-conteudo" style="padding:0;">
+      <div class="dash" id="dash">
+        <div class="dash-loading">
+          <div class="dash-loading__spinner"></div>
+          Carregando dados...
         </div>
-      </header>
-
-      <div class="admin-conteudo">
-        <div id="filtro-custom" style="display:none;margin-bottom:20px;background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:16px;">
-          <div style="display:flex;gap:12px;align-items:end;flex-wrap:wrap;">
-            <div><label style="display:block;font-size:12px;font-weight:600;color:#64748b;margin-bottom:4px;">De</label><input type="date" id="dataInicio" style="padding:8px 12px;border:1px solid #e2e8f0;border-radius:8px;" /></div>
-            <div><label style="display:block;font-size:12px;font-weight:600;color:#64748b;margin-bottom:4px;">Até</label><input type="date" id="dataFim" style="padding:8px 12px;border:1px solid #e2e8f0;border-radius:8px;" /></div>
-            <button id="btn-aplicar-filtro" style="padding:9px 16px;border-radius:8px;border:1px solid #0ea5e9;background:#0ea5e9;color:#fff;font-weight:600;font-size:14px;cursor:pointer;">Aplicar</button>
-          </div>
-        </div>
-
-        <div id="conteudo" style="text-align:center;padding:60px;color:#64748b;">Carregando...</div>
       </div>
-    </main>
-  </div>
+    </div>
+  </main>
+</div>
 
-  <script type="module">
-    const el = document.getElementById('conteudo');
-    const esc = s => s == null ? '' : String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+<script type="module">
 
-    let supabase;
-    let periodo = 'mes';
+import { supabase } from '../assets/js/supabase.js';
+import { renderAdminMenu } from '../assets/js/components/admin-menu.js';
 
-    (async () => {
-      try {
-        const mod = await import('../assets/js/supabase.js');
-        const menuMod = await import('../assets/js/components/admin-menu.js');
-        supabase = mod.supabase;
+const el = document.getElementById('dash');
+const esc = s => s == null ? '' : String(s).replace(/[&<>"']/g, m => ({
+  '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+}[m]));
 
-        const r = await supabase.auth.getSession();
-        if (!r.data || !r.data.session) { location.href = '../login.html'; return; }
+let periodo = 'mes';
 
-        const p = await supabase.from('profiles').select('role').eq('id', r.data.session.user.id).maybeSingle();
-        if (!p.data) { el.innerHTML = 'Perfil não encontrado'; return; }
+/* ============================================================
+   ACESSO
+   ============================================================ */
+async function verificarAcesso() {
+  const r = await supabase.auth.getSession();
+  if (!r.data || !r.data.session) {
+    location.href = '../login.html';
+    return null;
+  }
 
-        menuMod.renderAdminMenu('dashboard');
-        await carregar();
+  const p = await supabase
+    .from('profiles')
+    .select('role, nome')
+    .eq('id', r.data.session.user.id)
+    .maybeSingle();
 
-        document.getElementById('filtro-periodo').onchange = function(e) {
-          periodo = e.target.value;
-          document.getElementById('filtro-custom').style.display = periodo === 'personalizado' ? 'block' : 'none';
-          if (periodo !== 'personalizado') carregar();
-        };
+  if (!p.data || p.data.role !== 'admin') {
+    el.innerHTML = '<div class="erro">Acesso restrito a administradores.</div>';
+    return null;
+  }
 
-        document.getElementById('btn-aplicar-filtro').onclick = carregar;
-      } catch (e) {
-        el.innerHTML = 'Erro: ' + esc(e.message);
-      }
-    })();
+  return p.data;
+}
 
-    function calcularDatas() {
-      const hoje = new Date();
-      const inicio = new Date();
-      let fim = new Date();
+/* ============================================================
+   CÁLCULO DE DATAS
+   ============================================================ */
+function calcularDatas() {
+  const hoje = new Date();
+  const inicio = new Date();
+  let fim = new Date();
 
-      if (periodo === 'hoje') return { inicio: hoje.toISOString().slice(0, 10), fim: hoje.toISOString().slice(0, 10) };
-      if (periodo === '7dias') { inicio.setDate(inicio.getDate() - 6); return { inicio: inicio.toISOString().slice(0, 10), fim: hoje.toISOString().slice(0, 10) }; }
-      if (periodo === 'mes') { inicio.setDate(1); return { inicio: inicio.toISOString().slice(0, 10), fim: hoje.toISOString().slice(0, 10) }; }
-      if (periodo === 'mes_anterior') {
-        inicio.setMonth(inicio.getMonth() - 1);
-        inicio.setDate(1);
-        fim = new Date(inicio.getFullYear(), inicio.getMonth() + 1, 0);
-        return { inicio: inicio.toISOString().slice(0, 10), fim: fim.toISOString().slice(0, 10) };
-      }
-      return { inicio: document.getElementById('dataInicio').value || null, fim: document.getElementById('dataFim').value || null };
+  if (periodo === 'hoje') {
+    return { inicio: hoje.toISOString().slice(0, 10), fim: hoje.toISOString().slice(0, 10) };
+  }
+  if (periodo === '7dias') {
+    inicio.setDate(inicio.getDate() - 6);
+    return { inicio: inicio.toISOString().slice(0, 10), fim: hoje.toISOString().slice(0, 10) };
+  }
+  if (periodo === 'mes') {
+    inicio.setDate(1);
+    return { inicio: inicio.toISOString().slice(0, 10), fim: hoje.toISOString().slice(0, 10) };
+  }
+  if (periodo === 'mes_anterior') {
+    inicio.setMonth(inicio.getMonth() - 1);
+    inicio.setDate(1);
+    fim = new Date(inicio.getFullYear(), inicio.getMonth() + 1, 0);
+    return { inicio: inicio.toISOString().slice(0, 10), fim: fim.toISOString().slice(0, 10) };
+  }
+  return {
+    inicio: document.getElementById('dataInicio').value || null,
+    fim: document.getElementById('dataFim').value || null
+  };
+}
+
+/* ============================================================
+   CARREGAR KPIs
+   ============================================================ */
+async function carregarKPIs() {
+  const hoje = new Date().toISOString().slice(0, 10);
+  const datas = calcularDatas();
+
+  // Vendas no período
+  let qOrders = supabase.from('orders').select('total, status, created_at');
+  if (datas.inicio) qOrders = qOrders.gte('created_at', datas.inicio);
+  if (datas.fim) qOrders = qOrders.lte('created_at', datas.fim + 'T23:59:59');
+  const ordersR = await qOrders;
+  const orders = (ordersR.data || []).filter(o => o.status !== 'cancelado');
+  const faturamento = orders.reduce((s, o) => s + Number(o.total || 0), 0);
+  const numVendas = orders.length;
+  const ticketMedio = numVendas > 0 ? faturamento / numVendas : 0;
+
+  // Orçamentos pendentes
+  const quotesR = await supabase
+    .from('quotes')
+    .select('id, status')
+    .in('status', ['rascunho', 'enviado', 'aguardando']);
+  const orcamentosPendentes = (quotesR.data || []).length;
+
+  // Compras
+  const purchasesR = await supabase
+    .from('purchases')
+    .select('total, status')
+    .eq('status', 'recebida');
+  const totalCompras = (purchasesR.data || []).reduce((s, p) => s + Number(p.total || 0), 0);
+
+  // Financeiro
+  const finR = await supabase
+    .from('financial_accounts')
+    .select('tipo, status, valor_aberto');
+  const contas = finR.data || [];
+  let contasReceber = 0, contasPagar = 0;
+  contas.forEach(c => {
+    if (c.status === 'cancelado' || c.status === 'pago') return;
+    if (c.tipo === 'receber') contasReceber += Number(c.valor_aberto || 0);
+    else contasPagar += Number(c.valor_aberto || 0);
+  });
+
+  // Estoque
+  const estR = await supabase
+    .from('products')
+    .select('estoque, preco')
+    .neq('status', 'oculto');
+  const produtos = estR.data || [];
+  const valorEstoque = produtos.reduce((s, p) => s + (Number(p.estoque || 0) * Number(p.preco || 0)), 0);
+  const esgotados = produtos.filter(p => Number(p.estoque || 0) <= 0).length;
+
+  // Clientes ativos (com pelo menos 1 pedido no período)
+  const clientesR = await supabase
+    .from('orders')
+    .select('user_id, created_at');
+  let clientesAtivos = new Set();
+  (clientesR.data || []).forEach(o => {
+    if (datas.inicio && o.created_at < datas.inicio) return;
+    if (datas.fim && o.created_at > datas.fim + 'T23:59:59') return;
+    clientesAtivos.add(o.user_id);
+  });
+  clientesAtivos = clientesAtivos.size;
+
+  // Produtos mais vendidos
+  const topR = await supabase
+    .from('order_items')
+    .select('product_nome, quantidade, subtotal');
+  const mapa = {};
+  (topR.data || []).forEach(i => {
+    if (!mapa[i.product_nome]) mapa[i.product_nome] = { nome: i.product_nome, qtd: 0, total: 0 };
+    mapa[i.product_nome].qtd += Number(i.quantidade || 0);
+    mapa[i.product_nome].total += Number(i.subtotal || 0);
+  });
+  const topProdutos = Object.values(mapa).sort((a, b) => b.qtd - a.qtd).slice(0, 6);
+
+  // Últimas conversas
+  const chatsR = await supabase
+    .from('chats')
+    .select('id, assunto, ultima_msg, ultima_msg_at, nao_lidas_admin, profiles:user_id ( nome, email )')
+    .order('ultima_msg_at', { ascending: false, nullsFirst: false })
+    .limit(5);
+  const chats = chatsR.data || [];
+
+  const lucroBruto = faturamento - totalCompras;
+
+  return {
+    faturamento, numVendas, ticketMedio, orcamentosPendentes,
+    totalCompras, contasReceber, contasPagar, valorEstoque, esgotados,
+    clientesAtivos, topProdutos, chats, lucroBruto
+  };
+}
+
+/* ============================================================
+   FORMATAÇÃO
+   ============================================================ */
+function moeda(v) {
+  return Number(v || 0).toLocaleString('pt-BR', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  });
+}
+
+function dataCurta(d) {
+  if (!d) return '';
+  const data = new Date(d);
+  const hoje = new Date();
+  const diff = Math.floor((hoje - data) / (1000 * 60 * 60 * 24));
+  if (diff === 0) return 'Hoje';
+  if (diff === 1) return 'Ontem';
+  if (diff < 7) return diff + ' dias atrás';
+  return data.toLocaleDateString('pt-BR');
+}
+
+/* ============================================================
+   RENDER
+   ============================================================ */
+function render(kpis) {
+  const lucroPositivo = kpis.lucroBruto >= 0;
+
+  el.innerHTML = `
+    <!-- TOPO -->
+    <div class="dash-topo">
+      <div class="dash-topo__texto">
+        <h2>Bem-vindo 👋</h2>
+        <p>Aqui está o resumo da sua loja.</p>
+      </div>
+      <div class="dash-topo__acoes">
+        <select id="filtro-periodo">
+          <option value="hoje" ${periodo === 'hoje' ? 'selected' : ''}>Hoje</option>
+          <option value="7dias" ${periodo === '7dias' ? 'selected' : ''}>Últimos 7 dias</option>
+          <option value="mes" ${periodo === 'mes' ? 'selected' : ''}>Este mês</option>
+          <option value="mes_anterior" ${periodo === 'mes_anterior' ? 'selected' : ''}>Mês anterior</option>
+          <option value="personalizado" ${periodo === 'personalizado' ? 'selected' : ''}>Personalizado</option>
+        </select>
+        <a href="../index.html" class="btn-loja">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+            <polyline points="15 3 21 3 21 9"></polyline>
+            <line x1="10" y1="14" x2="21" y2="3"></line>
+          </svg>
+          Ver loja
+        </a>
+      </div>
+    </div>
+
+    <!-- FILTRO CUSTOM -->
+    <div class="dash-filtro-custom ${periodo === 'personalizado' ? 'visivel' : ''}" id="filtro-custom">
+      <div class="dash-filtro-custom__interno">
+        <div>
+          <label>De</label>
+          <input type="date" id="dataInicio" />
+        </div>
+        <div>
+          <label>Até</label>
+          <input type="date" id="dataFim" />
+        </div>
+        <button class="btn" id="btn-aplicar-filtro" style="padding:10px 18px;border-radius:10px;">Aplicar</button>
+      </div>
+    </div>
+
+    <!-- KPIs PRINCIPAIS -->
+    <div class="dash-grid">
+      ${kpi('💰', 'azul', 'Faturamento', 'R$ ' + moeda(kpis.faturamento), 'no período selecionado')}
+      ${kpi('🛒', 'azul', 'Vendas', kpis.numVendas, kpis.numVendas === 1 ? 'pedido' : 'pedidos')}
+      ${kpi('📊', 'azul', 'Ticket médio', 'R$ ' + moeda(kpis.ticketMedio), 'por pedido')}
+      ${kpi('📋', 'amarelo', 'Orçamentos pendentes', kpis.orcamentosPendentes, 'aguardando', 'orcamentos.html', true)}
+    </div>
+
+    <!-- KPIs SECUNDÁRIOS -->
+    <div class="dash-grid">
+      ${kpi('🛍️', 'laranja', 'Compras', 'R$ ' + moeda(kpis.totalCompras), 'recebidas')}
+      ${kpi('📥', 'verde', 'A receber', 'R$ ' + moeda(kpis.contasReceber), 'em aberto', 'contas-receber.html', true)}
+      ${kpi('📤', 'vermelho', 'A pagar', 'R$ ' + moeda(kpis.contasPagar), 'em aberto', 'contas-pagar.html', true)}
+      ${kpi('📦', 'roxo', 'Valor em estoque', 'R$ ' + moeda(kpis.valorEstoque), 'produtos disponíveis')}
+    </div>
+
+    <!-- KPIs NOVOS -->
+    <div class="dash-grid">
+      ${kpi('👥', 'azul', 'Clientes ativos', kpis.clientesAtivos, 'compraram no período')}
+      ${kpi('🚨', 'vermelho', 'Produtos esgotados', kpis.esgotados, kpis.esgotados === 1 ? 'produto' : 'produtos', 'estoque-alertas.html', true)}
+      ${kpi('💬', 'roxo', 'Conversas', kpis.chats.length, 'últimas mensagens', 'conversas.html', true)}
+      ${kpi('📈', 'verde', 'Lucro bruto', 'R$ ' + moeda(kpis.lucroBruto), kpis.lucroBruto >= 0 ? 'positivo' : 'negativo')}
+    </div>
+
+    <!-- DESTAQUE: LUCRO -->
+    <div class="dash-destaque ${lucroPositivo ? '' : 'negativo'}">
+      <div>
+        <div class="dash-destaque__rotulo">📈 Lucro bruto estimado</div>
+        <div class="dash-destaque__valor">R$ ${moeda(kpis.lucroBruto)}</div>
+        <div class="dash-destaque__nota">
+          ${lucroPositivo
+            ? 'Faturamento menos compras recebidas no período.'
+            : 'Atenção: as compras superaram o faturamento no período.'}
+        </div>
+      </div>
+      <div class="dash-destaque__icone">${lucroPositivo ? '✅' : '⚠️'}</div>
+    </div>
+
+    <!-- TOP PRODUTOS -->
+    <div class="dash-secao">
+      <div class="dash-secao__titulo">
+        <span>🏆 Produtos mais vendidos</span>
+        <small>Top ${kpis.topProdutos.length}</small>
+      </div>
+      ${kpis.topProdutos.length
+        ? `<div class="dash-ranking">
+            ${kpis.topProdutos.map((p, i) => `
+              <div class="dash-ranking__item">
+                <div class="dash-ranking__posicao">${i + 1}º</div>
+                <div class="dash-ranking__nome" title="${esc(p.nome)}">${esc(p.nome)}</div>
+                <div class="dash-ranking__qtd">${p.qtd} un.</div>
+                <div class="dash-ranking__total">R$ ${moeda(p.total)}</div>
+              </div>
+            `).join('')}
+          </div>`
+        : `<div class="dash-secao__vazio">Nenhuma venda registrada ainda.</div>`}
+    </div>
+
+    <!-- ÚLTIMAS CONVERSAS -->
+    <div class="dash-secao">
+      <div class="dash-secao__titulo">
+        <span>💬 Últimas conversas</span>
+        <a href="./conversas.html">Ver todas →</a>
+      </div>
+      ${kpis.chats.length
+        ? `<div class="dash-conversas">
+            ${kpis.chats.map(c => {
+              const nome = c.profiles?.nome || 'Cliente';
+              const inicial = nome.charAt(0).toUpperCase();
+              return `
+                <a href="./conversa.html?id=${c.id}" class="dash-conversas__item">
+                  <div class="dash-conversas__avatar">${esc(inicial)}</div>
+                  <div class="dash-conversas__info">
+                    <strong>${esc(nome)}</strong>
+                    <small>${esc((c.ultima_msg || 'Sem mensagens').slice(0, 60))}</small>
+                  </div>
+                  <div class="dash-conversas__lado">
+                    <small>${dataCurta(c.ultima_msg_at)}</small>
+                    ${c.nao_lidas_admin > 0 ? `<div class="dash-conversas__badge">${c.nao_lidas_admin}</div>` : ''}
+                  </div>
+                </a>
+              `;
+            }).join('')}
+          </div>`
+        : `<div class="dash-secao__vazio">Nenhuma conversa ainda.</div>`}
+    </div>
+  `;
+
+  /* Eventos */
+  document.getElementById('filtro-periodo').onchange = function(e) {
+    periodo = e.target.value;
+    const boxCustom = document.getElementById('filtro-custom');
+    if (periodo === 'personalizado') {
+      boxCustom.classList.add('visivel');
+      return;
     }
+    boxCustom.classList.remove('visivel');
+    recarregar();
+  };
 
-    async function carregar() {
-      el.innerHTML = 'Carregando...';
-      try {
-        const mod = await import('../assets/js/services/reports.service.js');
-        const datas = calcularDatas();
-        const kpis = await mod.kpisDashboard(datas);
-        const topProdutos = await mod.produtosMaisVendidos({ limite: 8 });
+  const btnAplicar = document.getElementById('btn-aplicar-filtro');
+  if (btnAplicar) {
+    btnAplicar.onclick = recarregar;
+  }
+}
 
-        el.innerHTML =
-          '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:24px;">' +
-            kpi('💰 Faturamento', 'R$ ' + kpis.faturamento.toFixed(2), '#0ea5e9') +
-            kpi('🛒 Vendas', kpis.vendas, '#0ea5e9') +
-            kpi('📊 Ticket médio', 'R$ ' + kpis.ticketMedio.toFixed(2), '#0ea5e9') +
-            kpi('📋 Orçamentos pendentes', kpis.orcamentosPendentes, '#f59e0b') +
-          '</div>' +
-          '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:24px;">' +
-            kpi('🛍️ Compras', 'R$ ' + kpis.totalCompras.toFixed(2), '#f97316') +
-            kpi('📥 A receber', 'R$ ' + kpis.contasReceber.toFixed(2), '#16a34a') +
-            kpi('📤 A pagar', 'R$ ' + kpis.contasPagar.toFixed(2), '#dc2626') +
-            kpi('📦 Valor em estoque', 'R$ ' + kpis.valorEstoque.toFixed(2), '#8b5cf6') +
-          '</div>' +
-          '<div style="background:' + (kpis.lucroBruto >= 0 ? '#f0fdf4' : '#fef2f2') + ';border:1px solid ' + (kpis.lucroBruto >= 0 ? '#86efac' : '#fca5a5') + ';border-radius:12px;padding:24px;margin-bottom:24px;">' +
-            '<div style="font-size:12px;text-transform:uppercase;color:#64748b;font-weight:600;margin-bottom:8px;">Lucro bruto estimado</div>' +
-            '<div style="font-size:36px;font-weight:700;color:' + (kpis.lucroBruto >= 0 ? '#16a34a' : '#dc2626') + ';">R$ ' + kpis.lucroBruto.toFixed(2) + '</div>' +
-          '</div>' +
-          (topProdutos.length
-            ? '<div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:20px;">' +
-                '<h3 style="font-size:16px;margin-bottom:16px;">🏆 Produtos mais vendidos</h3>' +
-                topProdutos.map(p =>
-                  '<div style="display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid #f1f5f9;">' +
-                    '<div><strong>' + esc(p.nome) + '</strong></div>' +
-                    '<div style="color:#64748b;font-size:14px;">' + p.quantidade + ' un · R$ ' + p.total.toFixed(2) + '</div>' +
-                  '</div>'
-                ).join('') +
-              '</div>'
-            : '<div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:40px;text-align:center;color:#64748b;">' +
-                '<div style="font-size:40px;margin-bottom:12px;">📊</div>' +
-                '<div style="font-size:16px;font-weight:600;color:#0f172a;margin-bottom:4px;">Sem dados ainda</div>' +
-                '<div style="font-size:13px;">Quando houver vendas, os produtos mais vendidos aparecerão aqui.</div>' +
-              '</div>');
-      } catch (e) {
-        el.innerHTML = 'Erro: ' + esc(e.message);
-      }
-    }
+function kpi(emoji, cor, rotulo, valor, nota, link, clicavel) {
+  const tag = link ? 'a' : 'div';
+  const href = link ? ` href="./${link}"` : '';
+  const classes = 'dash-kpi' + (clicavel ? ' clicavel' : '');
 
-    function kpi(rotulo, valor, cor) {
-      return '<div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:20px;">' +
-        '<div style="font-size:12px;text-transform:uppercase;color:#64748b;font-weight:600;margin-bottom:8px;">' + rotulo + '</div>' +
-        '<div style="font-size:24px;font-weight:700;color:' + cor + ';line-height:1.1;">' + valor + '</div>' +
-      '</div>';
-    }
-  </script>
+  return `
+    <${tag}${href} class="${classes}">
+      <div class="dash-kpi__topo">
+        <div class="dash-kpi__icone dash-kpi__icone--${cor}">${emoji}</div>
+      </div>
+      <div>
+        <div class="dash-kpi__rotulo">${rotulo}</div>
+        <div class="dash-kpi__valor">${valor}</div>
+        <div class="dash-kpi__nota">${nota}</div>
+      </div>
+    </${tag}>
+  `;
+}
+
+/* ============================================================
+   RECARREGAR
+   ============================================================ */
+async function recarregar() {
+  try {
+    const kpis = await carregarKPIs();
+    render(kpis);
+  } catch (e) {
+    console.error('[dashboard] erro:', e);
+    el.innerHTML = `
+      <div class="dash-topo">
+        <div class="dash-topo__texto">
+          <h2>Bem-vindo 👋</h2>
+          <p>Aqui está o resumo da sua loja.</p>
+        </div>
+      </div>
+      <div class="alerta alerta--erro" style="padding:20px;background:#fee2e2;color:#991b1b;border-radius:12px;">
+        Erro ao carregar dados: ${esc(e.message)}
+      </div>
+    `;
+  }
+}
+
+/* ============================================================
+   INICIAR
+   ============================================================ */
+(async function iniciar() {
+  try {
+    renderAdminMenu('dashboard');
+    const admin = await verificarAcesso();
+    if (!admin) return;
+    await recarregar();
+  } catch (e) {
+    console.error('[dashboard:init]', e);
+    el.innerHTML = `<div style="padding:24px;color:#991b1b;">Erro ao iniciar: ${esc(e.message)}</div>`;
+  }
+})();
+
+</script>
+
 </body>
 </html>
