@@ -1,323 +1,373 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Produtos — Minha Loja</title>
-  <link rel="stylesheet" href="./assets/css/tokens.css" />
-  <link rel="stylesheet" href="./assets/css/base.css" />
-  <link rel="stylesheet" href="./assets/css/layout.css" />
-  <link rel="stylesheet" href="./assets/css/components.css" />
-  <link rel="stylesheet" href="./assets/css/store.css" />
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Produtos — Minha Loja</title>
+<link rel="stylesheet" href="./assets/css/tokens.css" />
+<link rel="stylesheet" href="./assets/css/base.css" />
+<link rel="stylesheet" href="./assets/css/layout.css" />
+<link rel="stylesheet" href="./assets/css/components.css" />
+<link rel="stylesheet" href="./assets/css/store.css" />
 </head>
 <body>
-  <div id="header"></div>
+<div id="header"></div>
 
-  <main class="conteudo">
-    <div class="container">
-      <div class="migalhas"><a href="./index.html">Início</a><span>Produtos</span></div>
-      <h1 class="pagina-titulo">Catálogo de produtos</h1>
+<main class="conteudo">
+<div class="container">
+<div class="migalhas"><a href="./index.html">Início</a><span>Produtos</span></div>
+<h1 class="pagina-titulo">Catálogo de produtos</h1>
 
-      <div class="catalogo">
-        <aside class="filtros">
-          <h2 class="filtros__titulo">Filtros</h2>
-          <form id="form-filtros">
-            <div class="filtros__bloco">
-              <div class="filtros__subtitulo">Buscar</div>
-              <input type="search" name="busca" placeholder="Nome ou descrição" />
-            </div>
+<div class="catalogo">
+<aside class="filtros">
+<h2 class="filtros__titulo">Filtros</h2>
+<form id="form-filtros">
+<div class="filtros__bloco">
+<div class="filtros__subtitulo">Buscar</div>
+<input type="search" name="busca" placeholder="Nome ou descrição" />
+</div>
 
-            <div class="filtros__bloco">
-              <div class="filtros__subtitulo">Condição</div>
-              <div class="filtros__lista">
-                <label class="checkbox"><input type="checkbox" name="condicao" value="novo" /><span>Novo</span></label>
-                <label class="checkbox"><input type="checkbox" name="condicao" value="seminovo" /><span>Seminovo</span></label>
-                <label class="checkbox"><input type="checkbox" name="condicao" value="usado" /><span>Usado</span></label>
-                <label class="checkbox"><input type="checkbox" name="condicao" value="outro" /><span>Outro</span></label>
-              </div>
-            </div>
+<div class="filtros__bloco">
+<div class="filtros__subtitulo">Condição</div>
+<div class="filtros__lista">
+<label class="checkbox"><input type="checkbox" name="condicao" value="novo" /><span>Novo</span></label>
+<label class="checkbox"><input type="checkbox" name="condicao" value="seminovo" /><span>Seminovo</span></label>
+<label class="checkbox"><input type="checkbox" name="condicao" value="usado" /><span>Usado</span></label>
+<label class="checkbox"><input type="checkbox" name="condicao" value="outro" /><span>Outro</span></label>
+</div>
+</div>
 
-            <div class="filtros__bloco">
-              <div class="filtros__subtitulo">Faixa de preço</div>
-              <div class="campo-grupo">
-                <input type="number" name="precoMin" placeholder="Mín" min="0" step="0.01" />
-                <input type="number" name="precoMax" placeholder="Máx" min="0" step="0.01" />
-              </div>
-            </div>
+<div class="filtros__bloco">
+<div class="filtros__subtitulo">Faixa de preço</div>
+<div class="campo-grupo">
+<input type="number" name="precoMin" placeholder="Mín" min="0" step="0.01" />
+<input type="number" name="precoMax" placeholder="Máx" min="0" step="0.01" />
+</div>
+</div>
 
-            <div class="filtros__bloco" style="border:none;padding-bottom:0;">
-              <button type="submit" class="btn btn--principal btn--bloco">Aplicar filtros</button>
-              <button type="button" id="btn-limpar" class="btn btn--fantasma btn--bloco mt-2">Limpar filtros</button>
-            </div>
-          </form>
-        </aside>
+<div class="filtros__bloco" style="border:none;padding-bottom:0;">
+<button type="submit" class="btn btn--principal btn--bloco">Aplicar filtros</button>
+<button type="button" id="btn-limpar" class="btn btn--fantasma btn--bloco mt-2">Limpar filtros</button>
+</div>
+</form>
+</aside>
 
-        <section>
-          <div class="barra-resultados">
-            <div class="barra-resultados__info" id="info-resultados">Carregando produtos...</div>
-            <div class="flex gap-2">
-              <select id="ordenar" style="width:auto;">
-                <option value="recentes">Mais recentes</option>
-                <option value="menor-preco">Menor preço</option>
-                <option value="maior-preco">Maior preço</option>
-              </select>
-            </div>
-          </div>
+<section>
+<div class="barra-resultados">
+<div class="barra-resultados__info" id="info-resultados">Carregando produtos...</div>
+<div class="flex gap-2">
+<select id="ordenar" style="width:auto;">
+<option value="recentes">Mais recentes</option>
+<option value="menor-preco">Menor preço</option>
+<option value="maior-preco">Maior preço</option>
+</select>
+</div>
+</div>
 
-          <div id="lista-produtos" class="grid grid-3"></div>
-        </section>
-      </div>
-    </div>
-  </main>
+<div id="lista-produtos"></div>
+</section>
+</div>
+</div>
+</main>
 
-  <div id="footer"></div>
+<div id="footer"></div>
 
-  <script type="module">
-    (async () => {
-      try {
-        const { renderHeader } = await import('./assets/js/components/header.js');
-        const { renderFooter } = await import('./assets/js/components/footer.js');
-        await renderHeader('produtos');
-        await renderFooter();
-      } catch (e) {}
-    })();
+<script type="module">
+(async () => {
+try {
+const { renderHeader } = await import('./assets/js/components/header.js');
+const { renderFooter } = await import('./assets/js/components/footer.js');
+await renderHeader('produtos');
+await renderFooter();
+} catch (e) {}
+})();
 
-    const estado = { filtros: {}, ordenar: 'recentes' };
-    const params = new URLSearchParams(location.search);
+const estado = { filtros: {}, ordenar: 'recentes' };
+const params = new URLSearchParams(location.search);
 
-    if (params.get('q')) {
-      estado.filtros.busca = params.get('q');
-    }
+if (params.get('q')) {
+estado.filtros.busca = params.get('q');
+}
 
-    /*
-     * ÚNICA ALTERAÇÃO:
-     * pega o ID da categoria enviado pela página inicial
-     * e passa para o filtro de produtos.
-     */
-    if (params.get('categoria')) {
-      estado.filtros.categoria = params.get('categoria');
-    }
+if (params.get('categoria')) {
+estado.filtros.categoria = params.get('categoria');
+}
 
-    if (params.get('ordenar')) {
-      estado.ordenar = params.get('ordenar');
-    }
+if (params.get('ordenar')) {
+estado.ordenar = params.get('ordenar');
+}
 
-    (async () => {
-      try {
-        const { iniciarConfiguracoes } = await import('./assets/js/services/settings.service.js');
-        await iniciarConfiguracoes();
-      } catch (e) {}
-      await carregarProdutos();
-    })();
+(async () => {
+try {
+const { iniciarConfiguracoes } = await import('./assets/js/services/settings.service.js');
+await iniciarConfiguracoes();
+} catch (e) {}
+await carregarProdutos();
+})();
 
-    async function carregarProdutos() {
-      const lista = document.getElementById('lista-produtos');
-      const info = document.getElementById('info-resultados');
+async function carregarProdutos() {
+const lista = document.getElementById('lista-produtos');
+const info = document.getElementById('info-resultados');
 
-      lista.innerHTML = '<div class="carregando" style="grid-column:1/-1;"><div class="spinner"></div></div>';
+lista.innerHTML = '<div class="carregando" style="grid-column:1/-1;"><div class="spinner"></div></div>';
 
-      try {
-        const mod = await import('./assets/js/services/products.service.js');
+try {
+const mod = await import('./assets/js/services/products.service.js');
 
-        const r = await Promise.race([
-          mod.listarProdutos({
-            filtros: estado.filtros,
-            ordenar: estado.ordenar,
-            pagina: 1,
-            porPagina: 24
-          }),
-          new Promise((_, rej) =>
-            setTimeout(() => rej(new Error('timeout')), 8000)
-          )
-        ]);
+const r = await Promise.race([
+mod.listarProdutos({
+filtros: estado.filtros,
+ordenar: estado.ordenar,
+pagina: 1,
+porPagina: 24
+}),
+new Promise((_, rej) =>
+setTimeout(() => rej(new Error('timeout')), 8000)
+)
+]);
 
-        info.textContent =
-          r.total === 0
-            ? 'Nenhum produto encontrado'
-            : r.total +
-              ' produto' +
-              (r.total > 1 ? 's' : '') +
-              ' encontrado' +
-              (r.total > 1 ? 's' : '');
+info.textContent =
+r.total === 0
+? 'Nenhum produto encontrado'
+: r.total +
+' produto' +
+(r.total > 1 ? 's' : '') +
+' encontrado' +
+(r.total > 1 ? 's' : '');
 
-        if (!r.produtos.length) {
-          lista.innerHTML =
-            '<div class="estado-vazio" style="grid-column:1/-1;">' +
-              '<div class="estado-vazio__titulo">Nenhum produto encontrado</div>' +
-              '<p class="estado-vazio__descricao">Tente ajustar os filtros.</p>' +
-            '</div>';
-          return;
-        }
+if (!r.produtos.length) {
+lista.innerHTML =
+'<div class="estado-vazio" style="grid-column:1/-1;">' +
+'<div class="estado-vazio__titulo">Nenhum produto encontrado</div>' +
+'<p class="estado-vazio__descricao">Tente ajustar os filtros.</p>' +
+'</div>';
+return;
+}
 
-        lista.innerHTML = r.produtos
-          .map(function(p) {
-            return cardProduto(p, mod);
-          })
-          .join('');
+lista.innerHTML = r.produtos
+.map(function(p) {
+return cardProduto(p, mod);
+})
+.join('');
 
-      } catch (e) {
-        info.textContent = 'Erro ao carregar';
+// Ativa favoritos após renderizar
+ativarFavoritosCards();
 
-        lista.innerHTML =
-          '<div class="alerta alerta--erro" style="grid-column:1/-1;">' +
-          'Não foi possível carregar os produtos.' +
-          '</div>';
-      }
-    }
+} catch (e) {
+info.textContent = 'Erro ao carregar';
 
-    function cardProduto(p, mod) {
-      const disp = mod.rotuloDisponibilidade(p);
+lista.innerHTML =
+'<div class="alerta alerta--erro" style="grid-column:1/-1;">' +
+'Não foi possível carregar os produtos.' +
+'</div>';
+}
+}
 
-      const img = p.imagemPrincipal
-        ? '<img src="' + p.imagemPrincipal + '" alt="" loading="lazy" />'
-        : '<div class="produto-card__sem-imagem"></div>';
+function cardProduto(p, mod) {
+const disp = mod.rotuloDisponibilidade(p);
 
-      const preco = p.temPromo
-        ? '<div class="produto-card__preco-antigo">R$ ' +
-          p.preco.toFixed(2) +
-          '</div>' +
-          '<div class="produto-card__preco produto-card__preco--promo">R$ ' +
-          p.precoPromocional.toFixed(2) +
-          '</div>'
-        : '<div class="produto-card__preco">R$ ' +
-          p.preco.toFixed(2) +
-          '</div>';
+const img = p.imagemPrincipal
+? '<img src="' + p.imagemPrincipal + '" alt="" loading="lazy" />'
+: '<div class="produto-card__sem-imagem">📦</div>';
 
-      return '<article class="produto-card">' +
+const preco = p.temPromo
+? '<div class="produto-card__preco-antigo">R$ ' +
+p.preco.toFixed(2) +
+'</div>' +
+'<div class="produto-card__preco produto-card__preco--promo">R$ ' +
+p.precoPromocional.toFixed(2) +
+'</div>'
+: '<div class="produto-card__preco">R$ ' +
+p.preco.toFixed(2) +
+'</div>';
 
-        '<a href="./produto.html?id=' +
-        p.id +
-        '" class="produto-card__imagem">' +
+return '<article class="produto-card">' +
 
-          img +
+'<a href="./produto.html?id=' +
+p.id +
+'" class="produto-card__imagem">' +
 
-          '<div class="produto-card__selos">' +
+img +
 
-            (
-              p.temPromo
-                ? '<span class="badge badge--destaque">-' +
-                  p.descontoPct +
-                  '%</span>'
-                : ''
-            ) +
+'<div class="produto-card__selos">' +
 
-            (
-              p.destaque
-                ? '<span class="badge badge--principal">Destaque</span>'
-                : ''
-            ) +
+(
+p.temPromo
+? '<span class="badge badge--destaque">-' +
+p.descontoPct +
+'%</span>'
+: ''
+) +
 
-          '</div>' +
+(
+p.destaque
+? '<span class="badge badge--principal">Destaque</span>'
+: ''
+) +
 
-        '</a>' +
+'</div>' +
 
-        '<div class="produto-card__info">' +
+'</a>' +
 
-          '<div class="produto-card__condicao">' +
-          mod.rotuloCondicao(p.condicao) +
-          '</div>' +
+'<button type="button" class="produto-card__favorito" data-fav="' + p.id + '" title="Favoritar" aria-label="Favoritar">♡</button>' +
 
-          '<a href="./produto.html?id=' +
-          p.id +
-          '" class="produto-card__nome">' +
-          esc(p.nome) +
-          '</a>' +
+'<div class="produto-card__info">' +
 
-          preco +
+'<div class="produto-card__condicao">' +
+mod.rotuloCondicao(p.condicao) +
+'</div>' +
 
-          '<div>' +
-            '<span class="badge badge--' +
-            disp.tipo +
-            '">' +
-            disp.texto +
-            '</span>' +
-          '</div>' +
+'<a href="./produto.html?id=' +
+p.id +
+'" class="produto-card__nome">' +
+esc(p.nome) +
+'</a>' +
 
-          '<div class="produto-card__acoes">' +
-            '<a href="./produto.html?id=' +
-            p.id +
-            '" class="btn btn--principal btn--sm">Comprar</a>' +
-          '</div>' +
+preco +
 
-        '</div>' +
+'<div>' +
+'<span class="badge badge--' +
+disp.tipo +
+'">' +
+disp.texto +
+'</span>' +
+'</div>' +
 
-      '</article>';
-    }
+'<div class="produto-card__acoes">' +
+'<a href="./produto.html?id=' +
+p.id +
+'" class="btn btn--principal btn--sm">Comprar</a>' +
+'<a href="./produto.html?id=' +
+p.id +
+'#proposta" class="btn btn--contorno btn--sm">Proposta</a>' +
+'</div>' +
 
-    document.getElementById('form-filtros').onsubmit = function(e) {
-      e.preventDefault();
+'</div>' +
 
-      const form = e.target;
-      const f = {};
+'</article>';
+}
 
-      if (form.busca.value.trim()) {
-        f.busca = form.busca.value.trim();
-      }
+/* ============================================================
+   FAVORITOS NOS CARDS
+   ============================================================ */
+async function ativarFavoritosCards() {
+try {
+const { supabase } = await import('./assets/js/supabase.js');
+const { alternarFavorito } = await import('./assets/js/components/cart-widget.js');
+const { data: { user } } = await supabase.auth.getUser();
 
-      const cond =
-        form.querySelector('input[name="condicao"]:checked');
+let favoritos = new Set();
+if (user) {
+const r = await supabase.from('favorites').select('product_id').eq('user_id', user.id);
+(r.data || []).forEach(function(f) { favoritos.add(f.product_id); });
+}
 
-      if (cond) {
-        f.condicao = cond.value;
-      }
+document.querySelectorAll('.produto-card__favorito').forEach(function(btn) {
+if (btn.dataset.favAtivo) return;
+btn.dataset.favAtivo = '1';
 
-      if (form.precoMin.value) {
-        f.precoMin = form.precoMin.value;
-      }
+const id = btn.dataset.fav;
 
-      if (form.precoMax.value) {
-        f.precoMax = form.precoMax.value;
-      }
+if (favoritos.has(id)) {
+btn.classList.add('ativo');
+btn.textContent = '♥';
+}
 
-      /*
-       * Mantém a categoria selecionada mesmo quando
-       * o usuário aplicar outros filtros.
-       */
-      if (params.get('categoria')) {
-        f.categoria = params.get('categoria');
-      }
+btn.onclick = async function(e) {
+e.preventDefault();
+e.stopPropagation();
 
-      estado.filtros = f;
+if (!user) {
+window.location.href = './login.html?redirect=' + encodeURIComponent(window.location.pathname + window.location.search);
+return;
+}
 
-      carregarProdutos();
-    };
+try {
+const virouFavorito = await alternarFavorito(id);
+if (virouFavorito) {
+btn.classList.add('ativo');
+btn.textContent = '♥';
+} else {
+btn.classList.remove('ativo');
+btn.textContent = '♡';
+}
+} catch (err) {
+console.warn('[favorito] erro:', err);
+}
+};
+});
+} catch (e) {
+console.warn('[favoritos] erro ao ativar:', e);
+}
+}
 
-    document.getElementById('btn-limpar').onclick = function() {
-      document.getElementById('form-filtros').reset();
+document.getElementById('form-filtros').onsubmit = function(e) {
+e.preventDefault();
 
-      estado.filtros = {};
+const form = e.target;
+const f = {};
 
-      /*
-       * Mantém a categoria depois de limpar os filtros.
-       */
-      if (params.get('categoria')) {
-        estado.filtros.categoria = params.get('categoria');
-      }
+if (form.busca.value.trim()) {
+f.busca = form.busca.value.trim();
+}
 
-      carregarProdutos();
-    };
+const cond =
+form.querySelector('input[name="condicao"]:checked');
 
-    document.getElementById('ordenar').onchange = function(e) {
-      estado.ordenar = e.target.value;
-      carregarProdutos();
-    };
+if (cond) {
+f.condicao = cond.value;
+}
 
-    function esc(s) {
-      return s == null
-        ? ''
-        : String(s).replace(
-            /[&<>"']/g,
-            function(m) {
-              return {
-                '&': '&amp;',
-                '<': '&lt;',
-                '>': '&gt;',
-                '"': '&quot;',
-                "'": '&#39;'
-              }[m];
-            }
-          );
-    }
-  </script>
+if (form.precoMin.value) {
+f.precoMin = form.precoMin.value;
+}
+
+if (form.precoMax.value) {
+f.precoMax = form.precoMax.value;
+}
+
+if (params.get('categoria')) {
+f.categoria = params.get('categoria');
+}
+
+estado.filtros = f;
+
+carregarProdutos();
+};
+
+document.getElementById('btn-limpar').onclick = function() {
+document.getElementById('form-filtros').reset();
+
+estado.filtros = {};
+
+if (params.get('categoria')) {
+estado.filtros.categoria = params.get('categoria');
+}
+
+carregarProdutos();
+};
+
+document.getElementById('ordenar').onchange = function(e) {
+estado.ordenar = e.target.value;
+carregarProdutos();
+};
+
+function esc(s) {
+return s == null
+? ''
+: String(s).replace(
+/[&<>"']/g,
+function(m) {
+return {
+'&': '&amp;',
+'<': '&lt;',
+'>': '&gt;',
+'"': '&quot;',
+"'": '&#39;'
+}[m];
+}
+);
+}
+</script>
 </body>
 </html>
