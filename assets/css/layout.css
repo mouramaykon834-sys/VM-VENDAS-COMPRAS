@@ -5,22 +5,25 @@
 /* =============================================================
    HEADER
    ============================================================= */
+
 .cabecalho {
   position: sticky;
   top: 0;
   z-index: var(--z-sticky);
   background: #fff;
   border-bottom: 1px solid var(--cor-borda);
-  height: var(--altura-header);
 }
 
+/* Linha principal do header (logo + busca + ações) */
 .cabecalho__interno {
   display: flex;
   align-items: center;
-  gap: 16px;
-  height: 100%;
+  gap: 24px;
+  height: var(--altura-header);
+  padding: 0 4px;
 }
 
+/* Logo */
 .cabecalho__logo {
   display: flex;
   align-items: center;
@@ -30,23 +33,49 @@
   color: var(--cor-secundaria);
   text-decoration: none;
   flex-shrink: 0;
+  min-width: 120px;
 }
-.cabecalho__logo:hover { text-decoration: none; color: var(--cor-principal); }
+.cabecalho__logo:hover {
+  text-decoration: none;
+  color: var(--cor-principal);
+}
 
+/* Busca centralizada e larga (igual à foto) */
 .cabecalho__busca {
   flex: 1;
-  max-width: 520px;
+  max-width: 720px;
   position: relative;
+  display: flex;
+  align-items: center;
+  background: #fff;
+  border: 1px solid var(--cor-borda);
+  border-radius: 8px;
+  overflow: hidden;
+  transition: border-color .15s, box-shadow .15s;
+  height: 44px;
 }
-
+.cabecalho__busca:focus-within {
+  border-color: var(--cor-principal);
+  box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.10);
+}
 .cabecalho__busca input {
-  padding-left: 42px;
-  background: var(--cor-fundo-suave);
-  border-color: transparent;
+  flex: 1;
+  height: 100%;
+  padding: 0 16px 0 44px;
+  background: transparent;
+  border: none;
+  font-size: 15px;
+  color: var(--cor-texto);
+  outline: none;
+  border-radius: 0;
 }
 .cabecalho__busca input:focus {
-  background: #fff;
-  border-color: var(--cor-principal);
+  background: transparent;
+  border: none;
+  box-shadow: none;
+}
+.cabecalho__busca input::placeholder {
+  color: #94a3b8;
 }
 .cabecalho__busca-icone {
   position: absolute;
@@ -55,47 +84,92 @@
   transform: translateY(-50%);
   color: var(--cor-texto-suave);
   pointer-events: none;
+  z-index: 1;
 }
 
+/* Botão amarelo de busca (igual à foto) */
+.cabecalho__busca-btn {
+  background: var(--cor-destaque, #f59e0b);
+  color: #fff;
+  border: none;
+  height: 100%;
+  padding: 0 20px;
+  font-weight: var(--peso-semibold);
+  font-size: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: filter .15s;
+  flex-shrink: 0;
+}
+.cabecalho__busca-btn:hover {
+  filter: brightness(0.95);
+}
+.cabecalho__busca-btn svg {
+  color: #fff;
+  flex-shrink: 0;
+}
+
+/* Ações (favoritos, carrinho, conta, etc) */
 .cabecalho__acoes {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 4px;
   margin-left: auto;
+  flex-shrink: 0;
 }
 
 .cabecalho__acao {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 6px;
+  justify-content: center;
+  gap: 2px;
   padding: 8px 12px;
   border-radius: var(--raio-md);
   color: var(--cor-texto);
-  font-size: 14px;
+  font-size: 12px;
   font-weight: var(--peso-medio);
   position: relative;
   text-decoration: none;
   transition: background var(--transicao-rapida), color var(--transicao-rapida);
   -webkit-tap-highlight-color: transparent;
+  line-height: 1.2;
+  min-width: 64px;
 }
 .cabecalho__acao:hover {
   background: var(--cor-fundo-suave);
   color: var(--cor-principal);
   text-decoration: none;
 }
-.cabecalho__acao:active { background: var(--cor-fundo-suave); }
+.cabecalho__acao:active {
+  background: var(--cor-fundo-suave);
+}
 
+.cabecalho__acao svg {
+  flex-shrink: 0;
+}
+
+.cabecalho__acao-texto {
+  font-size: 12px;
+  font-weight: var(--peso-medio);
+  white-space: nowrap;
+}
+
+/* Badge (contador) */
 .cabecalho__badge {
   position: absolute;
-  top: 2px;
-  right: 2px;
+  top: 4px;
+  right: 12px;
   min-width: 18px;
   height: 18px;
   padding: 0 5px;
   border-radius: var(--raio-full);
   background: var(--cor-erro);
   color: #fff;
-  font-size: 11px;
+  font-size: 10px;
   font-weight: var(--peso-bold);
   display: flex;
   align-items: center;
@@ -104,8 +178,80 @@
 }
 
 /* =============================================================
+   BARRA SECUNDÁRIA DE NAVEGAÇÃO (faixa escura)
+   ============================================================= */
+
+.cabecalho__nav {
+  background: var(--cor-secundaria);
+  color: #cbd5e1;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.cabecalho__nav-interno {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  height: 42px;
+  padding: 0 4px;
+}
+
+.cabecalho__nav-lista {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.cabecalho__nav-lista::-webkit-scrollbar { display: none; }
+
+.cabecalho__nav-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: 6px;
+  color: #e2e8f0;
+  font-size: 13px;
+  font-weight: var(--peso-medio);
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background .15s, color .15s;
+  line-height: 1;
+}
+.cabecalho__nav-item:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+  text-decoration: none;
+}
+.cabecalho__nav-item svg {
+  flex-shrink: 0;
+}
+.cabecalho__nav-item--destaque {
+  font-weight: var(--peso-semibold);
+}
+
+.cabecalho__nav-info {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: #94a3b8;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.cabecalho__nav-info svg {
+  flex-shrink: 0;
+}
+
+/* =============================================================
    CONTEÚDO
    ============================================================= */
+
 .conteudo {
   min-height: calc(100vh - var(--altura-header) - 300px);
   padding: 24px 0;
@@ -134,6 +280,7 @@
 /* =============================================================
    RODAPÉ
    ============================================================= */
+
 .rodape {
   background: var(--cor-secundaria);
   color: #cbd5e1;
@@ -180,6 +327,7 @@
 /* =============================================================
    GRID GENÉRICO
    ============================================================= */
+
 .grid { display: grid; gap: 16px; }
 .grid-2 { grid-template-columns: repeat(2, 1fr); }
 .grid-3 { grid-template-columns: repeat(3, 1fr); }
@@ -188,17 +336,26 @@
 /* =============================================================
    RESPONSIVIDADE
    ============================================================= */
+
 @media (max-width: 1024px) {
   .rodape__grid { grid-template-columns: 1fr 1fr; }
   .grid-4 { grid-template-columns: repeat(2, 1fr); }
   .grid-3 { grid-template-columns: repeat(2, 1fr); }
+  .cabecalho__busca { max-width: 480px; }
 }
 
 @media (max-width: 900px) {
-  .cabecalho { height: var(--altura-header-mob); }
+  /* Mobile: header simplificado (mantém o comportamento atual) */
   .cabecalho__busca { display: none; }
+  .cabecalho__busca-btn { display: none; }
   .cabecalho__acao-texto { display: none; }
-  .cabecalho__acao { padding: 10px; }
+  .cabecalho__acao {
+    flex-direction: row;
+    padding: 10px;
+    min-width: auto;
+  }
+  .cabecalho__nav { display: none; }
+  .cabecalho__interno { height: var(--altura-header-mob); gap: 8px; }
   .grid-3, .grid-4 { grid-template-columns: repeat(2, 1fr); }
 }
 
@@ -209,12 +366,14 @@
   .pagina-titulo { font-size: var(--texto-xl); margin-bottom: 16px; }
 
   /* Header mobile reorganizado */
-  .cabecalho { height: 56px; }
-  .cabecalho__logo { font-size: var(--texto-base); }
+  .cabecalho { height: auto; }
+  .cabecalho__interno { height: 60px; padding: 0; }
+  .cabecalho__logo { font-size: var(--texto-base); min-width: auto; }
 
   /* Ações em linha única, mas pequenas */
   .cabecalho__acoes { gap: 2px; }
-  .cabecalho__acao { padding: 8px; }
+  .cabecalho__acao { padding: 8px; min-width: auto; }
+  .cabecalho__badge { right: 4px; }
 
   /* Rodapé mais compacto */
   .rodape { padding: 32px 0 16px; margin-top: 32px; }
@@ -224,6 +383,7 @@
 /* =============================================================
    NAV INFERIOR (mobile)
    ============================================================= */
+
 .nav-inferior {
   display: none;
   position: fixed;
