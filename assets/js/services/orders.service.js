@@ -6,14 +6,56 @@ import { supabase } from '../supabase.js';
 
 function normalizarItens(itens = []) {
     return (Array.isArray(itens) ? itens : [])
-        .map(item => ({
-            product_id: item.product_id || item.id,
-            quantidade: Number(
-                item.quantidade ??
-                item.quantity ??
-                0
-            )
-        }))
+        .map(item => {
+            const itemNormalizado = {
+                product_id: item.product_id || item.id,
+                quantidade: Number(
+                    item.quantidade ??
+                    item.quantity ??
+                    0
+                )
+            };
+
+            /*
+             * Preserva a garantia estendida escolhida pelo cliente.
+             *
+             * A garantia continua opcional:
+             * - sem garantia estendida -> não envia o campo
+             * - com garantia estendida -> envia os dados completos
+             */
+            if (
+                item.garantia_estendida &&
+                typeof item.garantia_estendida === 'object'
+            ) {
+                const meses = Number(
+                    item.garantia_estendida.meses
+                );
+
+                const preco = Number(
+                    item.garantia_estendida.preco
+                );
+
+                const descricao =
+                    typeof item.garantia_estendida.descricao === 'string'
+                        ? item.garantia_estendida.descricao.trim()
+                        : '';
+
+                if (
+                    Number.isInteger(meses) &&
+                    meses > 0 &&
+                    Number.isFinite(preco) &&
+                    preco >= 0
+                ) {
+                    itemNormalizado.garantia_estendida = {
+                        meses,
+                        preco,
+                        descricao
+                    };
+                }
+            }
+
+            return itemNormalizado;
+        })
         .filter(item =>
             item.product_id &&
             Number.isFinite(item.quantidade) &&
