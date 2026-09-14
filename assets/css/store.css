@@ -391,7 +391,7 @@ CATEGORIAS NA HOME (bolinhas arredondadas)
 .carrossel__track {
   position: relative;
   width: 100%;
-  height: 400px;
+  height: 280px;
   border-radius: var(--raio-xl);
   overflow: hidden;
   background: transparent;
@@ -404,7 +404,7 @@ CATEGORIAS NA HOME (bolinhas arredondadas)
   height: 100%;
   display: flex;
   align-items: center;
-  padding: 40px 48px;
+  padding: 32px 40px;
   color: #fff;
   opacity: 0;
   visibility: hidden;
@@ -443,18 +443,18 @@ CATEGORIAS NA HOME (bolinhas arredondadas)
 }
 
 .carrossel__titulo {
-  font-size: clamp(24px, 3vw, 40px);
+  font-size: clamp(22px, 2.5vw, 34px);
   font-weight: 700;
   color: #fff;
-  margin: 0 0 12px;
+  margin: 0 0 10px;
   line-height: 1.15;
   text-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
 }
 
 .carrossel__subtitulo {
-  font-size: clamp(14px, 1.2vw, 18px);
+  font-size: clamp(13px, 1.1vw, 16px);
   color: rgba(255, 255, 255, 0.95);
-  margin: 0 0 24px;
+  margin: 0 0 18px;
   line-height: 1.4;
   max-width: 520px;
   text-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
@@ -464,11 +464,11 @@ CATEGORIAS NA HOME (bolinhas arredondadas)
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  padding: 12px 24px;
+  padding: 10px 22px;
   background: var(--cor-destaque, #f59e0b);
   color: #fff;
   font-weight: 600;
-  font-size: 15px;
+  font-size: 14px;
   text-decoration: none;
   border-radius: 8px;
   transition: filter .15s, transform .15s;
@@ -486,8 +486,8 @@ CATEGORIAS NA HOME (bolinhas arredondadas)
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  width: 44px;
-  height: 44px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
   border: none;
   background: rgba(255, 255, 255, 0.85);
@@ -504,13 +504,13 @@ CATEGORIAS NA HOME (bolinhas arredondadas)
   background: #fff;
   transform: translateY(-50%) scale(1.06);
 }
-.carrossel__seta--prev { left: 16px; }
-.carrossel__seta--next { right: 16px; }
+.carrossel__seta--prev { left: 14px; }
+.carrossel__seta--next { right: 14px; }
 
 /* Bolinhas */
 .carrossel__bolinhas {
   position: absolute;
-  bottom: 16px;
+  bottom: 14px;
   left: 50%;
   transform: translateX(-50%);
   display: flex;
@@ -518,8 +518,8 @@ CATEGORIAS NA HOME (bolinhas arredondadas)
   z-index: 3;
 }
 .carrossel__bolinha {
-  width: 10px;
-  height: 10px;
+  width: 9px;
+  height: 9px;
   border-radius: 50%;
   border: none;
   background: rgba(255, 255, 255, 0.5);
@@ -536,18 +536,18 @@ CATEGORIAS NA HOME (bolinhas arredondadas)
 }
 
 @media (max-width: 900px) {
-  .carrossel__track { height: 320px; }
-  .carrossel__slide { padding: 32px 24px; }
-  .carrossel__seta { width: 36px; height: 36px; }
+  .carrossel__track { height: 240px; }
+  .carrossel__slide { padding: 24px 20px; }
+  .carrossel__seta { width: 34px; height: 34px; }
   .carrossel__seta--prev { left: 8px; }
   .carrossel__seta--next { right: 8px; }
 }
 
 @media (max-width: 640px) {
-  .carrossel__track { height: 240px; }
-  .carrossel__slide { padding: 24px 20px; }
-  .carrossel__titulo { font-size: 22px; }
-  .carrossel__subtitulo { font-size: 14px; margin-bottom: 16px; }
-  .carrossel__botao { padding: 10px 18px; font-size: 14px; }
+  .carrossel__track { height: 180px; }
+  .carrossel__slide { padding: 20px 16px; }
+  .carrossel__titulo { font-size: 20px; }
+  .carrossel__subtitulo { font-size: 13px; margin-bottom: 14px; }
+  .carrossel__botao { padding: 9px 16px; font-size: 13px; }
   .carrossel__bolinhas { bottom: 10px; }
 }
