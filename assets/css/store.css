@@ -2122,3 +2122,135 @@ html[data-tema="escuro"] .toast--alerta {
   animation: girar .7s linear infinite;
   color: #fff;
 }
+/* =============================================================
+   CORREÇÃO RESPONSIVA — MOBILE
+   Produtos, botões e categorias
+   ============================================================= */
+
+/* Evita que elementos internos criem rolagem horizontal */
+html,
+body {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+/* Garante que os grids possam encolher corretamente */
+#lista-destaques,
+#lista-ofertas,
+#lista-recentes,
+#lista-produtos {
+  width: 100%;
+  min-width: 0;
+}
+
+/* Cards de produtos */
+.produto-card {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+}
+
+/* Conteúdo interno do card */
+.produto-card__info {
+  width: 100%;
+  min-width: 0;
+}
+
+/* Nome do produto não pode aumentar a largura do card */
+.produto-card__nome {
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
+}
+
+/* Área dos botões */
+.produto-card__acoes {
+  display: flex;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  gap: 6px;
+}
+
+/* Botões dos cards */
+.produto-card__acoes .btn {
+  flex: 1 1 0;
+  width: 0;
+  min-width: 0;
+  max-width: 100%;
+  padding-left: 8px;
+  padding-right: 8px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* =============================================================
+   CATEGORIAS — MOBILE
+   ============================================================= */
+
+.categorias-circulos {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.categorias-circulos::-webkit-scrollbar {
+  display: none;
+}
+
+.categorias-circulos__item {
+  flex: 0 0 auto;
+}
+
+/* =============================================================
+   AJUSTES PARA CELULARES
+   ============================================================= */
+
+@media (max-width: 640px) {
+
+  /* Mantém os cards dentro da tela */
+  .produto-card {
+    min-width: 0;
+  }
+
+  .produto-card__info {
+    padding: 12px 10px 12px;
+  }
+
+  /* Botões menores e proporcionais ao card */
+  .produto-card__acoes {
+    gap: 6px;
+  }
+
+  .produto-card__acoes .btn {
+    flex: 1 1 0;
+    min-width: 0;
+    padding-left: 6px;
+    padding-right: 6px;
+    font-size: 13px;
+  }
+}
+
+/* =============================================================
+   CELULARES MUITO PEQUENOS
+   ============================================================= */
+
+@media (max-width: 380px) {
+
+  .produto-card__acoes {
+    gap: 5px;
+  }
+
+  .produto-card__acoes .btn {
+    font-size: 12px;
+    padding-left: 4px;
+    padding-right: 4px;
+  }
+
+}
