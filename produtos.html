@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Minhas propostas — Minha Loja</title>
+<title>Produtos — Minha Loja</title>
 <link rel="stylesheet" href="./assets/css/tokens.css" />
 <link rel="stylesheet" href="./assets/css/base.css" />
 <link rel="stylesheet" href="./assets/css/layout.css" />
@@ -12,70 +12,362 @@
 </head>
 <body>
 <div id="header"></div>
+
 <main class="conteudo">
 <div class="container">
-<div class="migalhas"><a href="./index.html">Início</a><span>Minhas propostas</span></div>
-<h1 class="pagina-titulo">Minhas propostas</h1>
-<div id="conteudo"><div class="carregando"><div class="spinner spinner--lg"></div></div></div>
+<div class="migalhas"><a href="./index.html">Início</a><span>Produtos</span></div>
+<h1 class="pagina-titulo">Catálogo de produtos</h1>
+
+<div class="catalogo">
+<aside class="filtros">
+<h2 class="filtros__titulo">Filtros</h2>
+<form id="form-filtros">
+<div class="filtros__bloco">
+<div class="filtros__subtitulo">Buscar</div>
+<input type="search" name="busca" placeholder="Nome ou descrição" />
+</div>
+
+<div class="filtros__bloco">
+<div class="filtros__subtitulo">Condição</div>
+<div class="filtros__lista">
+<label class="checkbox"><input type="checkbox" name="condicao" value="novo" /><span>Novo</span></label>
+<label class="checkbox"><input type="checkbox" name="condicao" value="seminovo" /><span>Seminovo</span></label>
+<label class="checkbox"><input type="checkbox" name="condicao" value="usado" /><span>Usado</span></label>
+<label class="checkbox"><input type="checkbox" name="condicao" value="outro" /><span>Outro</span></label>
+</div>
+</div>
+
+<div class="filtros__bloco">
+<div class="filtros__subtitulo">Faixa de preço</div>
+<div class="campo-grupo">
+<input type="number" name="precoMin" placeholder="Mín" min="0" step="0.01" />
+<input type="number" name="precoMax" placeholder="Máx" min="0" step="0.01" />
+</div>
+</div>
+
+<div class="filtros__bloco" style="border:none;padding-bottom:0;">
+<button type="submit" class="btn btn--principal btn--bloco">Aplicar filtros</button>
+<button type="button" id="btn-limpar" class="btn btn--fantasma btn--bloco mt-2">Limpar filtros</button>
+</div>
+</form>
+</aside>
+
+<section>
+<div class="barra-resultados">
+<div class="barra-resultados__info" id="info-resultados">Carregando produtos...</div>
+<div class="flex gap-2">
+<select id="ordenar" style="width:auto;">
+<option value="recentes">Mais recentes</option>
+<option value="menor-preco">Menor preço</option>
+<option value="maior-preco">Maior preço</option>
+</select>
+</div>
+</div>
+
+<div id="lista-produtos"></div>
+</section>
+</div>
 </div>
 </main>
+
 <div id="footer"></div>
 
 <script type="module">
-import { renderHeader } from './assets/js/components/header.js';
-import { renderFooter } from './assets/js/components/footer.js';
-import { iniciarConfiguracoes } from './assets/js/services/settings.service.js';
-import { supabase } from './assets/js/supabase.js';
-import { listarMinhasPropostas, rotuloStatusProposta } from './assets/js/services/proposals.service.js';
-
-await iniciarConfiguracoes();
-await renderHeader('conta');
+(async () => {
+try {
+const { renderHeader } = await import('./assets/js/components/header.js');
+const { renderFooter } = await import('./assets/js/components/footer.js');
+await renderHeader('produtos');
 await renderFooter();
+} catch (e) {}
+})();
 
-const el = document.getElementById('conteudo');
-const esc = s => s == null ? '' : String(s).replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]));
+const estado = { filtros: {}, ordenar: 'recentes' };
+const params = new URLSearchParams(location.search);
+
+if (params.get('q')) {
+estado.filtros.busca = params.get('q');
+}
+
+if (params.get('categoria')) {
+estado.filtros.categoria = params.get('categoria');
+}
+
+if (params.get('ordenar')) {
+estado.ordenar = params.get('ordenar');
+}
 
 (async () => {
-const r = await supabase.auth.getSession();
-if (!r.data?.session) {
-el.innerHTML = '<div class="estado-vazio"><div class="estado-vazio__titulo">Faça login</div><a href="./login.html?redirect=propostas.html" class="btn btn--principal">Fazer login</a></div>';
+try {
+const { iniciarConfiguracoes } = await import('./assets/js/services/settings.service.js');
+await iniciarConfiguracoes();
+} catch (e) {}
+await carregarProdutos();
+})();
+
+async function carregarProdutos() {
+const lista = document.getElementById('lista-produtos');
+const info = document.getElementById('info-resultados');
+
+lista.innerHTML = '<div class="carregando" style="grid-column:1/-1;"><div class="spinner"></div></div>';
+
+try {
+const mod = await import('./assets/js/services/products.service.js');
+
+const r = await Promise.race([
+mod.listarProdutos({
+filtros: estado.filtros,
+ordenar: estado.ordenar,
+pagina: 1,
+porPagina: 24
+}),
+new Promise((_, rej) =>
+setTimeout(() => rej(new Error('timeout')), 8000)
+)
+]);
+
+info.textContent =
+r.total === 0
+? 'Nenhum produto encontrado'
+: r.total +
+' produto' +
+(r.total > 1 ? 's' : '') +
+' encontrado' +
+(r.total > 1 ? 's' : '');
+
+if (!r.produtos.length) {
+lista.innerHTML =
+'<div class="estado-vazio" style="grid-column:1/-1;">' +
+'<div class="estado-vazio__titulo">Nenhum produto encontrado</div>' +
+'<p class="estado-vazio__descricao">Tente ajustar os filtros.</p>' +
+'</div>';
+return;
+}
+
+lista.innerHTML = r.produtos
+.map(function(p) {
+return cardProduto(p, mod);
+})
+.join('');
+
+// Ativa favoritos após renderizar
+ativarFavoritosCards();
+
+} catch (e) {
+info.textContent = 'Erro ao carregar';
+
+lista.innerHTML =
+'<div class="alerta alerta--erro" style="grid-column:1/-1;">' +
+'Não foi possível carregar os produtos.' +
+'</div>';
+}
+}
+
+function cardProduto(p, mod) {
+const disp = mod.rotuloDisponibilidade(p);
+
+const img = p.imagemPrincipal
+? '<img src="' + p.imagemPrincipal + '" alt="" loading="lazy" />'
+: '<div class="produto-card__sem-imagem">📦</div>';
+
+const preco = p.temPromo
+? '<div class="produto-card__preco-antigo">R$ ' +
+p.preco.toFixed(2) +
+'</div>' +
+'<div class="produto-card__preco produto-card__preco--promo">R$ ' +
+p.precoPromocional.toFixed(2) +
+'</div>'
+: '<div class="produto-card__preco">R$ ' +
+p.preco.toFixed(2) +
+'</div>';
+
+return '<article class="produto-card">' +
+
+'<a href="./produto.html?id=' +
+p.id +
+'" class="produto-card__imagem">' +
+
+img +
+
+'<div class="produto-card__selos">' +
+
+(
+p.temPromo
+? '<span class="badge badge--destaque">-' +
+p.descontoPct +
+'%</span>'
+: ''
+) +
+
+(
+p.destaque
+? '<span class="badge badge--principal">Destaque</span>'
+: ''
+) +
+
+'</div>' +
+
+'</a>' +
+
+'<button type="button" class="produto-card__favorito" data-fav="' + p.id + '" title="Favoritar" aria-label="Favoritar">♡</button>' +
+
+'<div class="produto-card__info">' +
+
+'<div class="produto-card__condicao">' +
+mod.rotuloCondicao(p.condicao) +
+'</div>' +
+
+'<a href="./produto.html?id=' +
+p.id +
+'" class="produto-card__nome">' +
+esc(p.nome) +
+'</a>' +
+
+preco +
+
+'<div>' +
+'<span class="badge badge--' +
+disp.tipo +
+'">' +
+disp.texto +
+'</span>' +
+'</div>' +
+
+'<div class="produto-card__acoes">' +
+'<a href="./produto.html?id=' +
+p.id +
+'" class="btn btn--principal btn--sm">Comprar</a>' +
+'<a href="./produto.html?id=' +
+p.id +
+'#proposta" class="btn btn--contorno btn--sm">Proposta</a>' +
+'</div>' +
+
+'</div>' +
+
+'</article>';
+}
+
+/* ============================================================
+   FAVORITOS NOS CARDS
+   ============================================================ */
+async function ativarFavoritosCards() {
+try {
+const { supabase } = await import('./assets/js/supabase.js');
+const { alternarFavorito } = await import('./assets/js/components/cart-widget.js');
+const { data: { user } } = await supabase.auth.getUser();
+
+let favoritos = new Set();
+if (user) {
+const r = await supabase.from('favorites').select('product_id').eq('user_id', user.id);
+(r.data || []).forEach(function(f) { favoritos.add(f.product_id); });
+}
+
+document.querySelectorAll('.produto-card__favorito').forEach(function(btn) {
+if (btn.dataset.favAtivo) return;
+btn.dataset.favAtivo = '1';
+
+const id = btn.dataset.fav;
+
+if (favoritos.has(id)) {
+btn.classList.add('ativo');
+btn.textContent = '♥';
+}
+
+btn.onclick = async function(e) {
+e.preventDefault();
+e.stopPropagation();
+
+if (!user) {
+window.location.href = './login.html?redirect=' + encodeURIComponent(window.location.pathname + window.location.search);
 return;
 }
 
 try {
-const props = await listarMinhasPropostas();
-if (!props.length) {
-el.innerHTML = '<div class="estado-vazio"><div class="estado-vazio__titulo">Nenhuma proposta ainda</div><p class="estado-vazio__descricao">Quando você enviar uma proposta em algum produto, ela aparece aqui.</p><a href="./produtos.html" class="btn btn--principal">Ver produtos</a></div>';
-return;
+const virouFavorito = await alternarFavorito(id);
+if (virouFavorito) {
+btn.classList.add('ativo');
+btn.textContent = '♥';
+} else {
+btn.classList.remove('ativo');
+btn.textContent = '♡';
 }
-
-el.innerHTML = props.map(p => {
-const { texto, tipo } = rotuloStatusProposta(p.status);
-const img = (p.products?.product_images || []).slice().sort((a,b) => (b.principal?1:0)-(a.principal?1:0))[0]?.url;
-
-return '<div class="proposta-card">' +
-(img
-? '<img src="' + img + '" class="proposta-card__img" alt="" />'
-: '<div class="proposta-card__img" style="display:flex;align-items:center;justify-content:center;font-size:28px;opacity:.3;">📦</div>') +
-'<div class="proposta-card__info">' +
-'<div class="proposta-card__numero">' + esc(p.numero) + '</div>' +
-'<a href="./produto.html?id=' + p.product_id + '" class="proposta-card__produto">' + esc(p.products?.nome || '-') + '</a>' +
-'<div class="proposta-card__valores">' +
-'Você ofertou <strong>R$ ' + Number(p.valor_proposta).toFixed(2) + '</strong>' +
-(p.valor_contra ? ' · Contraproposta: <strong style="color:var(--cor-principal);">R$ ' + Number(p.valor_contra).toFixed(2) + '</strong>' : '') +
-'</div>' +
-'</div>' +
-'<div class="proposta-card__lado">' +
-'<span class="badge badge--' + tipo + '">' + texto + '</span>' +
-'<div class="proposta-card__data">' + new Date(p.created_at).toLocaleDateString('pt-BR') + '</div>' +
-'<a href="./proposta.html?id=' + p.id + '" class="btn btn--contorno btn--sm">Ver</a>' +
-'</div>' +
-'</div>';
-}).join('');
+} catch (err) {
+console.warn('[favorito] erro:', err);
+}
+};
+});
 } catch (e) {
-el.innerHTML = '<div class="alerta alerta--erro">' + esc(e.message) + '</div>';
+console.warn('[favoritos] erro ao ativar:', e);
 }
-})();
+}
+
+document.getElementById('form-filtros').onsubmit = function(e) {
+e.preventDefault();
+
+const form = e.target;
+const f = {};
+
+if (form.busca.value.trim()) {
+f.busca = form.busca.value.trim();
+}
+
+const cond =
+form.querySelector('input[name="condicao"]:checked');
+
+if (cond) {
+f.condicao = cond.value;
+}
+
+if (form.precoMin.value) {
+f.precoMin = form.precoMin.value;
+}
+
+if (form.precoMax.value) {
+f.precoMax = form.precoMax.value;
+}
+
+if (params.get('categoria')) {
+f.categoria = params.get('categoria');
+}
+
+estado.filtros = f;
+
+carregarProdutos();
+};
+
+document.getElementById('btn-limpar').onclick = function() {
+document.getElementById('form-filtros').reset();
+
+estado.filtros = {};
+
+if (params.get('categoria')) {
+estado.filtros.categoria = params.get('categoria');
+}
+
+carregarProdutos();
+};
+
+document.getElementById('ordenar').onchange = function(e) {
+estado.ordenar = e.target.value;
+carregarProdutos();
+};
+
+function esc(s) {
+return s == null
+? ''
+: String(s).replace(
+/[&<>"']/g,
+function(m) {
+return {
+'&': '&amp;',
+'<': '&lt;',
+'>': '&gt;',
+'"': '&quot;',
+"'": '&#39;'
+}[m];
+}
+);
+}
 </script>
 </body>
 </html>
