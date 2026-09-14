@@ -10,178 +10,556 @@
 <link rel="stylesheet" href="./assets/css/components.css" />
 <link rel="stylesheet" href="./assets/css/store.css" />
 </head>
+
 <body>
+
 <div id="header"></div>
 
 <main class="conteudo">
+
 <div class="container">
-<div class="migalhas"><a href="./index.html">Início</a><span>Produtos</span></div>
-<h1 class="pagina-titulo">Catálogo de produtos</h1>
+
+<div class="migalhas">
+<a href="./index.html">Início</a>
+<span>Produtos</span>
+</div>
+
+<h1 class="pagina-titulo">
+Catálogo de produtos
+</h1>
 
 <div class="catalogo">
+
 <aside class="filtros">
-<h2 class="filtros__titulo">Filtros</h2>
+
+<h2 class="filtros__titulo">
+Filtros
+</h2>
+
 <form id="form-filtros">
-<div class="filtros__bloco">
-<div class="filtros__subtitulo">Buscar</div>
-<input type="search" name="busca" placeholder="Nome ou descrição" />
-</div>
 
 <div class="filtros__bloco">
-<div class="filtros__subtitulo">Condição</div>
+
+<div class="filtros__subtitulo">
+Buscar
+</div>
+
+<input
+type="search"
+name="busca"
+placeholder="Nome ou descrição"
+/>
+
+</div>
+
+
+<div class="filtros__bloco">
+
+<div class="filtros__subtitulo">
+Condição
+</div>
+
 <div class="filtros__lista">
-<label class="checkbox"><input type="checkbox" name="condicao" value="novo" /><span>Novo</span></label>
-<label class="checkbox"><input type="checkbox" name="condicao" value="seminovo" /><span>Seminovo</span></label>
-<label class="checkbox"><input type="checkbox" name="condicao" value="usado" /><span>Usado</span></label>
-<label class="checkbox"><input type="checkbox" name="condicao" value="outro" /><span>Outro</span></label>
+
+<label class="checkbox">
+<input
+type="checkbox"
+name="condicao"
+value="novo"
+/>
+<span>Novo</span>
+</label>
+
+<label class="checkbox">
+<input
+type="checkbox"
+name="condicao"
+value="seminovo"
+/>
+<span>Seminovo</span>
+</label>
+
+<label class="checkbox">
+<input
+type="checkbox"
+name="condicao"
+value="usado"
+/>
+<span>Usado</span>
+</label>
+
+<label class="checkbox">
+<input
+type="checkbox"
+name="condicao"
+value="outro"
+/>
+<span>Outro</span>
+</label>
+
 </div>
+
 </div>
+
 
 <div class="filtros__bloco">
-<div class="filtros__subtitulo">Faixa de preço</div>
-<div class="campo-grupo">
-<input type="number" name="precoMin" placeholder="Mín" min="0" step="0.01" />
-<input type="number" name="precoMax" placeholder="Máx" min="0" step="0.01" />
-</div>
+
+<div class="filtros__subtitulo">
+Faixa de preço
 </div>
 
-<div class="filtros__bloco" style="border:none;padding-bottom:0;">
-<button type="submit" class="btn btn--principal btn--bloco">Aplicar filtros</button>
-<button type="button" id="btn-limpar" class="btn btn--fantasma btn--bloco mt-2">Limpar filtros</button>
+<div class="campo-grupo">
+
+<input
+type="text"
+name="precoMin"
+placeholder="Mín"
+inputmode="decimal"
+autocomplete="off"
+/>
+
+<input
+type="text"
+name="precoMax"
+placeholder="Máx"
+inputmode="decimal"
+autocomplete="off"
+/>
+
 </div>
+
+</div>
+
+
+<div
+class="filtros__bloco"
+style="border:none;padding-bottom:0;"
+>
+
+<button
+type="submit"
+class="btn btn--principal btn--bloco"
+>
+Aplicar filtros
+</button>
+
+<button
+type="button"
+id="btn-limpar"
+class="btn btn--fantasma btn--bloco mt-2"
+>
+Limpar filtros
+</button>
+
+</div>
+
 </form>
+
 </aside>
 
+
 <section>
+
 <div class="barra-resultados">
-<div class="barra-resultados__info" id="info-resultados">Carregando produtos...</div>
-<div class="flex gap-2">
-<select id="ordenar" style="width:auto;">
-<option value="recentes">Mais recentes</option>
-<option value="menor-preco">Menor preço</option>
-<option value="maior-preco">Maior preço</option>
-</select>
-</div>
+
+<div
+class="barra-resultados__info"
+id="info-resultados"
+>
+Carregando produtos...
 </div>
 
+<div class="flex gap-2">
+
+<select
+id="ordenar"
+style="width:auto;"
+>
+
+<option value="recentes">
+Mais recentes
+</option>
+
+<option value="menor-preco">
+Menor preço
+</option>
+
+<option value="maior-preco">
+Maior preço
+</option>
+
+</select>
+
+</div>
+
+</div>
+
+
 <div id="lista-produtos"></div>
+
 </section>
+
 </div>
+
 </div>
+
 </main>
 
 <div id="footer"></div>
 
+
 <script type="module">
+
 (async () => {
+
 try {
-const { renderHeader } = await import('./assets/js/components/header.js');
-const { renderFooter } = await import('./assets/js/components/footer.js');
-await renderHeader('produtos');
+
+const {
+renderHeader
+} = await import(
+'./assets/js/components/header.js'
+);
+
+const {
+renderFooter
+} = await import(
+'./assets/js/components/footer.js'
+);
+
+await renderHeader(
+'produtos'
+);
+
 await renderFooter();
+
 } catch (e) {}
+
 })();
 
-const estado = { filtros: {}, ordenar: 'recentes' };
-const params = new URLSearchParams(location.search);
+
+const estado = {
+filtros: {},
+ordenar: 'recentes'
+};
+
+
+const params =
+new URLSearchParams(
+location.search
+);
+
 
 if (params.get('q')) {
-estado.filtros.busca = params.get('q');
+
+estado.filtros.busca =
+params.get('q');
+
 }
+
 
 if (params.get('categoria')) {
-estado.filtros.categoria = params.get('categoria');
+
+estado.filtros.categoria =
+params.get('categoria');
+
 }
+
 
 if (params.get('ordenar')) {
-estado.ordenar = params.get('ordenar');
+
+estado.ordenar =
+params.get('ordenar');
+
 }
 
+
+document.getElementById(
+'ordenar'
+).value =
+estado.ordenar;
+
+
 (async () => {
+
 try {
-const { iniciarConfiguracoes } = await import('./assets/js/services/settings.service.js');
+
+const {
+iniciarConfiguracoes
+} = await import(
+'./assets/js/services/settings.service.js'
+);
+
 await iniciarConfiguracoes();
+
 } catch (e) {}
+
 await carregarProdutos();
+
 })();
 
-async function carregarProdutos() {
-const lista = document.getElementById('lista-produtos');
-const info = document.getElementById('info-resultados');
 
-lista.innerHTML = '<div class="carregando" style="grid-column:1/-1;"><div class="spinner"></div></div>';
+async function carregarProdutos() {
+
+const lista =
+document.getElementById(
+'lista-produtos'
+);
+
+const info =
+document.getElementById(
+'info-resultados'
+);
+
+
+lista.innerHTML =
+'<div class="carregando" style="grid-column:1/-1;">' +
+'<div class="spinner"></div>' +
+'</div>';
+
 
 try {
-const mod = await import('./assets/js/services/products.service.js');
 
-const r = await Promise.race([
+const mod =
+await import(
+'./assets/js/services/products.service.js'
+);
+
+
+const r =
+await Promise.race([
+
 mod.listarProdutos({
-filtros: estado.filtros,
-ordenar: estado.ordenar,
+filtros:
+estado.filtros,
+ordenar:
+estado.ordenar,
 pagina: 1,
 porPagina: 24
 }),
-new Promise((_, rej) =>
-setTimeout(() => rej(new Error('timeout')), 8000)
+
+new Promise(
+(_, rej) =>
+setTimeout(
+() =>
+rej(
+new Error('timeout')
+),
+8000
 )
+)
+
 ]);
+
 
 info.textContent =
 r.total === 0
 ? 'Nenhum produto encontrado'
 : r.total +
 ' produto' +
-(r.total > 1 ? 's' : '') +
+(
+r.total > 1
+? 's'
+: ''
+) +
 ' encontrado' +
-(r.total > 1 ? 's' : '');
+(
+r.total > 1
+? 's'
+: ''
+);
 
-if (!r.produtos.length) {
+
+if (
+!r.produtos.length
+) {
+
 lista.innerHTML =
 '<div class="estado-vazio" style="grid-column:1/-1;">' +
-'<div class="estado-vazio__titulo">Nenhum produto encontrado</div>' +
-'<p class="estado-vazio__descricao">Tente ajustar os filtros.</p>' +
+'<div class="estado-vazio__titulo">' +
+'Nenhum produto encontrado' +
+'</div>' +
+'<p class="estado-vazio__descricao">' +
+'Tente ajustar os filtros.' +
+'</p>' +
 '</div>';
+
 return;
+
 }
 
-lista.innerHTML = r.produtos
-.map(function(p) {
-return cardProduto(p, mod);
+
+lista.innerHTML =
+r.produtos
+.map(function (p) {
+
+return cardProduto(
+p,
+mod
+);
+
 })
 .join('');
 
-// Ativa favoritos após renderizar
+
 ativarFavoritosCards();
 
+
 } catch (e) {
-info.textContent = 'Erro ao carregar';
+
+info.textContent =
+'Erro ao carregar';
+
 
 lista.innerHTML =
 '<div class="alerta alerta--erro" style="grid-column:1/-1;">' +
 'Não foi possível carregar os produtos.' +
 '</div>';
-}
+
 }
 
-function cardProduto(p, mod) {
-const disp = mod.rotuloDisponibilidade(p);
+}
 
-const img = p.imagemPrincipal
-? '<img src="' + p.imagemPrincipal + '" alt="" loading="lazy" />'
+
+/* ============================================================
+   MOEDA
+   ============================================================ */
+
+function formatarMoedaBR(valor) {
+
+const numero =
+Number(valor) || 0;
+
+return numero.toLocaleString(
+'pt-BR',
+{
+minimumFractionDigits: 2,
+maximumFractionDigits: 2
+}
+);
+
+}
+
+
+function formatarCampoMoeda(valor) {
+
+if (
+valor == null ||
+valor === ''
+) {
+
+return '';
+
+}
+
+return formatarMoedaBR(
+parsePrecoBR(valor)
+);
+
+}
+
+
+function parsePrecoBR(valor) {
+
+if (
+valor == null ||
+valor === ''
+) {
+
+return null;
+
+}
+
+let texto =
+String(valor)
+.trim()
+.replace(
+/R\$\s?/gi,
+''
+);
+
+
+if (!texto) {
+
+return null;
+
+}
+
+
+texto =
+texto
+.replace(/\./g, '')
+.replace(',', '.');
+
+
+const numero =
+Number(
+texto.replace(
+/[^0-9.-]/g,
+''
+)
+);
+
+
+return Number.isFinite(numero)
+? numero
+: null;
+
+}
+
+
+/* ============================================================
+   CARD
+   ============================================================ */
+
+function cardProduto(
+p,
+mod
+) {
+
+const disp =
+mod.rotuloDisponibilidade(
+p
+);
+
+
+const img =
+p.imagemPrincipal
+
+? '<img src="' +
+p.imagemPrincipal +
+'" alt="" loading="lazy" />'
+
 : '<div class="produto-card__sem-imagem">📦</div>';
 
-const preco = p.temPromo
-? '<div class="produto-card__preco-antigo">R$ ' +
-p.preco.toFixed(2) +
+
+const preco =
+p.temPromo
+
+? '<div class="produto-card__preco-antigo">' +
+'R$ ' +
+formatarMoedaBR(
+p.preco
+) +
 '</div>' +
-'<div class="produto-card__preco produto-card__preco--promo">R$ ' +
-p.precoPromocional.toFixed(2) +
+
+'<div class="produto-card__preco produto-card__preco--promo">' +
+'R$ ' +
+formatarMoedaBR(
+p.precoPromocional
+) +
 '</div>'
-: '<div class="produto-card__preco">R$ ' +
-p.preco.toFixed(2) +
+
+: '<div class="produto-card__preco">' +
+'R$ ' +
+formatarMoedaBR(
+p.preco
+) +
 '</div>';
 
-return '<article class="produto-card">' +
+
+return (
+
+'<article class="produto-card">' +
 
 '<a href="./produto.html?id=' +
 p.id +
@@ -209,12 +587,16 @@ p.destaque
 
 '</a>' +
 
-'<button type="button" class="produto-card__favorito" data-fav="' + p.id + '" title="Favoritar" aria-label="Favoritar">♡</button>' +
+'<button type="button" class="produto-card__favorito" data-fav="' +
+p.id +
+'" title="Favoritar" aria-label="Favoritar">♡</button>' +
 
 '<div class="produto-card__info">' +
 
 '<div class="produto-card__condicao">' +
-mod.rotuloCondicao(p.condicao) +
+mod.rotuloCondicao(
+p.condicao
+) +
 '</div>' +
 
 '<a href="./produto.html?id=' +
@@ -226,148 +608,485 @@ esc(p.nome) +
 preco +
 
 '<div>' +
+
 '<span class="badge badge--' +
 disp.tipo +
 '">' +
 disp.texto +
 '</span>' +
+
 '</div>' +
 
 '<div class="produto-card__acoes">' +
+
 '<a href="./produto.html?id=' +
 p.id +
-'" class="btn btn--principal btn--sm">Comprar</a>' +
+'" class="btn btn--principal btn--sm">' +
+'Comprar' +
+'</a>' +
+
 '<a href="./produto.html?id=' +
 p.id +
-'#proposta" class="btn btn--contorno btn--sm">Proposta</a>' +
-'</div>' +
+'#proposta" class="btn btn--contorno btn--sm">' +
+'Proposta' +
+'</a>' +
 
 '</div>' +
 
-'</article>';
+'</div>' +
+
+'</article>'
+
+);
+
 }
+
 
 /* ============================================================
-   FAVORITOS NOS CARDS
+   FAVORITOS
    ============================================================ */
+
 async function ativarFavoritosCards() {
+
 try {
-const { supabase } = await import('./assets/js/supabase.js');
-const { alternarFavorito } = await import('./assets/js/components/cart-widget.js');
-const { data: { user } } = await supabase.auth.getUser();
 
-let favoritos = new Set();
+const {
+supabase
+} = await import(
+'./assets/js/supabase.js'
+);
+
+const {
+alternarFavorito
+} = await import(
+'./assets/js/components/cart-widget.js'
+);
+
+const {
+data: {
+user
+}
+} = await supabase.auth.getUser();
+
+
+let favoritos =
+new Set();
+
+
 if (user) {
-const r = await supabase.from('favorites').select('product_id').eq('user_id', user.id);
-(r.data || []).forEach(function(f) { favoritos.add(f.product_id); });
+
+const r =
+await supabase
+.from('favorites')
+.select('product_id')
+.eq(
+'user_id',
+user.id
+);
+
+
+(r.data || [])
+.forEach(
+function (f) {
+
+favoritos.add(
+f.product_id
+);
+
+}
+);
+
 }
 
-document.querySelectorAll('.produto-card__favorito').forEach(function(btn) {
-if (btn.dataset.favAtivo) return;
-btn.dataset.favAtivo = '1';
 
-const id = btn.dataset.fav;
+document
+.querySelectorAll(
+'.produto-card__favorito'
+)
+.forEach(
+function (btn) {
 
-if (favoritos.has(id)) {
-btn.classList.add('ativo');
-btn.textContent = '♥';
+if (
+btn.dataset.favAtivo
+) {
+
+return;
+
 }
 
-btn.onclick = async function(e) {
+btn.dataset.favAtivo =
+'1';
+
+
+const id =
+btn.dataset.fav;
+
+
+if (
+favoritos.has(id)
+) {
+
+btn.classList.add(
+'ativo'
+);
+
+btn.textContent =
+'♥';
+
+}
+
+
+btn.onclick =
+async function (e) {
+
 e.preventDefault();
+
 e.stopPropagation();
 
+
 if (!user) {
-window.location.href = './login.html?redirect=' + encodeURIComponent(window.location.pathname + window.location.search);
+
+window.location.href =
+'./login.html?redirect=' +
+encodeURIComponent(
+window.location.pathname +
+window.location.search
+);
+
 return;
+
 }
+
 
 try {
-const virouFavorito = await alternarFavorito(id);
-if (virouFavorito) {
-btn.classList.add('ativo');
-btn.textContent = '♥';
+
+const virouFavorito =
+await alternarFavorito(
+id
+);
+
+
+if (
+virouFavorito
+) {
+
+btn.classList.add(
+'ativo'
+);
+
+btn.textContent =
+'♥';
+
 } else {
-btn.classList.remove('ativo');
-btn.textContent = '♡';
-}
-} catch (err) {
-console.warn('[favorito] erro:', err);
-}
-};
-});
-} catch (e) {
-console.warn('[favoritos] erro ao ativar:', e);
-}
+
+btn.classList.remove(
+'ativo'
+);
+
+btn.textContent =
+'♡';
+
 }
 
-document.getElementById('form-filtros').onsubmit = function(e) {
+} catch (
+err
+) {
+
+console.warn(
+'[favorito] erro:',
+err
+);
+
+}
+
+};
+
+}
+);
+
+} catch (e) {
+
+console.warn(
+'[favoritos] erro ao ativar:',
+e
+);
+
+}
+
+}
+
+
+/* ============================================================
+   FORMULÁRIO DE FILTROS
+   ============================================================ */
+
+document.getElementById(
+'form-filtros'
+).onsubmit =
+function (e) {
+
 e.preventDefault();
 
-const form = e.target;
+
+const form =
+e.target;
+
 const f = {};
 
-if (form.busca.value.trim()) {
-f.busca = form.busca.value.trim();
+
+if (
+form.busca.value.trim()
+) {
+
+f.busca =
+form.busca.value.trim();
+
 }
 
-const cond =
-form.querySelector('input[name="condicao"]:checked');
 
-if (cond) {
-f.condicao = cond.value;
+const condicoes =
+Array.from(
+form.querySelectorAll(
+'input[name="condicao"]:checked'
+)
+)
+.map(
+function (input) {
+
+return input.value;
+
+}
+);
+
+
+if (
+condicoes.length
+) {
+
+f.condicao =
+condicoes;
+
 }
 
-if (form.precoMin.value) {
-f.precoMin = form.precoMin.value;
+
+const precoMin =
+form.precoMin.value.trim();
+
+
+const precoMax =
+form.precoMax.value.trim();
+
+
+if (precoMin) {
+
+f.precoMin =
+precoMin;
+
 }
 
-if (form.precoMax.value) {
-f.precoMax = form.precoMax.value;
+
+if (precoMax) {
+
+f.precoMax =
+precoMax;
+
 }
 
-if (params.get('categoria')) {
-f.categoria = params.get('categoria');
+
+if (
+params.get('categoria')
+) {
+
+f.categoria =
+params.get(
+'categoria'
+);
+
 }
 
-estado.filtros = f;
+
+estado.filtros =
+f;
+
 
 carregarProdutos();
+
 };
 
-document.getElementById('btn-limpar').onclick = function() {
-document.getElementById('form-filtros').reset();
+
+/* ============================================================
+   FORMATAÇÃO DOS CAMPOS DE PREÇO
+   ============================================================ */
+
+const campoPrecoMin =
+document.querySelector(
+'input[name="precoMin"]'
+);
+
+const campoPrecoMax =
+document.querySelector(
+'input[name="precoMax"]'
+);
+
+
+function prepararCampoPreco(
+campo
+) {
+
+if (!campo) {
+
+return;
+
+}
+
+
+campo.addEventListener(
+'blur',
+function () {
+
+if (
+campo.value.trim()
+) {
+
+const numero =
+parsePrecoBR(
+campo.value
+);
+
+if (numero != null) {
+
+campo.value =
+formatarMoedaBR(
+numero
+);
+
+}
+
+}
+
+}
+);
+
+
+campo.addEventListener(
+'focus',
+function () {
+
+campo.select();
+
+}
+);
+
+}
+
+
+prepararCampoPreco(
+campoPrecoMin
+);
+
+prepararCampoPreco(
+campoPrecoMax
+);
+
+
+/* ============================================================
+   LIMPAR FILTROS
+   ============================================================ */
+
+document.getElementById(
+'btn-limpar'
+).onclick =
+function () {
+
+document.getElementById(
+'form-filtros'
+).reset();
+
 
 estado.filtros = {};
 
-if (params.get('categoria')) {
-estado.filtros.categoria = params.get('categoria');
-}
+
+estado.ordenar =
+'recentes';
+
+
+params.delete(
+'categoria'
+);
+
+params.delete(
+'q'
+);
+
+params.delete(
+'ordenar'
+);
+
+
+history.replaceState(
+{},
+'',
+location.pathname
+);
+
+
+document.getElementById(
+'ordenar'
+).value =
+'recentes';
+
 
 carregarProdutos();
+
 };
 
-document.getElementById('ordenar').onchange = function(e) {
-estado.ordenar = e.target.value;
+
+/* ============================================================
+   ORDENAÇÃO
+   ============================================================ */
+
+document.getElementById(
+'ordenar'
+).onchange =
+function (e) {
+
+estado.ordenar =
+e.target.value;
+
+
 carregarProdutos();
+
 };
+
+
+/* ============================================================
+   ESCAPE
+   ============================================================ */
 
 function esc(s) {
+
 return s == null
 ? ''
 : String(s).replace(
 /[&<>"']/g,
-function(m) {
+function (m) {
+
 return {
+
 '&': '&amp;',
 '<': '&lt;',
 '>': '&gt;',
 '"': '&quot;',
 "'": '&#39;'
+
 }[m];
+
 }
 );
+
 }
+
 </script>
+
 </body>
 </html>
