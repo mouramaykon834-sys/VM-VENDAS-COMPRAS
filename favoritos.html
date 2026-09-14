@@ -1,93 +1,106 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Meus favoritos — Minha Loja</title>
-  <link rel="stylesheet" href="./assets/css/tokens.css" />
-  <link rel="stylesheet" href="./assets/css/base.css" />
-  <link rel="stylesheet" href="./assets/css/layout.css" />
-  <link rel="stylesheet" href="./assets/css/components.css" />
-  <link rel="stylesheet" href="./assets/css/store.css" />
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Meus favoritos — Minha Loja</title>
+<link rel="stylesheet" href="./assets/css/tokens.css" />
+<link rel="stylesheet" href="./assets/css/base.css" />
+<link rel="stylesheet" href="./assets/css/layout.css" />
+<link rel="stylesheet" href="./assets/css/components.css" />
+<link rel="stylesheet" href="./assets/css/store.css" />
 </head>
 <body>
-  <div id="header"></div>
-  <main class="conteudo">
-    <div class="container">
-      <div class="migalhas"><a href="./index.html">Início</a><span>Favoritos</span></div>
-      <h1 class="pagina-titulo">Meus favoritos</h1>
-      <div id="conteudo"><div class="carregando"><div class="spinner spinner--lg"></div></div></div>
-    </div>
-  </main>
-  <div id="footer"></div>
+<div id="header"></div>
+<main class="conteudo">
+<div class="container">
+<div class="migalhas"><a href="./index.html">Início</a><span>Favoritos</span></div>
+<h1 class="pagina-titulo">Meus favoritos</h1>
+<div id="conteudo"><div class="carregando"><div class="spinner spinner--lg"></div></div></div>
+</div>
+</main>
+<div id="footer"></div>
 
-  <script type="module">
-    (async () => {
-      try {
-        const { renderHeader } = await import('./assets/js/components/header.js');
-        const { renderFooter } = await import('./assets/js/components/footer.js');
-        await renderHeader('favoritos');
-        await renderFooter();
-      } catch (e) {}
-    })();
+<script type="module">
+(async () => {
+try {
+const { renderHeader } = await import('./assets/js/components/header.js');
+const { renderFooter } = await import('./assets/js/components/footer.js');
+await renderHeader('favoritos');
+await renderFooter();
+} catch (e) {}
+})();
 
-    (async () => {
-      const el = document.getElementById('conteudo');
-      try {
-        const { supabase } = await import('./assets/js/supabase.js');
-        const r = await Promise.race([
-          supabase.auth.getUser(),
-          new Promise((_, rej) => setTimeout(() => rej(new Error('timeout')), 5000))
-        ]);
+(async () => {
+const el = document.getElementById('conteudo');
+try {
+const { supabase } = await import('./assets/js/supabase.js');
+const r = await Promise.race([
+supabase.auth.getUser(),
+new Promise((_, rej) => setTimeout(() => rej(new Error('timeout')), 5000))
+]);
 
-        if (!r || !r.data || !r.data.user) {
-          el.innerHTML = '<div class="estado-vazio"><div class="estado-vazio__titulo">Faça login</div><p class="estado-vazio__descricao">É preciso estar logado para ver seus favoritos.</p><a href="./login.html?redirect=favoritos.html" class="btn btn--principal">Fazer login</a></div>';
-          return;
-        }
+if (!r || !r.data || !r.data.user) {
+el.innerHTML = '<div class="estado-vazio"><div class="estado-vazio__titulo">Faça login</div><p class="estado-vazio__descricao">É preciso estar logado para ver seus favoritos.</p><a href="./login.html?redirect=favoritos.html" class="btn btn--principal">Fazer login</a></div>';
+return;
+}
 
-        const { listarMeusFavoritos } = await import('./assets/js/services/favorites.service.js');
-        const favs = await Promise.race([
-          listarMeusFavoritos(),
-          new Promise((_, rej) => setTimeout(() => rej(new Error('timeout')), 8000))
-        ]);
+const { listarMeusFavoritos, removerFavorito } = await import('./assets/js/services/favorites.service.js');
+const favs = await Promise.race([
+listarMeusFavoritos(),
+new Promise((_, rej) => setTimeout(() => rej(new Error('timeout')), 8000))
+]);
 
-        if (!favs || !favs.length) {
-          el.innerHTML = '<div class="estado-vazio"><div class="estado-vazio__titulo">Nenhum favorito ainda</div><p class="estado-vazio__descricao">Toque no ❤ nos produtos que você gostar.</p><a href="./produtos.html" class="btn btn--principal">Ver produtos</a></div>';
-          return;
-        }
+if (!favs || !favs.length) {
+el.innerHTML = '<div class="estado-vazio"><div class="estado-vazio__titulo">Nenhum favorito ainda</div><p class="estado-vazio__descricao">Toque no ❤ nos produtos que você gostar.</p><a href="./produtos.html" class="btn btn--principal">Ver produtos</a></div>';
+return;
+}
 
-        el.innerHTML = '<div class="grid grid-3">' + favs.map(function(f) {
-          const p = f.products;
-          if (!p) return '';
-          const imgs = (p.product_images || []).slice().sort(function(a, b) { return (b.principal ? 1 : 0) - (a.principal ? 1 : 0); });
-          const img = imgs[0] ? imgs[0].url : null;
-          const temPromo = p.preco_promocional != null && p.preco_promocional < p.preco;
-          const preco = temPromo ? Number(p.preco_promocional) : Number(p.preco);
-          return '<article class="produto-card">' +
-            '<a href="./produto.html?id=' + p.id + '" class="produto-card__imagem">' +
-              (img ? '<img src="' + img + '" alt="" loading="lazy" />' : '<div class="produto-card__sem-imagem"></div>') +
-            '</a>' +
-            '<button class="produto-card__favorito ativo" data-rm="' + f.id + '">❤</button>' +
-            '<div class="produto-card__info">' +
-              '<a href="./produto.html?id=' + p.id + '" class="produto-card__nome">' + esc(p.nome) + '</a>' +
-              '<div class="produto-card__preco">R$ ' + preco.toFixed(2) + '</div>' +
-              '<div class="produto-card__acoes"><a href="./produto.html?id=' + p.id + '" class="btn btn--principal btn--sm">Ver</a></div>' +
-            '</div>' +
-          '</article>';
-        }).join('') + '</div>';
+const { rotuloDisponibilidade, rotuloCondicao } = await import('./assets/js/services/products.service.js');
 
-        const { removerFavorito } = await import('./assets/js/services/favorites.service.js');
-        el.querySelectorAll('[data-rm]').forEach(function(b) {
-          b.onclick = async function() {
-            try { await removerFavorito(b.dataset.rm); location.reload(); } catch (e) {}
-          };
-        });
-      } catch (e) {
-        el.innerHTML = '<div class="alerta alerta--erro">Erro ao carregar favoritos. Tente novamente.</div>';
-      }
-    })();
+el.innerHTML = '<div class="favoritos-grid">' + favs.map(function(f) {
+const p = f.products;
+if (!p) return '';
+const imgs = (p.product_images || []).slice().sort(function(a, b) { return (b.principal ? 1 : 0) - (a.principal ? 1 : 0); });
+const img = imgs[0] ? imgs[0].url : null;
+const temPromo = p.preco_promocional != null && p.preco_promocional < p.preco;
+const preco = temPromo ? Number(p.preco_promocional) : Number(p.preco);
 
-    function esc(s) { return s == null ? '' : String(s).replace(/[&<>"']/g, function(m) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]; }); }
-  </script>
+return '<article class="produto-card">' +
+'<a href="./produto.html?id=' + p.id + '" class="produto-card__imagem">' +
+(img ? '<img src="' + img + '" alt="" loading="lazy" />' : '<div class="produto-card__sem-imagem">📦</div>') +
+'<div class="produto-card__selos">' +
+(temPromo ? '<span class="badge badge--destaque">Promoção</span>' : '') +
+'</div>' +
+'</a>' +
+'<button type="button" class="produto-card__favorito ativo" data-rm="' + f.id + '" title="Remover dos favoritos" aria-label="Remover dos favoritos">♥</button>' +
+'<div class="produto-card__info">' +
+'<a href="./produto.html?id=' + p.id + '" class="produto-card__nome">' + esc(p.nome) + '</a>' +
+'<div class="produto-card__preco">R$ ' + preco.toFixed(2) + '</div>' +
+'<div class="produto-card__acoes">' +
+'<a href="./produto.html?id=' + p.id + '" class="btn btn--principal btn--sm">Ver produto</a>' +
+'</div>' +
+'</div>' +
+'</article>';
+}).join('') + '</div>';
+
+el.querySelectorAll('[data-rm]').forEach(function(b) {
+b.onclick = async function() {
+try {
+await removerFavorito(b.dataset.rm);
+location.reload();
+} catch (e) {
+alert('Erro ao remover: ' + e.message);
+}
+};
+});
+
+} catch (e) {
+el.innerHTML = '<div class="alerta alerta--erro">Erro ao carregar favoritos. Tente novamente.</div>';
+}
+})();
+
+function esc(s) { return s == null ? '' : String(s).replace(/[&<>"']/g, function(m) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]; }); }
+</script>
 </body>
 </html>
