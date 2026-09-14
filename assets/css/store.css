@@ -193,6 +193,42 @@
 }
 
 /* =============================================================
+   GRID DO CATÁLOGO (produtos.html) — mesmo padrão da home
+   ============================================================= */
+
+#lista-produtos {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(4, 1fr);
+  align-items: stretch;
+}
+
+@media (min-width: 1440px) {
+  #lista-produtos {
+    grid-template-columns: repeat(5, 1fr);
+  }
+}
+
+@media (max-width: 1024px) {
+  #lista-produtos {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  #lista-produtos {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  #lista-produtos {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+}
+
+/* =============================================================
    CARD PRODUTO — MELHORADO
    ============================================================= */
 
@@ -381,7 +417,6 @@ html[data-tema="escuro"] .produto-card__favorito.ativo {
   padding: 24px 0 48px;
 }
 
-/* Espaço entre carrossel/banner e primeira seção */
 #home-carrossel + .banner-home,
 #home-carrossel.carrossel--ativo + .banner-home {
   margin-top: 0;
