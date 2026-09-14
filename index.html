@@ -44,7 +44,7 @@
 <h2 class="secao__titulo">Produtos em destaque</h2>
 <a href="./produtos.html" class="secao__link">Ver todos</a>
 </div>
-<div class="grid grid-4" id="lista-destaques"><div class="carregando" style="grid-column:1/-1;"><div class="spinner"></div></div></div>
+<div id="lista-destaques"><div class="carregando" style="grid-column:1/-1;"><div class="spinner"></div></div></div>
 </section>
 
 <section class="secao">
@@ -52,7 +52,7 @@
 <h2 class="secao__titulo">Ofertas</h2>
 <a href="./produtos.html?ordenar=menor-preco" class="secao__link">Ver todas</a>
 </div>
-<div class="grid grid-4" id="lista-ofertas"><div class="carregando" style="grid-column:1/-1;"><div class="spinner"></div></div></div>
+<div id="lista-ofertas"><div class="carregando" style="grid-column:1/-1;"><div class="spinner"></div></div></div>
 </section>
 
 <section class="secao">
@@ -60,7 +60,7 @@
 <h2 class="secao__titulo">Novidades</h2>
 <a href="./produtos.html?ordenar=recentes" class="secao__link">Ver todas</a>
 </div>
-<div class="grid grid-4" id="lista-recentes"><div class="carregando" style="grid-column:1/-1;"><div class="spinner"></div></div></div>
+<div id="lista-recentes"><div class="carregando" style="grid-column:1/-1;"><div class="spinner"></div></div></div>
 </section>
 </div>
 </main>
@@ -154,6 +154,8 @@ el.innerHTML = '<div class="estado-vazio" style="grid-column:1/-1;"><div class="
 return;
 }
 el.innerHTML = produtos.map(p => cardProduto(p, mod)).join('');
+// Ativa favoritos após renderizar
+ativarFavoritosCards();
 } catch (e) {
 el.innerHTML = '<div class="estado-vazio" style="grid-column:1/-1;"><div class="estado-vazio__titulo">' + textoVazio + '</div></div>';
 }
@@ -163,7 +165,7 @@ function cardProduto(p, mod) {
 const disp = mod.rotuloDisponibilidade(p);
 const img = p.imagemPrincipal
 ? '<img src="' + p.imagemPrincipal + '" alt="" loading="lazy" />'
-: '<div class="produto-card__sem-imagem"></div>';
+: '<div class="produto-card__sem-imagem">📦</div>';
 const preco = p.temPromo
 ? '<div class="produto-card__preco-antigo">R$ ' + p.preco.toFixed(2) + '</div><div class="produto-card__preco produto-card__preco--promo">R$ ' + p.precoPromocional.toFixed(2) + '</div>'
 : '<div class="produto-card__preco">R$ ' + p.preco.toFixed(2) + '</div>';
@@ -174,6 +176,7 @@ return '<article class="produto-card">' +
 (p.destaque ? '<span class="badge badge--principal">Destaque</span>' : '') +
 '</div>' +
 '</a>' +
+'<button type="button" class="produto-card__favorito" data-fav="' + p.id + '" title="Favoritar" aria-label="Favoritar">♡</button>' +
 '<div class="produto-card__info">' +
 '<div class="produto-card__condicao">' + mod.rotuloCondicao(p.condicao) + '</div>' +
 '<a href="./produto.html?id=' + p.id + '" class="produto-card__nome">' + esc(p.nome) + '</a>' +
@@ -185,6 +188,64 @@ preco +
 '</div>' +
 '</div>' +
 '</article>';
+}
+
+/* ============================================================
+   FAVORITOS NOS CARDS
+   ============================================================ */
+async function ativarFavoritosCards() {
+try {
+const { supabase } = await import('./assets/js/supabase.js');
+const { alternarFavorito } = await import('./assets/js/components/cart-widget.js');
+const { data: { user } } = await supabase.auth.getUser();
+
+// Buscar favoritos do usuário para marcar os corações
+let favoritos = new Set();
+if (user) {
+const r = await supabase.from('favorites').select('product_id').eq('user_id', user.id);
+(r.data || []).forEach(function(f) { favoritos.add(f.product_id); });
+}
+
+document.querySelectorAll('.produto-card__favorito').forEach(function(btn) {
+if (btn.dataset.favAtivo) return;
+btn.dataset.favAtivo = '1';
+
+const id = btn.dataset.fav;
+
+// Marca visualmente se já é favorito
+if (favoritos.has(id)) {
+btn.classList.add('ativo');
+btn.textContent = '♥';
+}
+
+// Clique
+btn.onclick = async function(e) {
+e.preventDefault();
+e.stopPropagation();
+
+// Se não estiver logado, manda para o login
+if (!user) {
+window.location.href = './login.html?redirect=' + encodeURIComponent(window.location.pathname);
+return;
+}
+
+try {
+const virouFavorito = await alternarFavorito(id);
+if (virouFavorito) {
+btn.classList.add('ativo');
+btn.textContent = '♥';
+} else {
+btn.classList.remove('ativo');
+btn.textContent = '♡';
+}
+} catch (err) {
+console.warn('[favorito] erro:', err);
+}
+};
+});
+} catch (e) {
+console.warn('[favoritos] erro ao ativar:', e);
+}
 }
 
 function esc(s) { return s == null ? '' : String(s).replace(/[&<>"']/g, function(m) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]; }); }
