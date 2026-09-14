@@ -9,7 +9,6 @@
 <link rel="stylesheet" href="./assets/css/layout.css" />
 <link rel="stylesheet" href="./assets/css/components.css" />
 <link rel="stylesheet" href="./assets/css/store.css" />
-
 <style>
 .prod-ref {
   color: #0ea5e9;
@@ -20,11 +19,7 @@
   padding: 0 2px;
   border-radius: 3px;
 }
-
-.prod-ref:hover {
-  background: #f0f9ff;
-}
-
+.prod-ref:hover { background: #f0f9ff; }
 .prod-ref-nao-achado {
   color: #dc2626;
   border-bottom: 1px dashed #dc2626;
@@ -34,7 +29,6 @@
 /* =============================================================
    SELO DE GARANTIA PADRÃO
    ============================================================= */
-
 .selo-garantia {
   display: inline-flex;
   align-items: center;
@@ -48,20 +42,17 @@
   font-weight: 600;
   margin-top: 12px;
 }
-
 .selo-garantia__icone {
   font-size: 16px;
   line-height: 1;
 }
-
 .selo-garantia__texto strong {
   color: #065f46;
 }
 
 /* =============================================================
-   GARANTIA ESTENDIDA
+   GARANTIA ESTENDIDA (radio buttons)
    ============================================================= */
-
 .garantia-estendida {
   margin-top: 18px;
   padding: 16px;
@@ -69,7 +60,6 @@
   border-radius: 12px;
   background: var(--cor-fundo-suave);
 }
-
 html[data-tema="escuro"] .garantia-estendida {
   background: #0f172a;
   border-color: #334155;
@@ -99,25 +89,20 @@ html[data-tema="escuro"] .garantia-estendida {
   margin-bottom: 8px;
   transition: border-color .15s, background .15s;
 }
-
 html[data-tema="escuro"] .garantia-estendida__opcao {
   background: #1e293b;
   border-color: #334155;
 }
-
 .garantia-estendida__opcao:last-child {
   margin-bottom: 0;
 }
-
 .garantia-estendida__opcao:hover {
   border-color: var(--cor-principal);
 }
-
 .garantia-estendida__opcao.selecionada {
   border-color: var(--cor-principal);
   background: #f0f9ff;
 }
-
 html[data-tema="escuro"] .garantia-estendida__opcao.selecionada {
   background: rgba(14, 165, 233, 0.1);
 }
@@ -154,10 +139,7 @@ html[data-tema="escuro"] .garantia-estendida__opcao.selecionada {
   white-space: nowrap;
 }
 
-/* =============================================================
-   AVISO DE PREÇO COM GARANTIA
-   ============================================================= */
-
+/* Preço atualizado (com garantia) */
 .produto__preco-garantia-aviso {
   display: none;
   margin-top: 10px;
@@ -168,1838 +150,544 @@ html[data-tema="escuro"] .garantia-estendida__opcao.selecionada {
   font-size: 13px;
   color: #075985;
 }
-
 html[data-tema="escuro"] .produto__preco-garantia-aviso {
   background: rgba(14, 165, 233, 0.15);
   color: #7dd3fc;
 }
-
 .produto__preco-garantia-aviso.visivel {
   display: block;
 }
-
 .produto__preco-garantia-aviso strong {
   color: var(--cor-principal);
 }
-
-/* =============================================================
-   MODAL DE GARANTIA
-   ============================================================= */
-
-.garantia-modal-overlay {
-  position: fixed;
-  inset: 0;
-  z-index: 10000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-  background: rgba(15, 23, 42, 0.62);
-  backdrop-filter: blur(3px);
-}
-
-.garantia-modal {
-  width: 100%;
-  max-width: 520px;
-  max-height: min(720px, 90vh);
-  overflow: auto;
-  background: #fff;
-  border: 1px solid #e2e8f0;
-  border-radius: 16px;
-  box-shadow: 0 24px 60px rgba(15, 23, 42, 0.24);
-}
-
-html[data-tema="escuro"] .garantia-modal {
-  background: #0f172a;
-  border-color: #334155;
-}
-
-.garantia-modal__cabecalho {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 16px;
-  padding: 20px 22px 16px;
-  border-bottom: 1px solid #e2e8f0;
-}
-
-html[data-tema="escuro"] .garantia-modal__cabecalho {
-  border-color: #334155;
-}
-
-.garantia-modal__titulo {
-  margin: 0;
-  color: #0f172a;
-  font-size: 19px;
-  line-height: 1.3;
-  font-weight: 700;
-}
-
-html[data-tema="escuro"] .garantia-modal__titulo {
-  color: #f8fafc;
-}
-
-.garantia-modal__subtitulo {
-  margin: 5px 0 0;
-  color: #64748b;
-  font-size: 13px;
-  line-height: 1.5;
-}
-
-html[data-tema="escuro"] .garantia-modal__subtitulo {
-  color: #94a3b8;
-}
-
-.garantia-modal__fechar {
-  flex: 0 0 auto;
-  width: 34px;
-  height: 34px;
-  border: 0;
-  border-radius: 9px;
-  background: transparent;
-  color: #64748b;
-  font-size: 25px;
-  line-height: 1;
-  cursor: pointer;
-}
-
-.garantia-modal__fechar:hover {
-  background: #f1f5f9;
-  color: #0f172a;
-}
-
-html[data-tema="escuro"] .garantia-modal__fechar:hover {
-  background: #1e293b;
-  color: #f8fafc;
-}
-
-.garantia-modal__corpo {
-  padding: 20px 22px;
-}
-
-.garantia-modal__produto {
-  margin-bottom: 16px;
-  padding: 12px 14px;
-  border: 1px solid #e2e8f0;
-  border-radius: 10px;
-  background: #f8fafc;
-  color: #334155;
-  font-size: 13px;
-}
-
-html[data-tema="escuro"] .garantia-modal__produto {
-  background: #1e293b;
-  border-color: #334155;
-  color: #cbd5e1;
-}
-
-.garantia-modal__produto strong {
-  color: #0f172a;
-}
-
-html[data-tema="escuro"] .garantia-modal__produto strong {
-  color: #f8fafc;
-}
-
-.garantia-modal__resumo {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 10px;
-  margin-bottom: 18px;
-}
-
-.garantia-modal__item {
-  padding: 13px 14px;
-  border: 1px solid #e2e8f0;
-  border-radius: 10px;
-}
-
-html[data-tema="escuro"] .garantia-modal__item {
-  border-color: #334155;
-}
-
-.garantia-modal__label {
-  display: block;
-  margin-bottom: 4px;
-  color: #64748b;
-  font-size: 11px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: .04em;
-}
-
-html[data-tema="escuro"] .garantia-modal__label {
-  color: #94a3b8;
-}
-
-.garantia-modal__valor {
-  color: #0f172a;
-  font-size: 16px;
-  font-weight: 700;
-}
-
-html[data-tema="escuro"] .garantia-modal__valor {
-  color: #f8fafc;
-}
-
-.garantia-modal__descricao {
-  color: #475569;
-  font-size: 14px;
-  line-height: 1.65;
-  white-space: pre-line;
-}
-
-html[data-tema="escuro"] .garantia-modal__descricao {
-  color: #cbd5e1;
-}
-
-.garantia-modal__rodape {
-  display: flex;
-  justify-content: flex-end;
-  gap: 10px;
-  padding: 16px 22px 20px;
-  border-top: 1px solid #e2e8f0;
-}
-
-html[data-tema="escuro"] .garantia-modal__rodape {
-  border-color: #334155;
-}
-
-.garantia-modal__rodape button {
-  min-height: 42px;
-}
-
-@media (max-width: 640px) {
-  .garantia-modal-overlay {
-    padding: 12px;
-  }
-
-  .garantia-modal__resumo {
-    grid-template-columns: 1fr;
-  }
-
-  .garantia-modal__rodape {
-    flex-direction: column-reverse;
-  }
-
-  .garantia-modal__rodape button {
-    width: 100%;
-  }
-}
 </style>
 </head>
-
 <body>
-
 <div id="header"></div>
 
 <main class="conteudo">
-  <div class="container">
-    <div id="conteudo-produto">
-      <div class="carregando">
-        <div class="spinner spinner--lg"></div>
-      </div>
-    </div>
-  </div>
+<div class="container">
+<div id="conteudo-produto"><div class="carregando"><div class="spinner spinner--lg"></div></div></div>
+</div>
 </main>
 
 <div id="footer"></div>
 
 <script type="module">
-
 (async () => {
-  try {
-    const { renderHeader } = await import('./assets/js/components/header.js');
-    const { renderFooter } = await import('./assets/js/components/footer.js');
-
-    await renderHeader('produtos');
-    await renderFooter();
-  } catch (e) {}
+try {
+const { renderHeader } = await import('./assets/js/components/header.js');
+const { renderFooter } = await import('./assets/js/components/footer.js');
+await renderHeader('produtos');
+await renderFooter();
+} catch (e) {}
 })();
 
 let imagensUrls = [];
 let produtoAtual = null;
-let garantiaSelecionada = null;
-
-/* ============================================================
-   CARREGAMENTO DO PRODUTO
-   ============================================================ */
+let garantiaSelecionada = null; // null = sem garantia | { meses, preco, descricao }
 
 (async () => {
-  const params = new URLSearchParams(location.search);
-  const produtoId = params.get('id');
+const params = new URLSearchParams(location.search);
+const produtoId = params.get('id');
+if (!produtoId) { renderNaoEncontrado('Nenhum produto selecionado.'); return; }
 
-  if (!produtoId) {
-    renderNaoEncontrado('Nenhum produto selecionado.');
-    return;
-  }
+try {
+const mod = await import('./assets/js/services/products.service.js');
 
-  try {
-    const mod = await import('./assets/js/services/products.service.js');
+const p = await Promise.race([
+mod.buscarProduto(produtoId),
+new Promise((_, rej) => setTimeout(() => rej(new Error('timeout')), 8000))
+]);
 
-    const p = await Promise.race([
-      mod.buscarProduto(produtoId),
-      new Promise((_, rej) =>
-        setTimeout(() => rej(new Error('timeout')), 8000)
-      )
-    ]);
-
-    if (!p || p.status === 'oculto') {
-      renderNaoEncontrado('Produto não encontrado.');
-      return;
-    }
-
-    renderProduto(p, mod);
-
-  } catch (e) {
-    console.error('[produto] erro:', e);
-    renderNaoEncontrado('Produto não encontrado.');
-  }
+if (!p || p.status === 'oculto') { renderNaoEncontrado('Produto não encontrado.'); return; }
+renderProduto(p, mod);
+} catch (e) {
+renderNaoEncontrado('Produto não encontrado.');
+}
 })();
 
-/* ============================================================
-   RENDERIZAÇÃO DO PRODUTO
-   ============================================================ */
-
 async function renderProduto(p, mod) {
-
-  document.title = p.nome + ' — Minha Loja';
-  produtoAtual = p;
-
-  const disp = mod.rotuloDisponibilidade(p);
-  const cond = mod.rotuloCondicao(p.condicao);
-
-  const imagens = (p.imagens && p.imagens.length)
-    ? p.imagens
-    : [{ url: null }];
-
-  imagensUrls = imagens
-    .map(function(img) {
-      return img.url;
-    })
-    .filter(function(u) {
-      return u;
-    });
-
-  if (
-    p.imagemPrincipal &&
-    imagensUrls.indexOf(p.imagemPrincipal) === -1
-  ) {
-    imagensUrls.unshift(p.imagemPrincipal);
-  }
-
-  const img = p.imagemPrincipal
-    ? '<img src="' + p.imagemPrincipal + '" alt="" />'
-    : '<div class="produto-card__sem-imagem">📦</div>';
-
-  const preco = p.temPromo
-    ? '<div class="produto__preco-antigo">R$ ' +
-      p.preco.toFixed(2) +
-      '</div><div class="produto__preco produto__preco--promo" id="preco-principal">R$ ' +
-      p.precoPromocional.toFixed(2) +
-      '</div>'
-    : '<div class="produto__preco" id="preco-principal">R$ ' +
-      p.preco.toFixed(2) +
-      '</div>';
-
-  const miniaturas = imagens.length > 1
-    ? '<div class="galeria__miniaturas" id="galeria-miniaturas">' +
-      imagens.map(function(img, i) {
-        return '<button class="galeria__miniatura ' +
-          (i === 0 ? 'ativa' : '') +
-          '" data-img="' +
-          (img.url || '') +
-          '" data-idx="' +
-          i +
-          '">' +
-          (img.url
-            ? '<img src="' + img.url + '" alt="" loading="lazy" />'
-            : '') +
-          '</button>';
-      }).join('') +
-      '</div>'
-    : '';
-
-  /* ============================================================
-     GARANTIA PADRÃO
-     ============================================================ */
-
-  const garantiaPadraoMeses = Number(
-    p.garantia_meses ||
-    p.garantiaMeses ||
-    p.garantia_padrao_meses ||
-    0
-  );
-
-  const garantiaPadraoDescricao =
-    p.garantia_descricao ||
-    p.garantiaDescricao ||
-    p.descricao_garantia ||
-    '';
-
-  const temGarantiaPadrao = garantiaPadraoMeses > 0;
-
-  const seloGarantia = temGarantiaPadrao
-    ? '<div class="selo-garantia">' +
-      '<span class="selo-garantia__icone">🛡️</span>' +
-      '<span class="selo-garantia__texto">' +
-      '<strong>Garantia de ' +
-      garantiaPadraoMeses +
-      ' meses</strong> inclusa' +
-      '</span>' +
-      '</div>'
-    : '';
-
-  /* ============================================================
-     GARANTIAS ESTENDIDAS
-     ============================================================ */
-
-  const garantiasEstendidas =
-    p.garantias_estendidas ||
-    p.garantiasEstendidas ||
-    p.garantia_estendida_opcoes ||
-    [];
-
-  let blocoGarantiaEstendida = '';
-
-  if (
-    Array.isArray(garantiasEstendidas) &&
-    garantiasEstendidas.length
-  ) {
-
-    blocoGarantiaEstendida =
-      '<div class="garantia-estendida">' +
-
-      '<div class="garantia-estendida__titulo">' +
-      '🛡️ Garantia estendida' +
-      '</div>' +
-
-      '<label class="garantia-estendida__opcao">' +
-
-      '<input type="radio" ' +
-      'name="garantia-estendida" ' +
-      'value="sem" checked>' +
-
-      '<div class="garantia-estendida__info">' +
-      '<div class="garantia-estendida__titulo-opcao">' +
-      'Sem garantia estendida' +
-      '</div>' +
-      '<div class="garantia-estendida__desc">' +
-      'Manter apenas a garantia padrão do produto' +
-      '</div>' +
-      '</div>' +
-
-      '<div class="garantia-estendida__preco">' +
-      'Grátis' +
-      '</div>' +
-
-      '</label>' +
-
-      garantiasEstendidas.map(function(g, index) {
-
-        const meses = Number(
-          g.meses ||
-          g.meses_adicionais ||
-          g.periodo ||
-          0
-        );
-
-        const precoGarantia = Number(
-          g.preco ||
-          g.valor ||
-          g.preco_garantia ||
-          0
-        );
-
-        const descricao =
-          g.descricao ||
-          g.descricao_garantia ||
-          '';
-
-        if (!meses) return '';
-
-        return (
-          '<label class="garantia-estendida__opcao" ' +
-          'data-garantia-index="' + index + '">' +
-
-          '<input type="radio" ' +
-          'name="garantia-estendida" ' +
-          'value="' + index + '" ' +
-          'data-meses="' + meses + '" ' +
-          'data-preco="' + precoGarantia + '" ' +
-          'data-descricao="' +
-          esc(descricao) +
-          '">' +
-
-          '<div class="garantia-estendida__info">' +
-
-          '<div class="garantia-estendida__titulo-opcao">' +
-          '+' + meses + ' meses de garantia' +
-          '</div>' +
-
-          '<div class="garantia-estendida__desc">' +
-          (descricao
-            ? esc(descricao)
-            : 'Confira os detalhes da garantia') +
-          '</div>' +
-
-          '</div>' +
-
-          '<div class="garantia-estendida__preco">' +
-          'R$ ' +
-          precoGarantia.toFixed(2) +
-          '</div>' +
-
-          '</label>'
-        );
-      }).join('') +
-
-      '<div id="preco-garantia-aviso" ' +
-      'class="produto__preco-garantia-aviso">' +
-      '</div>' +
-
-      '</div>';
-  }
-
-  /* ============================================================
-     CONTEÚDO PRINCIPAL
-     ============================================================ */
-
-  document.getElementById('conteudo-produto').innerHTML =
-
-    '<div class="produto">' +
-
-    '<div class="produto__galeria">' +
-
-    '<div class="galeria__principal" id="galeria-principal">' +
-    img +
-    '</div>' +
-
-    miniaturas +
-
-    '</div>' +
-
-    '<div class="produto__info">' +
-
-    '<div class="produto__condicao">' +
-    esc(cond) +
-    '</div>' +
-
-    '<h1 class="produto__titulo">' +
-    esc(p.nome) +
-    '</h1>' +
-
-    '<div class="produto__disponibilidade">' +
-    esc(disp) +
-    '</div>' +
-
-    '<div id="preco-area">' +
-    preco +
-    '</div>' +
-
-    seloGarantia +
-
-    blocoGarantiaEstendida +
-
-    (p.descricao
-      ? '<div class="produto__descricao">' +
-        esc(p.descricao) +
-        '</div>'
-      : '') +
-
-    '<div class="produto__acoes">' +
-
-    '<button id="btn-comprar" ' +
-    'class="btn btn--principal">' +
-    'Comprar agora' +
-    '</button>' +
-
-    '<button id="btn-carrinho" ' +
-    'class="btn btn--secundario">' +
-    'Adicionar ao carrinho' +
-    '</button>' +
-
-    '<button id="btn-proposta" ' +
-    'class="btn btn--secundario">' +
-    'Fazer proposta' +
-    '</button>' +
-
-    '<button id="btn-chat" ' +
-    'class="btn btn--secundario">' +
-    'Conversar com a loja' +
-    '</button>' +
-
-    '<button id="btn-whatsapp" ' +
-    'class="btn btn--secundario">' +
-    'WhatsApp' +
-    '</button>' +
-
-    '</div>' +
-
-    '</div>' +
-
-    '</div>';
-
-  /* ============================================================
-     GALERIA
-     ============================================================ */
-
-  document.querySelectorAll(
-    '.galeria__miniatura'
-  ).forEach(function(btn) {
-
-    btn.addEventListener('click', function() {
-
-      const idx = Number(
-        btn.getAttribute('data-idx') || 0
-      );
-
-      const url =
-        btn.getAttribute('data-img');
-
-      if (url) {
-
-        const principal =
-          document.getElementById(
-            'galeria-principal'
-          );
-
-        principal.innerHTML =
-          '<img src="' +
-          url +
-          '" alt="" />';
-
-      }
-
-      document.querySelectorAll(
-        '.galeria__miniatura'
-      ).forEach(function(b) {
-        b.classList.remove('ativa');
-      });
-
-      btn.classList.add('ativa');
-    });
-
-  });
-
-  /* ============================================================
-     GARANTIA — EVENTOS
-     ============================================================ */
-
-  const radiosGarantia =
-    document.querySelectorAll(
-      'input[name="garantia-estendida"]'
-    );
-
-  radiosGarantia.forEach(function(radio) {
-
-    radio.addEventListener('change', function() {
-
-      document.querySelectorAll(
-        '.garantia-estendida__opcao'
-      ).forEach(function(opcao) {
-        opcao.classList.remove('selecionada');
-      });
-
-      const opcaoSelecionada =
-        radio.closest(
-          '.garantia-estendida__opcao'
-        );
-
-      if (opcaoSelecionada) {
-        opcaoSelecionada.classList.add(
-          'selecionada'
-        );
-      }
-
-      if (radio.value === 'sem') {
-
-        garantiaSelecionada = null;
-
-        atualizarPrecoGarantia();
-
-        return;
-      }
-
-      const meses =
-        Number(
-          radio.getAttribute('data-meses') || 0
-        );
-
-      const precoGarantia =
-        Number(
-          radio.getAttribute('data-preco') || 0
-        );
-
-      const descricao =
-        radio.getAttribute(
-          'data-descricao'
-        ) || '';
-
-      const garantia = {
-        meses: meses,
-        preco: precoGarantia,
-        descricao: descricao
-      };
-
-      abrirModalGarantia(
-        p,
-        garantia,
-        function(confirmada) {
-
-          if (!confirmada) {
-
-            const semGarantia =
-              document.querySelector(
-                'input[name="garantia-estendida"][value="sem"]'
-              );
-
-            if (semGarantia) {
-              semGarantia.checked = true;
-            }
-
-            garantiaSelecionada = null;
-
-            document.querySelectorAll(
-              '.garantia-estendida__opcao'
-            ).forEach(function(opcao) {
-              opcao.classList.remove(
-                'selecionada'
-              );
-            });
-
-            atualizarPrecoGarantia();
-
-            return;
-          }
-
-          garantiaSelecionada = garantia;
-
-          atualizarPrecoGarantia();
-        }
-      );
-
-    });
-
-  });
-
-  /* ============================================================
-     ESTADO INICIAL
-     ============================================================ */
-
-  const radioInicial =
-    document.querySelector(
-      'input[name="garantia-estendida"][value="sem"]'
-    );
-
-  if (radioInicial) {
-    const opcaoInicial =
-      radioInicial.closest(
-        '.garantia-estendida__opcao'
-      );
-
-    if (opcaoInicial) {
-      opcaoInicial.classList.add(
-        'selecionada'
-      );
-    }
-  }
-
-  /* ============================================================
-     BOTÃO CARRINHO
-     ============================================================ */
-
-  document.getElementById(
-    'btn-carrinho'
-  ).onclick = function() {
-
-    adicionarAoCarrinho(
-      p,
-      garantiaSelecionada
-    );
-
-    mostrarToast(
-      'Produto adicionado',
-      garantiaSelecionada
-        ? 'Produto + garantia estendida adicionados ao carrinho.'
-        : 'Produto adicionado ao carrinho.'
-    );
-  };
-
-  /* ============================================================
-     BOTÃO COMPRAR
-     ============================================================ */
-
-  document.getElementById(
-    'btn-comprar'
-  ).onclick = function() {
-
-    adicionarAoCarrinho(
-      p,
-      garantiaSelecionada
-    );
-
-    location.href =
-      './carrinho.html';
-  };
-
-  /* ============================================================
-     PROPOSTA
-     ============================================================ */
-
-  document.getElementById(
-    'btn-proposta'
-  ).onclick = async function() {
-
-    const { supabase } =
-      await import(
-        './assets/js/supabase.js'
-      );
-
-    const r =
-      await supabase.auth.getUser();
-
-    if (
-      !r.data ||
-      !r.data.user
-    ) {
-
-      mostrarAviso(
-        'Faça login',
-        'Você precisa estar logado para enviar proposta.',
-        'Fazer login',
-        './login.html'
-      );
-
-      return;
-    }
-
-    abrirModalProposta(p);
-  };
-
-  /* ============================================================
-     CHAT
-     ============================================================ */
-
-  document.getElementById(
-    'btn-chat'
-  ).onclick = async function() {
-
-    const { supabase } =
-      await import(
-        './assets/js/supabase.js'
-      );
-
-    const r =
-      await supabase.auth.getUser();
-
-    if (
-      !r.data ||
-      !r.data.user
-    ) {
-
-      mostrarAviso(
-        'Faça login',
-        'Você precisa estar logado para conversar com a loja.',
-        'Fazer login',
-        './login.html'
-      );
-
-      return;
-    }
-
-    try {
-
-      const {
-        abrirConversa
-      } = await import(
-        './assets/js/services/chat.service.js'
-      );
-
-      const chatId =
-        await abrirConversa({
-          product_id: p.id,
-          assunto:
-            'Interesse em: ' +
-            p.nome
-        });
-
-      location.href =
-        './conversa.html?id=' +
-        chatId;
-
-    } catch (e) {
-
-      alert(
-        'Erro ao abrir chat: ' +
-        e.message
-      );
-    }
-  };
-
-  /* ============================================================
-     WHATSAPP
-     ============================================================ */
-
-  document.getElementById(
-    'btn-whatsapp'
-  ).onclick = async function() {
-
-    try {
-
-      const {
-        abrirWhatsapp
-      } = await import(
-        './assets/js/services/whatsapp.service.js'
-      );
-
-      const link =
-        await abrirWhatsapp({
-          tipo: 'produto',
-          produto: p
-        });
-
-      if (!link) {
-
-        mostrarAviso(
-          'WhatsApp não configurado',
-          'O administrador ainda não cadastrou o WhatsApp da loja.',
-          'Fechar',
-          '#'
-        );
-
-        return;
-      }
-
-    } catch (e) {
-
-      mostrarAviso(
-        'Erro',
-        'Não foi possível abrir o WhatsApp.',
-        'Fechar',
-        '#'
-      );
-    }
-  };
+document.title = p.nome + ' — Minha Loja';
+produtoAtual = p;
+const disp = mod.rotuloDisponibilidade(p);
+const cond = mod.rotuloCondicao(p.condicao);
+const imagens = (p.imagens && p.imagens.length) ? p.imagens : [{ url: null }];
+
+imagensUrls = imagens.map(function(img) { return img.url; }).filter(function(u) { return u; });
+if (p.imagemPrincipal && imagensUrls.indexOf(p.imagemPrincipal) === -1) {
+imagensUrls.unshift(p.imagemPrincipal);
 }
 
-/* ============================================================
-   ATUALIZAÇÃO DO PREÇO
-   ============================================================ */
+const img = p.imagemPrincipal
+? '<img src="' + p.imagemPrincipal + '" alt="" />'
+: '<div class="produto-card__sem-imagem">📦</div>';
 
-function atualizarPrecoGarantia() {
+const preco = p.temPromo
+? '<div class="produto__preco-antigo">R$ ' + p.preco.toFixed(2) + '</div><div class="produto__preco produto__preco--promo" id="preco-principal">R$ ' + p.precoPromocional.toFixed(2) + '</div>'
+: '<div class="produto__preco" id="preco-principal">R$ ' + p.preco.toFixed(2) + '</div>';
 
-  if (!produtoAtual) {
-    return;
-  }
+const miniaturas = imagens.length > 1
+? '<div class="galeria__miniaturas" id="galeria-miniaturas">' + imagens.map(function(img, i) {
+return '<button class="galeria__miniatura ' + (i === 0 ? 'ativa' : '') + '" data-img="' + (img.url || '') + '" data-idx="' + i + '">' + (img.url ? '<img src="' + img.url + '" alt="" loading="lazy" />' : '') + '</button>';
+}).join('') + '</div>'
+: '';
 
-  const precoBase =
-    produtoAtual.temPromo
-      ? produtoAtual.precoPromocional
-      : produtoAtual.preco;
-
-  const adicional =
-    garantiaSelecionada
-      ? Number(
-          garantiaSelecionada.preco || 0
-        )
-      : 0;
-
-  const precoFinal =
-    precoBase + adicional;
-
-  const precoPrincipal =
-    document.getElementById(
-      'preco-principal'
-    );
-
-  if (precoPrincipal) {
-
-    precoPrincipal.textContent =
-      'R$ ' +
-      precoFinal.toFixed(2);
-  }
-
-  const aviso =
-    document.getElementById(
-      'preco-garantia-aviso'
-    );
-
-  if (!aviso) {
-    return;
-  }
-
-  if (garantiaSelecionada) {
-
-    aviso.innerHTML =
-      'Garantia estendida adicionada: ' +
-      '<strong>+ R$ ' +
-      adicional.toFixed(2) +
-      '</strong>';
-
-    aviso.classList.add(
-      'visivel'
-    );
-
-  } else {
-
-    aviso.innerHTML = '';
-
-    aviso.classList.remove(
-      'visivel'
-    );
-  }
+// ============================================================
+// SELO DE GARANTIA PADRÃO
+// ============================================================
+let seloGarantiaHTML = '';
+if (p.garantia_padrao_meses && p.garantia_padrao_meses > 0) {
+const desc = p.garantia_padrao_descricao
+? ' — ' + esc(p.garantia_padrao_descricao)
+: '';
+seloGarantiaHTML = `
+<div class="selo-garantia">
+<span class="selo-garantia__icone">🛡️</span>
+<span class="selo-garantia__texto">
+<strong>Garantia padrão de ${p.garantia_padrao_meses} ${p.garantia_padrao_meses === 1 ? 'mês' : 'meses'}</strong>${desc}
+</span>
+</div>`;
 }
 
-/* ============================================================
-   MODAL DE GARANTIA
-   ============================================================ */
+// ============================================================
+// GARANTIAS ESTENDIDAS (radio buttons)
+// ============================================================
+let garantiaEstendidaHTML = '';
+const garantias = Array.isArray(p.garantias_estendidas) ? p.garantias_estendidas : [];
 
-function abrirModalGarantia(
-  produto,
-  garantia,
-  callback
-) {
+if (garantias.length > 0) {
+garantiaEstendidaHTML = `
+<div class="garantia-estendida" id="bloco-garantia">
+<div class="garantia-estendida__titulo">🛡️ Estender garantia</div>
 
-  const existente =
-    document.getElementById(
-      'garantia-modal-overlay'
-    );
+<label class="garantia-estendida__opcao selecionada" data-garantia-idx="-1">
+<input type="radio" name="garantia" value="-1" checked />
+<div class="garantia-estendida__info">
+<div class="garantia-estendida__titulo-opcao">Sem garantia estendida</div>
+<div class="garantia-estendida__desc">Manter apenas a garantia padrão</div>
+</div>
+<div class="garantia-estendida__preco">Grátis</div>
+</label>
 
-  if (existente) {
-    existente.remove();
-  }
-
-  const div =
-    document.createElement('div');
-
-  div.id =
-    'garantia-modal-overlay';
-
-  div.className =
-    'garantia-modal-overlay';
-
-  const meses =
-    Number(
-      garantia.meses || 0
-    );
-
-  const preco =
-    Number(
-      garantia.preco || 0
-    );
-
-  const descricao =
-    garantia.descricao ||
-    'Esta garantia estendida adiciona cobertura ao produto conforme as condições cadastradas pela loja.';
-
-  div.innerHTML =
-
-    '<div class="garantia-modal" role="dialog" aria-modal="true" aria-labelledby="garantia-modal-titulo">' +
-
-    '<div class="garantia-modal__cabecalho">' +
-
-    '<div>' +
-
-    '<h2 id="garantia-modal-titulo" class="garantia-modal__titulo">' +
-    'Confirmar garantia estendida' +
-    '</h2>' +
-
-    '<p class="garantia-modal__subtitulo">' +
-    'Confira os detalhes antes de adicionar a garantia ao produto.' +
-    '</p>' +
-
-    '</div>' +
-
-    '<button type="button" class="garantia-modal__fechar" id="garantia-modal-fechar" aria-label="Fechar">' +
-    '×' +
-    '</button>' +
-
-    '</div>' +
-
-    '<div class="garantia-modal__corpo">' +
-
-    '<div class="garantia-modal__produto">' +
-    '<strong>Produto:</strong> ' +
-    esc(produto.nome) +
-    '</div>' +
-
-    '<div class="garantia-modal__resumo">' +
-
-    '<div class="garantia-modal__item">' +
-    '<span class="garantia-modal__label">Período adicional</span>' +
-    '<span class="garantia-modal__valor">' +
-    '+' + meses +
-    ' meses' +
-    '</span>' +
-    '</div>' +
-
-    '<div class="garantia-modal__item">' +
-    '<span class="garantia-modal__label">Valor</span>' +
-    '<span class="garantia-modal__valor">' +
-    'R$ ' +
-    preco.toFixed(2) +
-    '</span>' +
-    '</div>' +
-
-    '</div>' +
-
-    '<div>' +
-
-    '<span class="garantia-modal__label">' +
-    'Detalhes da garantia' +
-    '</span>' +
-
-    '<div class="garantia-modal__descricao">' +
-    esc(descricao) +
-    '</div>' +
-
-    '</div>' +
-
-    '</div>' +
-
-    '<div class="garantia-modal__rodape">' +
-
-    '<button type="button" id="garantia-modal-cancelar" class="btn btn--secundario">' +
-    'Cancelar' +
-    '</button>' +
-
-    '<button type="button" id="garantia-modal-confirmar" class="btn btn--principal">' +
-    'Adicionar esta garantia' +
-    '</button>' +
-
-    '</div>' +
-
-    '</div>';
-
-  document.body.appendChild(div);
-
-  function fechar(confirmada) {
-
-    div.remove();
-
-    if (typeof callback === 'function') {
-      callback(confirmada);
-    }
-  }
-
-  document.getElementById(
-    'garantia-modal-fechar'
-  ).onclick = function() {
-    fechar(false);
-  };
-
-  document.getElementById(
-    'garantia-modal-cancelar'
-  ).onclick = function() {
-    fechar(false);
-  };
-
-  document.getElementById(
-    'garantia-modal-confirmar'
-  ).onclick = function() {
-    fechar(true);
-  };
-
-  div.addEventListener(
-    'click',
-    function(e) {
-
-      if (e.target === div) {
-        fechar(false);
-      }
-    }
-  );
-
-  function teclaEscape(e) {
-
-    if (e.key === 'Escape') {
-      fechar(false);
-      document.removeEventListener(
-        'keydown',
-        teclaEscape
-      );
-    }
-  }
-
-  document.addEventListener(
-    'keydown',
-    teclaEscape
-  );
+${garantias.map((g, i) => `
+<label class="garantia-estendida__opcao" data-garantia-idx="${i}">
+<input type="radio" name="garantia" value="${i}" />
+<div class="garantia-estendida__info">
+<div class="garantia-estendida__titulo-opcao">+${g.meses} ${g.meses === 1 ? 'mês' : 'meses'}</div>
+${g.descricao ? `<div class="garantia-estendida__desc">${esc(g.descricao)}</div>` : ''}
+</div>
+<div class="garantia-estendida__preco">+ R$ ${Number(g.preco).toFixed(2)}</div>
+</label>
+`).join('')}
+</div>`;
 }
 
-/* ============================================================
-   CARRINHO
-   ============================================================ */
+// ============================================================
+// HTML FINAL
+// ============================================================
+const el = document.getElementById('conteudo-produto');
+el.innerHTML =
+'<div class="migalhas"><a href="./index.html">Início</a><span><a href="./produtos.html">Produtos</a></span><span>' + esc(p.nome) + '</span></div>' +
 
-function adicionarAoCarrinho(
-  produto,
-  garantia
-) {
+'<div class="produto">' +
 
-  try {
+'<div class="galeria">' +
+'<div class="galeria__principal" id="galeria-principal">' + img +
+'<div class="galeria__zoom-icone">' +
+'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line><line x1="11" y1="8" x2="11" y2="14"></line><line x1="8" y1="11" x2="14" y2="11"></line></svg>' +
+'</div>' +
+'</div>' +
+miniaturas +
+'</div>' +
 
-    const c =
-      JSON.parse(
-        localStorage.getItem(
-          'carrinho'
-        ) || '[]'
-      );
+'<div class="produto__info">' +
 
-    const precoBase =
-      produto.temPromo
-        ? produto.precoPromocional
-        : produto.preco;
+'<div class="produto__meta">' +
+'<span class="badge badge--neutro">' + cond + '</span>' +
+'<span class="badge badge--' + disp.tipo + '">' + disp.texto + '</span>' +
+(p.marca ? '<span class="texto-suave">Marca: <strong>' + esc(p.marca) + '</strong></span>' : '') +
+'</div>' +
 
-    const precoFinal =
-      precoBase +
-      (
-        garantia
-          ? Number(
-              garantia.preco || 0
-            )
-          : 0
-      );
+'<h1 class="produto__nome">' + esc(p.nome) + '</h1>' +
 
-    const chaveGarantia =
-      garantia
-        ? (
-            garantia.meses +
-            '_' +
-            garantia.preco
-          )
-        : 'sem';
+(p.descricaoCurta ? '<p class="produto__descricao-curta">' + esc(p.descricaoCurta) + '</p>' : '') +
 
-    const idx =
-      c.findIndex(function(i) {
+seloGarantiaHTML +
 
-        if (
-          i.id !== produto.id
-        ) {
-          return false;
-        }
+'<div class="produto__preco-bloco">' + preco +
+'<div class="produto__preco-garantia-aviso" id="aviso-garantia"></div>' +
+'</div>' +
 
-        const iChave =
-          i.garantia_estendida
-            ? (
-                i.garantia_estendida.meses +
-                '_' +
-                i.garantia_estendida.preco
-              )
-            : 'sem';
+garantiaEstendidaHTML +
 
-        return (
-          iChave ===
-          chaveGarantia
-        );
-      });
+'<div class="produto__acoes">' +
+'<div class="produto__acoes-linha">' +
+'<button class="btn btn--principal btn--lg" id="btn-comprar" style="flex:2;">🛒 Comprar agora</button>' +
+'<button class="btn btn--contorno btn--lg" id="btn-carrinho" style="flex:1;" title="Adicionar ao carrinho">+ Carrinho</button>' +
+'</div>' +
+'<div class="produto__acoes-linha">' +
+'<button class="btn btn--contorno" id="btn-proposta">Fazer proposta</button>' +
+'<button class="btn btn--contorno" id="btn-chat">Conversar</button>' +
+'</div>' +
+'<div class="produto__acoes-linha">' +
+'<button class="btn-whatsapp" id="btn-whatsapp">Falar no WhatsApp</button>' +
+'</div>' +
+'</div>' +
 
-    if (idx >= 0) {
+(p.descricao ? '<div><h3 class="mb-2">Descrição</h3><div class="produto__descricao" id="descricao-container">' + esc(p.descricao) + '</div></div>' : '') +
+'</div>' +
+'</div>';
 
-      c[idx].quantidade += 1;
-
-    } else {
-
-      const item = {
-
-        id: produto.id,
-
-        nome: produto.nome,
-
-        preco: precoFinal,
-
-        preco_base: precoBase,
-
-        imagem:
-          produto.imagemPrincipal,
-
-        quantidade: 1
-      };
-
-      if (garantia) {
-
-        item.garantia_estendida = {
-
-          meses:
-            garantia.meses,
-
-          preco:
-            garantia.preco,
-
-          descricao:
-            garantia.descricao || ''
-        };
-      }
-
-      c.push(item);
-    }
-
-    localStorage.setItem(
-      'carrinho',
-      JSON.stringify(c)
-    );
-
-  } catch (e) {
-
-    console.error(
-      '[carrinho] erro:',
-      e
-    );
-  }
+// Processar descrição com preview de produtos
+if (p.descricao) {
+try {
+const previewMod = await import('./assets/js/components/produto-preview.js');
+const container = document.getElementById('descricao-container');
+await previewMod.renderizarDescricao(p.descricao, container);
+container.style.whiteSpace = 'pre-line';
+} catch (e) {
+console.warn('[produto] preview não carregado:', e);
+}
 }
 
-/* ============================================================
-   BADGE DO CARRINHO
-   ============================================================ */
+// ==========================================================
+// GALERIA
+// ==========================================================
+const principal = document.getElementById('galeria-principal');
+if (principal) {
+principal.onclick = function() {
+if (!imagensUrls.length) return;
+abrirGaleriaFull(0);
+};
+}
+
+document.querySelectorAll('.galeria__miniatura').forEach(function(btn) {
+btn.onclick = function() {
+const url = btn.dataset.img;
+const idx = Number(btn.dataset.idx) || 0;
+if (!url) return;
+document.getElementById('galeria-principal').innerHTML = '<img src="' + url + '" alt="" /><div class="galeria__zoom-icone"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line><line x1="11" y1="8" x2="11" y2="14"></line><line x1="8" y1="11" x2="14" y2="11"></line></svg></div>';
+document.querySelectorAll('.galeria__miniatura').forEach(function(b) { b.classList.remove('ativa'); });
+btn.classList.add('ativa');
+document.getElementById('galeria-principal').onclick = function() {
+abrirGaleriaFull(idx);
+};
+};
+});
+
+// ==========================================================
+// GARANTIA ESTENDIDA — escolha
+// ==========================================================
+document.querySelectorAll('.garantia-estendida__opcao').forEach(function(label) {
+label.onclick = function(e) {
+// Se clicou no próprio radio, deixa o comportamento padrão
+document.querySelectorAll('.garantia-estendida__opcao').forEach(function(x) {
+x.classList.remove('selecionada');
+});
+label.classList.add('selecionada');
+
+const input = label.querySelector('input[type="radio"]');
+if (input && !input.checked) input.checked = true;
+
+const idx = Number(label.dataset.garantiaIdx);
+if (idx >= 0 && garantias[idx]) {
+garantiaSelecionada = {
+meses: Number(garantias[idx].meses),
+preco: Number(garantias[idx].preco),
+descricao: garantias[idx].descricao || ''
+};
+} else {
+garantiaSelecionada = null;
+}
+
+atualizarPrecoComGarantia();
+};
+});
+
+// ==========================================================
+// ATUALIZAR PREÇO COM GARANTIA
+// ==========================================================
+function atualizarPrecoComGarantia() {
+const precoEl = document.getElementById('preco-principal');
+const avisoEl = document.getElementById('aviso-garantia');
+
+if (!precoEl) return;
+
+const precoBase = p.temPromo ? p.precoPromocional : p.preco;
+
+if (garantiaSelecionada) {
+const total = precoBase + garantiaSelecionada.preco;
+precoEl.innerHTML = 'R$ ' + total.toFixed(2);
+
+if (avisoEl) {
+avisoEl.classList.add('visivel');
+avisoEl.innerHTML = '🛡️ Inclui garantia estendida de <strong>+' + garantiaSelecionada.meses + ' meses</strong> por R$ ' + garantiaSelecionada.preco.toFixed(2);
+}
+} else {
+precoEl.innerHTML = p.temPromo
+? 'R$ ' + p.precoPromocional.toFixed(2)
+: 'R$ ' + p.preco.toFixed(2);
+
+if (avisoEl) {
+avisoEl.classList.remove('visivel');
+avisoEl.innerHTML = '';
+}
+}
+}
+
+// ==========================================================
+// BOTÕES DE COMPRA
+// ==========================================================
+document.getElementById('btn-comprar').onclick = function() {
+adicionarAoCarrinho(p, garantiaSelecionada);
+location.href = './carrinho.html';
+};
+
+document.getElementById('btn-carrinho').onclick = function() {
+adicionarAoCarrinho(p, garantiaSelecionada);
+atualizarBadgeCarrinho();
+mostrarToast('✅ Adicionado ao carrinho', p.nome);
+};
+
+// ==========================================================
+// ADICIONAR AO CARRINHO (com garantia opcional)
+// ==========================================================
+function adicionarAoCarrinho(produto, garantia) {
+try {
+const c = JSON.parse(localStorage.getItem('carrinho') || '[]');
+const precoBase = produto.temPromo ? produto.precoPromocional : produto.preco;
+const precoFinal = precoBase + (garantia ? garantia.preco : 0);
+
+// Chave única: produto + garantia (se tiver)
+const chaveGarantia = garantia ? (garantia.meses + '_' + garantia.preco) : 'sem';
+
+const idx = c.findIndex(function(i) {
+if (i.id !== produto.id) return false;
+const iChave = i.garantia_estendida
+? (i.garantia_estendida.meses + '_' + i.garantia_estendida.preco)
+: 'sem';
+return iChave === chaveGarantia;
+});
+
+if (idx >= 0) {
+c[idx].quantidade += 1;
+} else {
+const item = {
+id: produto.id,
+nome: produto.nome,
+preco: precoFinal,
+preco_base: precoBase,
+imagem: produto.imagemPrincipal,
+quantidade: 1
+};
+
+if (garantia) {
+item.garantia_estendida = {
+meses: garantia.meses,
+preco: garantia.preco,
+descricao: garantia.descricao || ''
+};
+}
+
+c.push(item);
+}
+
+localStorage.setItem('carrinho', JSON.stringify(c));
+} catch (e) {
+console.error('[carrinho] erro:', e);
+}
+}
 
 function atualizarBadgeCarrinho() {
-
-  try {
-
-    const c =
-      JSON.parse(
-        localStorage.getItem(
-          'carrinho'
-        ) || '[]'
-      );
-
-    const total =
-      c.reduce(
-        function(s, i) {
-          return s +
-            (i.quantidade || 0);
-        },
-        0
-      );
-
-    const badge =
-      document.getElementById(
-        'badge-carrinho'
-      );
-
-    if (badge) {
-
-      if (total > 0) {
-
-        badge.textContent =
-          total;
-
-        badge.classList.remove(
-          'oculto'
-        );
-
-      } else {
-
-        badge.classList.add(
-          'oculto'
-        );
-      }
-    }
-
-  } catch (e) {}
+try {
+const c = JSON.parse(localStorage.getItem('carrinho') || '[]');
+const total = c.reduce(function(s, i) { return s + (i.quantidade || 0); }, 0);
+const badge = document.getElementById('badge-carrinho');
+if (badge) {
+if (total > 0) { badge.textContent = total; badge.classList.remove('oculto'); }
+else badge.classList.add('oculto');
+}
+} catch (e) {}
 }
 
+// ==========================================================
+// PROPOSTA, CHAT, WHATSAPP (mantido igual)
+// ==========================================================
+document.getElementById('btn-proposta').onclick = async function() {
+const { supabase } = await import('./assets/js/supabase.js');
+const r = await supabase.auth.getUser();
+if (!r.data || !r.data.user) { mostrarAviso('Faça login', 'Você precisa estar logado para enviar proposta.', 'Fazer login', './login.html'); return; }
+abrirModalProposta(p);
+};
+
+document.getElementById('btn-chat').onclick = async function() {
+const { supabase } = await import('./assets/js/supabase.js');
+const r = await supabase.auth.getUser();
+if (!r.data || !r.data.user) {
+mostrarAviso('Faça login', 'Você precisa estar logado para conversar com a loja.', 'Fazer login', './login.html');
+return;
+}
+try {
+const { abrirConversa } = await import('./assets/js/services/chat.service.js');
+const chatId = await abrirConversa({ product_id: p.id, assunto: 'Interesse em: ' + p.nome });
+location.href = './conversa.html?id=' + chatId;
+} catch (e) {
+alert('Erro ao abrir chat: ' + e.message);
+}
+};
+
+document.getElementById('btn-whatsapp').onclick = async function() {
+try {
+const { abrirWhatsapp } = await import('./assets/js/services/whatsapp.service.js');
+const link = await abrirWhatsapp({ tipo: 'produto', produto: p });
+if (!link) { mostrarAviso('WhatsApp não configurado', 'O administrador ainda não cadastrou o WhatsApp da loja.', 'Fechar', '#'); }
+} catch (e) { mostrarAviso('Erro', 'Não foi possível abrir o WhatsApp.', 'Fechar', '#'); }
+};
+
+} // fim renderProduto
+
 /* ============================================================
-   TOAST
+   HELPERS DE UI
    ============================================================ */
-
-function mostrarToast(
-  titulo,
-  mensagem
-) {
-
-  let area =
-    document.querySelector(
-      '.toast-area-cart'
-    );
-
-  if (!area) {
-
-    area =
-      document.createElement(
-        'div'
-      );
-
-    area.className =
-      'toast-area-cart';
-
-    area.style.cssText =
-      'position:fixed;' +
-      'top:20px;' +
-      'right:20px;' +
-      'z-index:99999;' +
-      'display:flex;' +
-      'flex-direction:column;' +
-      'gap:10px;' +
-      'pointer-events:none;' +
-      'max-width:calc(100% - 40px);';
-
-    document.body.appendChild(
-      area
-    );
-  }
-
-  const el =
-    document.createElement(
-      'div'
-    );
-
-  el.style.cssText =
-    'background:#dcfce7;' +
-    'color:#166534;' +
-    'border-left:4px solid #16a34a;' +
-    'padding:12px 16px;' +
-    'border-radius:10px;' +
-    'box-shadow:0 8px 20px rgba(15,23,42,.15);' +
-    'font-family:system-ui,sans-serif;' +
-    'font-size:14px;' +
-    'min-width:240px;' +
-    'pointer-events:auto;' +
-    'opacity:0;' +
-    'transform:translateX(20px);' +
-    'transition:all .25s;';
-
-  el.innerHTML =
-    '<div style="font-weight:700;margin-bottom:2px;">' +
-    esc(titulo) +
-    '</div>' +
-
-    (
-      mensagem
-        ? '<div style="font-size:12px;opacity:.85;">' +
-          esc(mensagem) +
-          '</div>'
-        : ''
-    );
-
-  area.appendChild(el);
-
-  requestAnimationFrame(
-    function() {
-
-      el.style.opacity =
-        '1';
-
-      el.style.transform =
-        'translateX(0)';
-    }
-  );
-
-  setTimeout(
-    function() {
-
-      el.style.opacity =
-        '0';
-
-      el.style.transform =
-        'translateX(20px)';
-
-      setTimeout(
-        function() {
-          el.remove();
-        },
-        300
-      );
-
-    },
-    3000
-  );
+function mostrarToast(titulo, mensagem) {
+let area = document.querySelector('.toast-area-cart');
+if (!area) {
+area = document.createElement('div');
+area.className = 'toast-area-cart';
+area.style.cssText = 'position:fixed;top:20px;right:20px;z-index:99999;display:flex;flex-direction:column;gap:10px;pointer-events:none;max-width:calc(100% - 40px);';
+document.body.appendChild(area);
 }
 
-/* ============================================================
-   GALERIA FULLSCREEN
-   ============================================================ */
+const el = document.createElement('div');
+el.style.cssText =
+'background:#dcfce7;color:#166534;border-left:4px solid #16a34a;padding:12px 16px;' +
+'border-radius:10px;box-shadow:0 8px 20px rgba(15,23,42,.15);' +
+'font-family:system-ui,sans-serif;font-size:14px;min-width:240px;' +
+'pointer-events:auto;opacity:0;transform:translateX(20px);transition:all .25s;';
 
-async function abrirGaleriaFull(
-  indice
-) {
+el.innerHTML =
+'<div style="font-weight:700;margin-bottom:2px;">' + esc(titulo) + '</div>' +
+(mensagem ? '<div style="font-size:12px;opacity:.85;">' + esc(mensagem) + '</div>' : '');
 
-  try {
-
-    const {
-      abrirGaleria
-    } = await import(
-      './assets/js/components/galeria.js'
-    );
-
-    abrirGaleria(
-      imagensUrls,
-      indice
-    );
-
-  } catch (e) {
-
-    console.error(
-      'Erro ao abrir galeria:',
-      e
-    );
-  }
+area.appendChild(el);
+requestAnimationFrame(function() {
+el.style.opacity = '1';
+el.style.transform = 'translateX(0)';
+});
+setTimeout(function() {
+el.style.opacity = '0';
+el.style.transform = 'translateX(20px)';
+setTimeout(function() { el.remove(); }, 300);
+}, 3000);
 }
 
-/* ============================================================
-   MODAL DE PROPOSTA
-   ============================================================ */
+async function abrirGaleriaFull(indice) {
+try {
+const { abrirGaleria } = await import('./assets/js/components/galeria.js');
+abrirGaleria(imagensUrls, indice);
+} catch (e) {
+console.error('Erro ao abrir galeria:', e);
+}
+}
 
 function abrirModalProposta(p) {
+const div = document.createElement('div');
+div.style.cssText = 'position:fixed;inset:0;z-index:9999;background:rgba(15,23,42,.6);display:flex;align-items:center;justify-content:center;padding:16px;';
+div.id = 'modal-proposta-overlay';
 
-  const div =
-    document.createElement(
-      'div'
-    );
+div.innerHTML =
+'<div style="background:#fff;border-radius:16px;max-width:520px;width:100%;max-height:90vh;overflow-y:auto;box-shadow:0 20px 40px rgba(15,23,42,.2);">' +
+'<div style="display:flex;justify-content:space-between;align-items:center;padding:16px 20px;border-bottom:1px solid #e2e8f0;">' +
+'<h2 style="font-size:18px;font-weight:600;">Enviar proposta</h2>' +
+'<button id="mp-x" style="background:none;border:none;font-size:24px;cursor:pointer;color:#64748b;line-height:1;">×</button>' +
+'</div>' +
+'<form id="form-prop" style="padding:20px;">' +
+'<p style="font-size:13px;color:#64748b;margin-bottom:16px;">Produto: <strong>' + esc(p.nome) + '</strong><br>Preço anunciado: <strong>R$ ' + p.precoFinal.toFixed(2) + '</strong></p>' +
+'<div style="margin-bottom:14px;">' +
+'<label style="display:block;font-size:13px;font-weight:600;margin-bottom:5px;">Seu valor (R$)</label>' +
+'<input type="number" id="vp" required min="0" step="0.01" style="width:100%;padding:10px 12px;border:1px solid #e2e8f0;border-radius:8px;font-size:14px;" />' +
+'</div>' +
+'<div style="margin-bottom:14px;">' +
+'<label style="display:block;font-size:13px;font-weight:600;margin-bottom:5px;">Quantidade</label>' +
+'<input type="number" id="qp" required value="1" min="1" style="width:100%;padding:10px 12px;border:1px solid #e2e8f0;border-radius:8px;font-size:14px;" />' +
+'</div>' +
+'<div style="margin-bottom:14px;">' +
+'<label style="display:block;font-size:13px;font-weight:600;margin-bottom:5px;">Mensagem</label>' +
+'<textarea id="mp" rows="3" style="width:100%;padding:10px 12px;border:1px solid #e2e8f0;border-radius:8px;font-size:14px;font-family:inherit;"></textarea>' +
+'</div>' +
+'<div style="display:flex;gap:8px;justify-content:flex-end;margin-top:20px;">' +
+'<button type="button" id="mp-cancel" style="padding:10px 18px;border-radius:8px;border:1px solid #e2e8f0;background:#fff;color:#0f172a;font-weight:600;cursor:pointer;">Cancelar</button>' +
+'<button type="submit" id="mp-enviar" style="padding:10px 18px;border-radius:8px;border:none;background:#0ea5e9;color:#fff;font-weight:600;cursor:pointer;">Enviar proposta</button>' +
+'</div>' +
+'</form>' +
+'</div>';
 
-  div.style.cssText =
-    'position:fixed;' +
-    'inset:0;' +
-    'z-index:9999;' +
-    'background:rgba(15,23,42,.6);' +
-    'display:flex;' +
-    'align-items:center;' +
-    'justify-content:center;' +
-    'padding:16px;';
+document.body.appendChild(div);
 
-  div.id =
-    'modal-proposta-overlay';
+document.getElementById('mp-x').onclick = fecharModalProposta;
+document.getElementById('mp-cancel').onclick = fecharModalProposta;
+div.onclick = function(e) { if (e.target === div) fecharModalProposta(); };
 
-  div.innerHTML =
+document.getElementById('form-prop').onsubmit = async function(e) {
+e.preventDefault();
+const btn = document.getElementById('mp-enviar');
+btn.disabled = true; btn.textContent = 'Enviando...';
 
-    '<div style="background:#fff;border-radius:16px;max-width:520px;width:100%;max-height:90vh;overflow-y:auto;box-shadow:0 20px 40px rgba(15,23,42,.2);">' +
+try {
+const { supabase } = await import('./assets/js/supabase.js');
+const r = await supabase.auth.getUser();
+const user = r.data ? r.data.user : null;
+if (!user) throw new Error('Faça login primeiro');
 
-    '<div style="display:flex;justify-content:space-between;align-items:center;padding:16px 20px;border-bottom:1px solid #e2e8f0;">' +
+const { error } = await supabase.from('proposals').insert({
+user_id: user.id,
+product_id: p.id,
+preco_anunciado: p.precoFinal,
+valor_proposta: Number(document.getElementById('vp').value),
+quantidade: Number(document.getElementById('qp').value),
+mensagem: document.getElementById('mp').value.trim() || null,
+status: 'enviada'
+});
 
-    '<h2 style="font-size:18px;font-weight:600;">Enviar proposta</h2>' +
+if (error) throw error;
 
-    '<button id="mp-x" style="background:none;border:none;font-size:24px;cursor:pointer;color:#64748b;line-height:1;">×</button>' +
-
-    '</div>' +
-
-    '<form id="form-prop" style="padding:20px;">' +
-
-    '<p style="font-size:13px;color:#64748b;margin-bottom:16px;">' +
-
-    'Produto: <strong>' +
-    esc(p.nome) +
-    '</strong><br>' +
-
-    'Preço anunciado: <strong>R$ ' +
-    p.precoFinal.toFixed(2) +
-    '</strong>' +
-
-    '</p>' +
-
-    '<div style="margin-bottom:14px;">' +
-
-    '<label style="display:block;font-size:13px;font-weight:600;margin-bottom:5px;">Seu valor (R$)</label>' +
-
-    '<input type="number" id="vp" required min="0" step="0.01" style="width:100%;padding:10px 12px;border:1px solid #e2e8f0;border-radius:8px;font-size:14px;" />' +
-
-    '</div>' +
-
-    '<div style="margin-bottom:14px;">' +
-
-    '<label style="display:block;font-size:13px;font-weight:600;margin-bottom:5px;">Quantidade</label>' +
-
-    '<input type="number" id="qp" required value="1" min="1" style="width:100%;padding:10px 12px;border:1px solid #e2e8f0;border-radius:8px;font-size:14px;" />' +
-
-    '</div>' +
-
-    '<div style="margin-bottom:14px;">' +
-
-    '<label style="display:block;font-size:13px;font-weight:600;margin-bottom:5px;">Mensagem</label>' +
-
-    '<textarea id="mp" rows="3" style="width:100%;padding:10px 12px;border:1px solid #e2e8f0;border-radius:8px;font-size:14px;font-family:inherit;"></textarea>' +
-
-    '</div>' +
-
-    '<div style="display:flex;gap:8px;justify-content:flex-end;margin-top:20px;">' +
-
-    '<button type="button" id="mp-cancel" style="padding:10px 18px;border-radius:8px;border:1px solid #e2e8f0;background:#fff;color:#0f172a;font-weight:600;cursor:pointer;">Cancelar</button>' +
-
-    '<button type="submit" id="mp-enviar" style="padding:10px 18px;border-radius:8px;border:none;background:#0ea5e9;color:#fff;font-weight:600;cursor:pointer;">Enviar proposta</button>' +
-
-    '</div>' +
-
-    '</form>' +
-
-    '</div>';
-
-  document.body.appendChild(
-    div
-  );
-
-  document.getElementById(
-    'mp-x'
-  ).onclick =
-    fecharModalProposta;
-
-  document.getElementById(
-    'mp-cancel'
-  ).onclick =
-    fecharModalProposta;
-
-  div.onclick =
-    function(e) {
-
-      if (
-        e.target === div
-      ) {
-        fecharModalProposta();
-      }
-    };
-
-  document.getElementById(
-    'form-prop'
-  ).onsubmit =
-    async function(e) {
-
-      e.preventDefault();
-
-      const btn =
-        document.getElementById(
-          'mp-enviar'
-        );
-
-      btn.disabled =
-        true;
-
-      btn.textContent =
-        'Enviando...';
-
-      try {
-
-        const {
-          supabase
-        } = await import(
-          './assets/js/supabase.js'
-        );
-
-        const r =
-          await supabase.auth.getUser();
-
-        const user =
-          r.data
-            ? r.data.user
-            : null;
-
-        if (!user) {
-          throw new Error(
-            'Faça login primeiro'
-          );
-        }
-
-        const {
-          error
-        } =
-          await supabase
-            .from('proposals')
-            .insert({
-
-              user_id:
-                user.id,
-
-              product_id:
-                p.id,
-
-              preco_anunciado:
-                p.precoFinal,
-
-              valor_proposta:
-                Number(
-                  document.getElementById(
-                    'vp'
-                  ).value
-                ),
-
-              quantidade:
-                Number(
-                  document.getElementById(
-                    'qp'
-                  ).value
-                ),
-
-              mensagem:
-                document.getElementById(
-                  'mp'
-                ).value.trim() ||
-                null,
-
-              status:
-                'enviada'
-            });
-
-        if (error) {
-          throw error;
-        }
-
-        fecharModalProposta();
-
-        setTimeout(
-          function() {
-            location.href =
-              './propostas.html';
-          },
-          500
-        );
-
-      } catch (err) {
-
-        alert(
-          'Erro: ' +
-          err.message
-        );
-
-        btn.disabled =
-          false;
-
-        btn.textContent =
-          'Enviar proposta';
-      }
-    };
+fecharModalProposta();
+setTimeout(function() { location.href = './propostas.html'; }, 500);
+} catch (err) {
+alert('Erro: ' + err.message);
+btn.disabled = false; btn.textContent = 'Enviar proposta';
+}
+};
 }
 
 function fecharModalProposta() {
-
-  const el =
-    document.getElementById(
-      'modal-proposta-overlay'
-    );
-
-  if (el) {
-    el.remove();
-  }
+const el = document.getElementById('modal-proposta-overlay');
+if (el) el.remove();
 }
 
-/* ============================================================
-   AVISO
-   ============================================================ */
-
-function mostrarAviso(
-  t,
-  txt,
-  bt,
-  link
-) {
-
-  const div =
-    document.createElement(
-      'div'
-    );
-
-  div.style.cssText =
-    'position:fixed;' +
-    'inset:0;' +
-    'z-index:9999;' +
-    'background:rgba(15,23,42,.6);' +
-    'display:flex;' +
-    'align-items:center;' +
-    'justify-content:center;' +
-    'padding:16px;';
-
-  div.innerHTML =
-
-    '<div style="background:#fff;border-radius:16px;max-width:400px;width:100%;padding:24px;text-align:center;">' +
-
-    '<h2 style="font-size:18px;font-weight:600;margin-bottom:12px;">' +
-    esc(t) +
-    '</h2>' +
-
-    '<p style="color:#64748b;font-size:14px;margin-bottom:20px;">' +
-    esc(txt) +
-    '</p>' +
-
-    '<div style="display:flex;gap:8px;justify-content:center;">' +
-
-    '<button id="av-c" style="padding:10px 18px;border-radius:8px;border:1px solid #e2e8f0;background:#fff;font-weight:600;cursor:pointer;">Fechar</button>' +
-
-    (
-      link &&
-      link !== '#'
-        ? '<a href="' +
-          link +
-          '" style="padding:10px 18px;border-radius:8px;border:none;background:#0ea5e9;color:#fff;font-weight:600;text-decoration:none;">' +
-          esc(bt) +
-          '</a>'
-        : ''
-    ) +
-
-    '</div>' +
-
-    '</div>';
-
-  document.body.appendChild(
-    div
-  );
-
-  document.getElementById(
-    'av-c'
-  ).onclick =
-    function() {
-      div.remove();
-    };
-
-  div.onclick =
-    function(e) {
-
-      if (
-        e.target === div
-      ) {
-        div.remove();
-      }
-    };
+function mostrarAviso(t, txt, bt, link) {
+const div = document.createElement('div');
+div.style.cssText = 'position:fixed;inset:0;z-index:9999;background:rgba(15,23,42,.6);display:flex;align-items:center;justify-content:center;padding:16px;';
+div.innerHTML =
+'<div style="background:#fff;border-radius:16px;max-width:400px;width:100%;padding:24px;text-align:center;">' +
+'<h2 style="font-size:18px;font-weight:600;margin-bottom:12px;">' + esc(t) + '</h2>' +
+'<p style="color:#64748b;font-size:14px;margin-bottom:20px;">' + esc(txt) + '</p>' +
+'<div style="display:flex;gap:8px;justify-content:center;">' +
+'<button id="av-c" style="padding:10px 18px;border-radius:8px;border:1px solid #e2e8f0;background:#fff;font-weight:600;cursor:pointer;">Fechar</button>' +
+(link && link !== '#' ? '<a href="' + link + '" style="padding:10px 18px;border-radius:8px;border:none;background:#0ea5e9;color:#fff;font-weight:600;text-decoration:none;">' + esc(bt) + '</a>' : '') +
+'</div>' +
+'</div>';
+document.body.appendChild(div);
+document.getElementById('av-c').onclick = function() { div.remove(); };
+div.onclick = function(e) { if (e.target === div) div.remove(); };
 }
 
-/* ============================================================
-   PRODUTO NÃO ENCONTRADO
-   ============================================================ */
-
-function renderNaoEncontrado(
-  msg
-) {
-
-  document.getElementById(
-    'conteudo-produto'
-  ).innerHTML =
-
-    '<div class="estado-vazio">' +
-
-    '<div class="estado-vazio__titulo">' +
-    'Produto não disponível' +
-    '</div>' +
-
-    '<p class="estado-vazio__descricao">' +
-    esc(msg) +
-    '</p>' +
-
-    '<a href="./produtos.html" class="btn btn--principal">' +
-    'Ver catálogo' +
-    '</a>' +
-
-    '</div>';
+function renderNaoEncontrado(msg) {
+document.getElementById('conteudo-produto').innerHTML = '<div class="estado-vazio"><div class="estado-vazio__titulo">Produto não disponível</div><p class="estado-vazio__descricao">' + esc(msg) + '</p><a href="./produtos.html" class="btn btn--principal">Ver catálogo</a></div>';
 }
 
-/* ============================================================
-   ESCAPE HTML
-   ============================================================ */
-
-function esc(s) {
-
-  return s == null
-    ? ''
-    : String(s).replace(
-        /[&<>"']/g,
-        function(m) {
-
-          return {
-            '&': '&amp;',
-            '<': '&lt;',
-            '>': '&gt;',
-            '"': '&quot;',
-            "'": '&#39;'
-          }[m];
-        }
-      );
-}
-
+function esc(s) { return s == null ? '' : String(s).replace(/[&<>"']/g, function(m) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]; }); }
 </script>
-
 </body>
 </html>
