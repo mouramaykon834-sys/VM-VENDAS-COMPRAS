@@ -1,283 +1,134 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Carrinho — Minha Loja</title>
-<link rel="stylesheet" href="./assets/css/tokens.css" />
-<link rel="stylesheet" href="./assets/css/base.css" />
-<link rel="stylesheet" href="./assets/css/layout.css" />
-<link rel="stylesheet" href="./assets/css/components.css" />
-<link rel="stylesheet" href="./assets/css/store.css" />
-
-<style>
-/* =============================================================
-   CARRINHO — estilos específicos (isolado)
-   ============================================================= */
-
-.carrinho__item-garantia {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 12px;
-  font-weight: 600;
-  color: #166534;
-  background: #dcfce7;
-  padding: 4px 10px;
-  border-radius: 6px;
-  margin-top: 6px;
-  width: fit-content;
-}
-html[data-tema="escuro"] .carrinho__item-garantia {
-  background: rgba(22, 163, 74, 0.15);
-  color: #86efac;
-}
-.carrinho__item-garantia__icone {
-  font-size: 14px;
-  line-height: 1;
-}
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Carrinho — Minha Loja</title>
+  <link rel="stylesheet" href="./assets/css/tokens.css" />
+  <link rel="stylesheet" href="./assets/css/base.css" />
+  <link rel="stylesheet" href="./assets/css/layout.css" />
+  <link rel="stylesheet" href="./assets/css/components.css" />
+  <link rel="stylesheet" href="./assets/css/store.css" />
 </head>
 <body>
-<div id="header"></div>
+  <div id="header"></div>
 
-<main class="conteudo">
-<div class="container">
-<div class="migalhas"><a href="./index.html">Início</a><span>Carrinho</span></div>
-<h1 class="pagina-titulo">Meu carrinho</h1>
+  <main class="conteudo">
+    <div class="container">
+      <div class="migalhas"><a href="./index.html">Início</a><span>Carrinho</span></div>
+      <h1 class="pagina-titulo">Meu carrinho</h1>
 
-<div id="conteudo-carrinho">
-<div class="carregando"><div class="spinner spinner--lg"></div></div>
-</div>
-</div>
-</main>
+      <div id="conteudo-carrinho">
+        <div class="carregando"><div class="spinner spinner--lg"></div></div>
+      </div>
+    </div>
+  </main>
 
-<div id="footer"></div>
+  <div id="footer"></div>
 
-<script type="module">
-import { renderHeader } from './assets/js/components/header.js';
-import { renderFooter } from './assets/js/components/footer.js';
-import { iniciarConfiguracoes } from './assets/js/services/settings.service.js';
+  <script type="module">
+    import { renderHeader } from './assets/js/components/header.js';
+    import { renderFooter } from './assets/js/components/footer.js';
+    import { iniciarConfiguracoes } from './assets/js/services/settings.service.js';
 
-await iniciarConfiguracoes();
-await renderHeader('carrinho');
-await renderFooter();
+    await iniciarConfiguracoes();
+    await renderHeader('carrinho');
+    await renderFooter();
 
-const el = document.getElementById('conteudo-carrinho');
+    const el = document.getElementById('conteudo-carrinho');
 
-/* ============================================================
-   DADOS
-   ============================================================ */
-function ler() {
-  try { return JSON.parse(localStorage.getItem('carrinho') || '[]'); } catch { return []; }
-}
-function salvar(itens) {
-  localStorage.setItem('carrinho', JSON.stringify(itens));
-  atualizarBadge();
-}
+    function ler() {
+      try { return JSON.parse(localStorage.getItem('carrinho') || '[]'); } catch { return []; }
+    }
+    function salvar(itens) { localStorage.setItem('carrinho', JSON.stringify(itens)); }
 
-function atualizarBadge() {
-  const itens = ler();
-  const total = itens.reduce((s, i) => s + (i.quantidade || 0), 0);
-  const badge = document.getElementById('badge-carrinho');
-  if (badge) {
-    if (total > 0) { badge.textContent = total; badge.classList.remove('oculto'); }
-    else badge.classList.add('oculto');
-  }
-}
+    function render() {
+      const itens = ler();
 
-/* ============================================================
-   TOAST
-   ============================================================ */
-function toast(titulo, mensagem, tipo) {
-  tipo = tipo || 'sucesso';
+      if (!itens.length) {
+        el.innerHTML = `
+          <div class="estado-vazio">
+            <div class="estado-vazio__titulo">Seu carrinho está vazio</div>
+            <p class="estado-vazio__descricao">Adicione produtos para continuar.</p>
+            <a href="./produtos.html" class="btn btn--principal">Ver produtos</a>
+          </div>`;
+        return;
+      }
 
-  let area = document.querySelector('.toast-area-cart');
-  if (!area) {
-    area = document.createElement('div');
-    area.className = 'toast-area-cart';
-    area.style.cssText = 'position:fixed;top:20px;right:20px;z-index:99999;display:flex;flex-direction:column;gap:10px;pointer-events:none;max-width:calc(100% - 40px);';
-    document.body.appendChild(area);
-  }
+      const subtotal = itens.reduce((s, i) => s + i.preco * i.quantidade, 0);
 
-  const cores = {
-    sucesso: { bg: '#dcfce7', cor: '#166534', borda: '#16a34a' },
-    erro: { bg: '#fee2e2', cor: '#991b1b', borda: '#dc2626' },
-    info: { bg: '#dbeafe', cor: '#1e40af', borda: '#0ea5e9' }
-  };
-  const c = cores[tipo] || cores.sucesso;
+      el.innerHTML = `
+        <div class="carrinho">
+          <div class="carrinho__lista">
+            ${itens.map((i, idx) => `
+              <div class="carrinho__item">
+                ${i.imagem
+                  ? `<img src="${i.imagem}" alt="" class="carrinho__item-img" />`
+                  : `<div class="carrinho__item-img"></div>`}
+                <div class="carrinho__item-info">
+                  <a href="./produto.html?id=${i.id}" class="carrinho__item-nome">${esc(i.nome)}</a>
+                  <div class="carrinho__item-preco">R$ ${Number(i.preco).toFixed(2)}</div>
+                  <button class="carrinho__item-remover" data-rm="${idx}">Remover</button>
+                </div>
+                <div class="carrinho__item-acoes">
+                  <div class="carrinho__quantidade">
+                    <button class="btn btn--fantasma btn--sm" data-menos="${idx}">−</button>
+                    <input type="number" min="1" value="${i.quantidade}" data-qtd="${idx}" />
+                    <button class="btn btn--fantasma btn--sm" data-mais="${idx}">+</button>
+                  </div>
+                  <div style="margin-top:8px;text-align:right;font-weight:700;">
+                    R$ ${(i.preco * i.quantidade).toFixed(2)}
+                  </div>
+                </div>
+              </div>
+            `).join('')}
+          </div>
 
-  const el2 = document.createElement('div');
-  el2.style.cssText =
-    'background:' + c.bg + ';color:' + c.cor + ';border-left:4px solid ' + c.borda + ';' +
-    'padding:12px 16px;border-radius:10px;box-shadow:0 8px 20px rgba(15,23,42,.15);' +
-    'font-family:system-ui,sans-serif;font-size:14px;min-width:240px;max-width:100%;' +
-    'pointer-events:auto;opacity:0;transform:translateX(20px);transition:all .25s;';
+          <aside class="resumo">
+            <h2 class="resumo__titulo">Resumo do pedido</h2>
+            <div class="resumo__linha">
+              <span>Subtotal</span>
+              <span>R$ ${subtotal.toFixed(2)}</span>
+            </div>
+            <div class="resumo__total">
+              <span>Total</span>
+              <span>R$ ${subtotal.toFixed(2)}</span>
+            </div>
+            <a href="./checkout.html" class="btn btn--principal btn--bloco btn--lg mt-4">
+              Finalizar pedido
+            </a>
+            <a href="./produtos.html" class="btn btn--fantasma btn--bloco mt-2">
+              Continuar comprando
+            </a>
+          </aside>
+        </div>
+      `;
 
-  el2.innerHTML =
-    '<div style="font-weight:700;margin-bottom:2px;">' + esc(titulo) + '</div>' +
-    (mensagem ? '<div style="font-size:12px;opacity:.85;">' + esc(mensagem) + '</div>' : '');
+      // Eventos
+      el.querySelectorAll('[data-rm]').forEach(b => b.onclick = () => {
+        const i = ler(); i.splice(Number(b.dataset.rm), 1); salvar(i); render();
+      });
+      el.querySelectorAll('[data-mais]').forEach(b => b.onclick = () => {
+        const i = ler(); i[Number(b.dataset.mais)].quantidade++; salvar(i); render();
+      });
+      el.querySelectorAll('[data-menos]').forEach(b => b.onclick = () => {
+        const i = ler(); const idx = Number(b.dataset.menos);
+        if (i[idx].quantidade > 1) i[idx].quantidade--; else i.splice(idx, 1);
+        salvar(i); render();
+      });
+      el.querySelectorAll('[data-qtd]').forEach(inp => inp.onchange = (e) => {
+        const i = ler(); const idx = Number(e.target.dataset.qtd);
+        const v = Math.max(1, Number(e.target.value) || 1);
+        i[idx].quantidade = v; salvar(i); render();
+      });
+    }
 
-  area.appendChild(el2);
-  requestAnimationFrame(function() {
-    el2.style.opacity = '1';
-    el2.style.transform = 'translateX(0)';
-  });
-  setTimeout(function() {
-    el2.style.opacity = '0';
-    el2.style.transform = 'translateX(20px)';
-    setTimeout(function() { el2.remove(); }, 300);
-  }, 2500);
-}
+    function esc(s) {
+      if (s == null) return '';
+      return String(s).replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]));
+    }
 
-/* ============================================================
-   RENDER
-   ============================================================ */
-function render() {
-  const itens = ler();
-
-  if (!itens.length) {
-    el.innerHTML =
-      '<div class="estado-vazio" style="padding: 60px 16px;">' +
-        '<div class="estado-vazio__icone">🛒</div>' +
-        '<div class="estado-vazio__titulo">Seu carrinho está vazio</div>' +
-        '<p class="estado-vazio__descricao">Explore nossa loja e adicione produtos ao carrinho.</p>' +
-        '<div class="estado-vazio__acoes">' +
-          '<a href="./produtos.html" class="btn btn--principal btn--lg">Ver produtos</a>' +
-        '</div>' +
-      '</div>';
-    return;
-  }
-
-  const subtotal = itens.reduce((s, i) => s + i.preco * i.quantidade, 0);
-  const totalItens = itens.reduce((s, i) => s + i.quantidade, 0);
-  const temGarantia = itens.some(i => i.garantia_estendida);
-
-  el.innerHTML =
-    '<div class="carrinho">' +
-
-    '<div class="carrinho__lista">' +
-    itens.map((i, idx) =>
-      '<div class="carrinho__item" data-idx="' + idx + '">' +
-
-      (i.imagem
-        ? '<img src="' + i.imagem + '" alt="" class="carrinho__item-img" />'
-        : '<div class="carrinho__item-img" style="display:flex;align-items:center;justify-content:center;font-size:32px;opacity:.3;">📦</div>') +
-
-      '<div class="carrinho__item-info">' +
-      '<a href="./produto.html?id=' + i.id + '" class="carrinho__item-nome">' + esc(i.nome) + '</a>' +
-
-      (i.garantia_estendida
-        ? '<div class="carrinho__item-garantia">' +
-            '<span class="carrinho__item-garantia__icone">🛡️</span>' +
-            'Garantia +' + i.garantia_estendida.meses + ' meses' +
-          '</div>'
-        : '') +
-
-      '<div class="carrinho__item-preco-unit">R$ ' + Number(i.preco).toFixed(2) + ' cada</div>' +
-
-      '<button type="button" class="carrinho__item-remover" data-rm="' + idx + '">' +
-      '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>' +
-      'Remover' +
-      '</button>' +
-      '</div>' +
-
-      '<div class="carrinho__item-acoes">' +
-      '<div class="carrinho__quantidade">' +
-      '<button type="button" data-menos="' + idx + '" aria-label="Diminuir">−</button>' +
-      '<input type="number" min="1" value="' + i.quantidade + '" data-qtd="' + idx + '" />' +
-      '<button type="button" data-mais="' + idx + '" aria-label="Aumentar">+</button>' +
-      '</div>' +
-      '<div class="carrinho__item-subtotal">R$ ' + (i.preco * i.quantidade).toFixed(2) + '</div>' +
-      '</div>' +
-
-      '</div>'
-    ).join('') +
-    '</div>' +
-
-    '<aside class="resumo">' +
-    '<h2 class="resumo__titulo">Resumo do pedido</h2>' +
-    '<div class="resumo__linha">' +
-    '<span>Itens</span>' +
-    '<strong>' + totalItens + '</strong>' +
-    '</div>' +
-    '<div class="resumo__linha">' +
-    '<span>Subtotal</span>' +
-    '<strong>R$ ' + subtotal.toFixed(2) + '</strong>' +
-    '</div>' +
-
-    (temGarantia
-      ? '<div class="resumo__linha" style="color: #166534;">' +
-          '<span>🛡️ Inclui garantia estendida</span>' +
-          '<strong>—</strong>' +
-        '</div>'
-      : '') +
-
-    '<div class="resumo__linha">' +
-    '<span>Frete</span>' +
-    '<strong>Calculado no checkout</strong>' +
-    '</div>' +
-    '<div class="resumo__total">' +
-    '<span>Total</span>' +
-    '<strong>R$ ' + subtotal.toFixed(2) + '</strong>' +
-    '</div>' +
-    '<a href="./checkout.html" class="btn btn--principal btn--bloco btn--lg mt-4">Finalizar pedido</a>' +
-    '<a href="./produtos.html" class="btn btn--fantasma btn--bloco mt-2">Continuar comprando</a>' +
-    '</aside>' +
-
-    '</div>';
-
-  // Eventos
-  el.querySelectorAll('[data-rm]').forEach(b => b.onclick = () => {
-    const idx = Number(b.dataset.rm);
-    const item = el.querySelector('.carrinho__item[data-idx="' + idx + '"]');
-
-    const itens = ler();
-    const nomeRemovido = itens[idx] ? itens[idx].nome : '';
-
-    // Animação de saída
-    if (item) item.classList.add('removendo');
-
-    setTimeout(() => {
-      itens.splice(idx, 1);
-      salvar(itens);
-      render();
-      if (nomeRemovido) toast('🗑️ Removido', nomeRemovido, 'info');
-    }, 280);
-  });
-
-  el.querySelectorAll('[data-mais]').forEach(b => b.onclick = () => {
-    const i = ler();
-    i[Number(b.dataset.mais)].quantidade++;
-    salvar(i);
     render();
-  });
-
-  el.querySelectorAll('[data-menos]').forEach(b => b.onclick = () => {
-    const i = ler();
-    const idx = Number(b.dataset.menos);
-    if (i[idx].quantidade > 1) i[idx].quantidade--;
-    else i.splice(idx, 1);
-    salvar(i);
-    render();
-  });
-
-  el.querySelectorAll('[data-qtd]').forEach(inp => inp.onchange = (e) => {
-    const i = ler();
-    const idx = Number(e.target.dataset.qtd);
-    const v = Math.max(1, Number(e.target.value) || 1);
-    i[idx].quantidade = v;
-    salvar(i);
-    render();
-  });
-}
-
-function esc(s) {
-  if (s == null) return '';
-  return String(s).replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]));
-}
-
-render();
-</script>
+  </script>
 </body>
 </html>
