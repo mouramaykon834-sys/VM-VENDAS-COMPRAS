@@ -2,6 +2,7 @@
 // SERVICE: COMPRAS — VM VENDAS E COMPRAS
 // =============================================================
 import { supabase } from '../supabase.js';
+import { log } from '../core/logger.js';
 
 export async function listarCompras({ status = null, supplier_id = null, busca = '' } = {}) {
   let q = supabase
@@ -110,7 +111,7 @@ export async function receberCompra(id) {
       p_parcelas: 1
     });
   } catch (e) {
-    console.warn('[purchases] Conta a pagar não criada:', e.message);
+    log.warn('purchases', 'Conta a pagar não criada:', e.message);
   }
 }
 
