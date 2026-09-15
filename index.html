@@ -4,1050 +4,399 @@
 <head>
 
 <meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Minha Loja — Produtos e ofertas</title>
+<meta name="description" content="Loja virtual com produtos novos, usados e seminovos." />
 
-<meta
-name="viewport"
-content="width=device-width, initial-scale=1.0"
-/>
-
-<title>
-Minha Loja — Produtos e ofertas
-</title>
-
-<meta
-name="description"
-content="Loja virtual com produtos novos, usados e seminovos."
-/>
-
-<link
-rel="stylesheet"
-href="./assets/css/tokens.css"
-/>
-
-<link
-rel="stylesheet"
-href="./assets/css/base.css"
-/>
-
-<link
-rel="stylesheet"
-href="./assets/css/layout.css"
-/>
-
-<link
-rel="stylesheet"
-href="./assets/css/components.css"
-/>
-
-<link
-rel="stylesheet"
-href="./assets/css/store.css"
-/>
+<link rel="stylesheet" href="./assets/css/tokens.css" />
+<link rel="stylesheet" href="./assets/css/base.css" />
+<link rel="stylesheet" href="./assets/css/layout.css" />
+<link rel="stylesheet" href="./assets/css/components.css" />
+<link rel="stylesheet" href="./assets/css/store.css" />
 
 </head>
-
 
 <body>
 
 <div id="header"></div>
 
-
 <main class="conteudo">
-
 <div class="container">
 
-
 <!-- CARROSSEL -->
-
 <div id="home-carrossel"></div>
 
-
 <!-- BANNER PADRÃO -->
-
-<section
-class="banner-home"
-id="banner"
->
-
-<div class="banner-home__conteudo">
-
-<h1
-class="banner-home__titulo"
-id="home-titulo"
->
-Bem-vindo à nossa loja
-</h1>
-
-<p
-class="banner-home__subtitulo"
-id="home-subtitulo"
->
-Encontre produtos novos, usados e seminovos com preços imperdíveis.
-</p>
-
-<a
-href="./produtos.html"
-class="btn btn--destaque btn--lg"
->
-Ver todos os produtos
-</a>
-
-</div>
-
+<section class="banner-home" id="banner">
+  <div class="banner-home__conteudo">
+    <h1 class="banner-home__titulo" id="home-titulo">Bem-vindo à nossa loja</h1>
+    <p class="banner-home__subtitulo" id="home-subtitulo">Encontre produtos novos, usados e seminovos com preços imperdíveis.</p>
+    <a href="./produtos.html" class="btn btn--destaque btn--lg">Ver todos os produtos</a>
+  </div>
 </section>
-
 
 <!-- CATEGORIAS -->
-
-<section
-class="secao"
-id="secao-categorias"
-style="display:none;"
->
-
-<div class="secao__cabecalho">
-
-<h2 class="secao__titulo">
-Categorias
-</h2>
-
-<a
-href="./produtos.html"
-class="secao__link"
->
-Ver todas
-</a>
-
-</div>
-
-<div
-class="categorias-circulos"
-id="lista-categorias"
-></div>
-
+<section class="secao" id="secao-categorias" style="display:none;">
+  <div class="secao__cabecalho">
+    <h2 class="secao__titulo">Categorias</h2>
+    <a href="./produtos.html" class="secao__link">Ver todas</a>
+  </div>
+  <div class="categorias-circulos" id="lista-categorias"></div>
 </section>
-
 
 <!-- DESTAQUES -->
-
 <section class="secao">
-
-<div class="secao__cabecalho">
-
-<h2 class="secao__titulo">
-Produtos em destaque
-</h2>
-
-<a
-href="./produtos.html"
-class="secao__link"
->
-Ver todos
-</a>
-
-</div>
-
-<div
-id="lista-destaques"
->
-<div
-class="carregando"
-style="grid-column:1/-1;"
->
-<div class="spinner"></div>
-</div>
-</div>
-
+  <div class="secao__cabecalho">
+    <h2 class="secao__titulo">Produtos em destaque</h2>
+    <a href="./produtos.html" class="secao__link">Ver todos</a>
+  </div>
+  <div class="carrossel-produtos">
+    <button type="button" class="carrossel-produtos__seta carrossel-produtos__seta--prev" aria-label="Anterior" hidden>‹</button>
+    <div id="lista-destaques" class="carrossel-produtos__trilho">
+      <div class="carregando"><div class="spinner"></div></div>
+    </div>
+    <button type="button" class="carrossel-produtos__seta carrossel-produtos__seta--next" aria-label="Próximo" hidden>›</button>
+  </div>
 </section>
-
 
 <!-- OFERTAS -->
-
 <section class="secao">
-
-<div class="secao__cabecalho">
-
-<h2 class="secao__titulo">
-Ofertas
-</h2>
-
-<a
-href="./produtos.html?ordenar=menor-preco"
-class="secao__link"
->
-Ver todas
-</a>
-
-</div>
-
-<div
-id="lista-ofertas"
->
-
-<div
-class="carregando"
-style="grid-column:1/-1;"
->
-
-<div class="spinner"></div>
-
-</div>
-
-</div>
-
+  <div class="secao__cabecalho">
+    <h2 class="secao__titulo">Ofertas</h2>
+    <a href="./produtos.html?ordenar=menor-preco" class="secao__link">Ver todas</a>
+  </div>
+  <div class="carrossel-produtos">
+    <button type="button" class="carrossel-produtos__seta carrossel-produtos__seta--prev" aria-label="Anterior" hidden>‹</button>
+    <div id="lista-ofertas" class="carrossel-produtos__trilho">
+      <div class="carregando"><div class="spinner"></div></div>
+    </div>
+    <button type="button" class="carrossel-produtos__seta carrossel-produtos__seta--next" aria-label="Próximo" hidden>›</button>
+  </div>
 </section>
-
 
 <!-- NOVIDADES -->
-
 <section class="secao">
-
-<div class="secao__cabecalho">
-
-<h2 class="secao__titulo">
-Novidades
-</h2>
-
-<a
-href="./produtos.html?ordenar=recentes"
-class="secao__link"
->
-Ver todas
-</a>
-
-</div>
-
-<div
-id="lista-recentes"
->
-
-<div
-class="carregando"
-style="grid-column:1/-1;"
->
-
-<div class="spinner"></div>
-
-</div>
-
-</div>
-
+  <div class="secao__cabecalho">
+    <h2 class="secao__titulo">Novidades</h2>
+    <a href="./produtos.html?ordenar=recentes" class="secao__link">Ver todas</a>
+  </div>
+  <div class="carrossel-produtos">
+    <button type="button" class="carrossel-produtos__seta carrossel-produtos__seta--prev" aria-label="Anterior" hidden>‹</button>
+    <div id="lista-recentes" class="carrossel-produtos__trilho">
+      <div class="carregando"><div class="spinner"></div></div>
+    </div>
+    <button type="button" class="carrossel-produtos__seta carrossel-produtos__seta--next" aria-label="Próximo" hidden>›</button>
+  </div>
 </section>
 
-
 </div>
-
 </main>
-
 
 <div id="footer"></div>
 
-
 <script type="module">
-
 
 /* ============================================================
    HEADER / FOOTER
    ============================================================ */
 
 Promise.all([
-
-import(
-'./assets/js/components/header.js'
-)
-.then(
-m =>
-m.renderHeader(
-'inicio'
-)
-)
-.catch(
-e =>
-console.error(
-'[header]',
-e
-)
-),
-
-import(
-'./assets/js/components/footer.js'
-)
-.then(
-m =>
-m.renderFooter()
-)
-.catch(
-e =>
-console.error(
-'[footer]',
-e
-)
-)
-
+  import('./assets/js/components/header.js')
+    .then(m => m.renderHeader('inicio'))
+    .catch(e => console.error('[header]', e)),
+  import('./assets/js/components/footer.js')
+    .then(m => m.renderFooter())
+    .catch(e => console.error('[footer]', e))
 ]);
 
-
 /* ============================================================
-   CARROSSEL
+   CARROSSEL DE BANNERS
    ============================================================ */
 
 (async () => {
-
-try {
-
-const mod =
-await import(
-'./assets/js/components/carrossel.js'
-);
-
-await mod.iniciarCarrossel();
-
-} catch (e) {
-
-console.warn(
-'[carrossel] não iniciado:',
-e
-);
-
-}
-
+  try {
+    const mod = await import('./assets/js/components/carrossel.js');
+    await mod.iniciarCarrossel();
+  } catch (e) {
+    console.warn('[carrossel] não iniciado:', e);
+  }
 })();
-
 
 /* ============================================================
    CONFIGURAÇÕES
    ============================================================ */
 
 (async () => {
+  try {
+    const mod = await import('./assets/js/services/settings.service.js');
+    const cfg = await mod.iniciarConfiguracoes();
+    const store = cfg.store || {};
 
-try {
+    if (store.banner_home_url) {
+      const b = document.getElementById('banner');
+      b.style.background = 'linear-gradient(rgba(15,23,42,.4), rgba(15,23,42,.6)), url(' + store.banner_home_url + ') center/cover';
+    }
 
-const mod =
-await import(
-'./assets/js/services/settings.service.js'
-);
+    if (store.titulo_home) {
+      document.getElementById('home-titulo').textContent = store.titulo_home;
+    }
 
-const cfg =
-await mod.iniciarConfiguracoes();
-
-const store =
-cfg.store || {};
-
-
-if (
-store.banner_home_url
-) {
-
-const b =
-document.getElementById(
-'banner'
-);
-
-b.style.background =
-'linear-gradient(rgba(15,23,42,.4), rgba(15,23,42,.6)), url(' +
-store.banner_home_url +
-') center/cover';
-
-}
-
-
-if (
-store.titulo_home
-) {
-
-document.getElementById(
-'home-titulo'
-).textContent =
-store.titulo_home;
-
-}
-
-
-if (
-store.subtitulo_home
-) {
-
-document.getElementById(
-'home-subtitulo'
-).textContent =
-store.subtitulo_home;
-
-}
-
-
-} catch (e) {}
-
+    if (store.subtitulo_home) {
+      document.getElementById('home-subtitulo').textContent = store.subtitulo_home;
+    }
+  } catch (e) {}
 })();
-
 
 /* ============================================================
    CATEGORIAS
    ============================================================ */
 
 (async () => {
+  try {
+    const { supabase } = await import('./assets/js/supabase.js');
 
-try {
+    const r = await supabase
+      .from('categories')
+      .select('id, nome, slug, imagem_url')
+      .eq('ativo', true)
+      .order('ordem', { ascending: true })
+      .order('nome', { ascending: true });
 
-const {
-supabase
-} = await import(
-'./assets/js/supabase.js'
-);
+    if (r.error || !r.data || !r.data.length) {
+      return;
+    }
 
+    const secao = document.getElementById('secao-categorias');
+    secao.style.display = 'block';
 
-const r =
-await supabase
+    const lista = document.getElementById('lista-categorias');
 
-.from('categories')
+    lista.innerHTML = r.data.map(function (c) {
+      const img = c.imagem_url
+        ? '<img src="' + c.imagem_url + '" alt="' + esc(c.nome) + '" loading="lazy" />'
+        : '<div class="categorias-circulos__placeholder">' + esc(c.nome.charAt(0).toUpperCase()) + '</div>';
 
-.select(
-'id, nome, slug, imagem_url'
-)
-
-.eq(
-'ativo',
-true
-)
-
-.order(
-'ordem',
-{
-ascending: true
-}
-)
-
-.order(
-'nome',
-{
-ascending: true
-}
-);
-
-
-if (
-r.error ||
-!r.data ||
-!r.data.length
-) {
-
-return;
-
-}
-
-
-const secao =
-document.getElementById(
-'secao-categorias'
-);
-
-secao.style.display =
-'block';
-
-
-const lista =
-document.getElementById(
-'lista-categorias'
-);
-
-
-lista.innerHTML =
-r.data
-
-.map(
-function (c) {
-
-const img =
-c.imagem_url
-
-? '<img src="' +
-c.imagem_url +
-'" alt="' +
-esc(c.nome) +
-'" loading="lazy" />'
-
-: '<div class="categorias-circulos__placeholder">' +
-esc(
-c.nome.charAt(0).toUpperCase()
-) +
-'</div>';
-
-
-return (
-
-'<a href="./produtos.html?categoria=' +
-c.id +
-'" class="categorias-circulos__item">' +
-
-'<div class="categorias-circulos__imagem">' +
-img +
-'</div>' +
-
-'<div class="categorias-circulos__nome">' +
-esc(c.nome) +
-'</div>' +
-
-'</a>'
-
-);
-
-}
-)
-
-.join('');
-
-
-} catch (e) {
-
-console.warn(
-'[categorias] erro:',
-e
-);
-
-}
-
+      return (
+        '<a href="./produtos.html?categoria=' + c.id + '" class="categorias-circulos__item">' +
+          '<div class="categorias-circulos__imagem">' + img + '</div>' +
+          '<div class="categorias-circulos__nome">' + esc(c.nome) + '</div>' +
+        '</a>'
+      );
+    }).join('');
+  } catch (e) {
+    console.warn('[categorias] erro:', e);
+  }
 })();
-
 
 /* ============================================================
    PRODUTOS DA HOME
    ============================================================ */
 
 (async () => {
+  try {
+    const mod = await import('./assets/js/services/products.service.js');
 
-try {
+    await Promise.all([
+      carregarSecao('lista-destaques', mod.listarDestaques, 'Nenhum produto em destaque ainda', mod),
+      carregarSecao('lista-ofertas', mod.listarOfertas, 'Nenhuma oferta no momento', mod),
+      carregarSecao('lista-recentes', mod.listarRecentes, 'Nenhum produto cadastrado ainda', mod)
+    ]);
 
-const mod =
-await import(
-'./assets/js/services/products.service.js'
-);
-
-
-await Promise.all([
-
-carregarSecao(
-'lista-destaques',
-mod.listarDestaques,
-'Nenhum produto em destaque ainda',
-mod
-),
-
-carregarSecao(
-'lista-ofertas',
-mod.listarOfertas,
-'Nenhuma oferta no momento',
-mod
-),
-
-carregarSecao(
-'lista-recentes',
-mod.listarRecentes,
-'Nenhum produto cadastrado ainda',
-mod
-)
-
-]);
-
-
-} catch (e) {}
-
+    ativarSetasCarrossel();
+  } catch (e) {}
 })();
 
+async function carregarSecao(id, fn, textoVazio, mod) {
+  const el = document.getElementById(id);
 
-/* ============================================================
-   CARREGAR SEÇÃO
-   ============================================================ */
+  try {
+    const produtos = await Promise.race([
+      fn(12),
+      new Promise((_, rej) => setTimeout(() => rej(new Error('timeout')), 8000))
+    ]);
 
-async function carregarSecao(
-id,
-fn,
-textoVazio,
-mod
-) {
+    if (!produtos || !produtos.length) {
+      el.innerHTML =
+        '<div class="estado-vazio" style="flex:0 0 100%;width:100%;">' +
+          '<div class="estado-vazio__titulo">' + textoVazio + '</div>' +
+          '<p class="estado-vazio__descricao">Em breve novos produtos.</p>' +
+        '</div>';
+      return;
+    }
 
-const el =
-document.getElementById(
-id
-);
-
-
-try {
-
-const produtos =
-await Promise.race([
-
-fn(8),
-
-new Promise(
-(_, rej) =>
-setTimeout(
-() =>
-rej(
-new Error(
-'timeout'
-)
-),
-8000
-)
-)
-
-]);
-
-
-if (
-!produtos ||
-!produtos.length
-) {
-
-el.innerHTML =
-'<div class="estado-vazio" style="grid-column:1/-1;">' +
-
-'<div class="estado-vazio__titulo">' +
-textoVazio +
-'</div>' +
-
-'<p class="estado-vazio__descricao">' +
-'Em breve novos produtos.' +
-'</p>' +
-
-'</div>';
-
-return;
-
+    el.innerHTML = produtos.map(p => cardProduto(p, mod)).join('');
+    ativarFavoritosCards();
+  } catch (e) {
+    el.innerHTML =
+      '<div class="estado-vazio" style="flex:0 0 100%;width:100%;">' +
+        '<div class="estado-vazio__titulo">' + textoVazio + '</div>' +
+      '</div>';
+  }
 }
-
-
-el.innerHTML =
-produtos
-.map(
-p =>
-cardProduto(
-p,
-mod
-)
-)
-.join('');
-
-
-ativarFavoritosCards();
-
-
-} catch (e) {
-
-el.innerHTML =
-'<div class="estado-vazio" style="grid-column:1/-1;">' +
-
-'<div class="estado-vazio__titulo">' +
-textoVazio +
-'</div>' +
-
-'</div>';
-
-}
-
-}
-
 
 /* ============================================================
    MOEDA BRASILEIRA
    ============================================================ */
 
-function formatarMoedaBR(
-valor
-) {
-
-const numero =
-Number(valor) || 0;
-
-
-return numero.toLocaleString(
-'pt-BR',
-{
-minimumFractionDigits: 2,
-maximumFractionDigits: 2
+function formatarMoedaBR(valor) {
+  const numero = Number(valor) || 0;
+  return numero.toLocaleString('pt-BR', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  });
 }
-);
-
-}
-
 
 /* ============================================================
    CARD DO PRODUTO
    ============================================================ */
 
-function cardProduto(
-p,
-mod
-) {
-
-const disp =
-mod.rotuloDisponibilidade(
-p
-);
-
-
-const img =
-p.imagemPrincipal
-
-? '<img src="' +
-p.imagemPrincipal +
-'" alt="" loading="lazy" />'
-
-: '<div class="produto-card__sem-imagem">📦</div>';
-
-
-const preco =
-p.temPromo
-
-? '<div class="produto-card__preco-antigo">' +
-
-'R$ ' +
-formatarMoedaBR(
-p.preco
-) +
-
-'</div>' +
-
-'<div class="produto-card__preco produto-card__preco--promo">' +
-
-'R$ ' +
-formatarMoedaBR(
-p.precoPromocional
-) +
-
-'</div>'
-
-: '<div class="produto-card__preco">' +
-
-'R$ ' +
-formatarMoedaBR(
-p.preco
-) +
-
-'</div>';
-
-
-return (
-
-'<article class="produto-card">' +
-
-
-'<a href="./produto.html?id=' +
-p.id +
-'" class="produto-card__imagem">' +
-
-img +
-
-'<div class="produto-card__selos">' +
-
-(
-p.temPromo
-
-? '<span class="badge badge--destaque">-' +
-p.descontoPct +
-'%</span>'
-
-: ''
-) +
-
-(
-p.destaque
-
-? '<span class="badge badge--principal">Destaque</span>'
-
-: ''
-) +
-
-'</div>' +
-
-'</a>' +
-
-
-'<button type="button" class="produto-card__favorito" data-fav="' +
-p.id +
-'" title="Favoritar" aria-label="Favoritar">♡</button>' +
-
-
-'<div class="produto-card__info">' +
-
-
-'<div class="produto-card__condicao">' +
-
-mod.rotuloCondicao(
-p.condicao
-) +
-
-'</div>' +
-
-
-'<a href="./produto.html?id=' +
-p.id +
-'" class="produto-card__nome">' +
-
-esc(
-p.nome
-) +
-
-'</a>' +
-
-
-preco +
-
-
-'<div>' +
-
-'<span class="badge badge--' +
-disp.tipo +
-'">' +
-
-disp.texto +
-
-'</span>' +
-
-'</div>' +
-
-
-'<div class="produto-card__acoes">' +
-
-
-'<a href="./produto.html?id=' +
-p.id +
-'" class="btn btn--principal btn--sm">' +
-
-'Comprar' +
-
-'</a>' +
-
-
-'<a href="./produto.html?id=' +
-p.id +
-'#proposta" class="btn btn--contorno btn--sm">' +
-
-'Proposta' +
-
-'</a>' +
-
-
-'</div>' +
-
-
-'</div>' +
-
-
-'</article>'
-
-);
-
+function cardProduto(p, mod) {
+  const disp = mod.rotuloDisponibilidade(p);
+
+  const img = p.imagemPrincipal
+    ? '<img src="' + p.imagemPrincipal + '" alt="" loading="lazy" />'
+    : '<div class="produto-card__sem-imagem">📦</div>';
+
+  const preco = p.temPromo
+    ? '<div class="produto-card__preco-antigo">R$ ' + formatarMoedaBR(p.preco) + '</div>' +
+      '<div class="produto-card__preco produto-card__preco--promo">R$ ' + formatarMoedaBR(p.precoPromocional) + '</div>'
+    : '<div class="produto-card__preco">R$ ' + formatarMoedaBR(p.preco) + '</div>';
+
+  return (
+    '<article class="produto-card">' +
+      '<a href="./produto.html?id=' + p.id + '" class="produto-card__imagem">' +
+        img +
+        '<div class="produto-card__selos">' +
+          (p.temPromo ? '<span class="badge badge--destaque">-' + p.descontoPct + '%</span>' : '') +
+          (p.destaque ? '<span class="badge badge--principal">Destaque</span>' : '') +
+        '</div>' +
+      '</a>' +
+      '<button type="button" class="produto-card__favorito" data-fav="' + p.id + '" title="Favoritar" aria-label="Favoritar">♡</button>' +
+      '<div class="produto-card__info">' +
+        '<div class="produto-card__condicao">' + mod.rotuloCondicao(p.condicao) + '</div>' +
+        '<a href="./produto.html?id=' + p.id + '" class="produto-card__nome">' + esc(p.nome) + '</a>' +
+        preco +
+        '<div><span class="badge badge--' + disp.tipo + '">' + disp.texto + '</span></div>' +
+        '<div class="produto-card__acoes">' +
+          '<a href="./produto.html?id=' + p.id + '" class="btn btn--principal btn--sm">Comprar</a>' +
+          '<a href="./produto.html?id=' + p.id + '#proposta" class="btn btn--contorno btn--sm">Proposta</a>' +
+        '</div>' +
+      '</div>' +
+    '</article>'
+  );
 }
-
 
 /* ============================================================
    FAVORITOS
    ============================================================ */
 
 async function ativarFavoritosCards() {
+  try {
+    const { supabase } = await import('./assets/js/supabase.js');
+    const { alternarFavorito } = await import('./assets/js/components/cart-widget.js');
 
-try {
+    const { data: { user } } = await supabase.auth.getUser();
 
-const {
-supabase
-} = await import(
-'./assets/js/supabase.js'
-);
+    let favoritos = new Set();
 
+    if (user) {
+      const r = await supabase
+        .from('favorites')
+        .select('product_id')
+        .eq('user_id', user.id);
 
-const {
-alternarFavorito
-} = await import(
-'./assets/js/components/cart-widget.js'
-);
+      (r.data || []).forEach(function (f) {
+        favoritos.add(f.product_id);
+      });
+    }
 
+    document.querySelectorAll('.produto-card__favorito').forEach(function (btn) {
+      if (btn.dataset.favAtivo) return;
+      btn.dataset.favAtivo = '1';
 
-const {
-data: {
-user
-}
-} =
-await supabase.auth.getUser();
+      const id = btn.dataset.fav;
 
+      if (favoritos.has(id)) {
+        btn.classList.add('ativo');
+        btn.textContent = '♥';
+      }
 
-let favoritos =
-new Set();
+      btn.onclick = async function (e) {
+        e.preventDefault();
+        e.stopPropagation();
 
+        if (!user) {
+          window.location.href = './login.html?redirect=' + encodeURIComponent(window.location.pathname);
+          return;
+        }
 
-if (user) {
+        try {
+          const virouFavorito = await alternarFavorito(id);
 
-const r =
-await supabase
-
-.from('favorites')
-
-.select(
-'product_id'
-)
-
-.eq(
-'user_id',
-user.id
-);
-
-
-(r.data || [])
-.forEach(
-function (f) {
-
-favoritos.add(
-f.product_id
-);
-
-}
-);
-
-}
-
-
-document
-.querySelectorAll(
-'.produto-card__favorito'
-)
-.forEach(
-function (btn) {
-
-if (
-btn.dataset.favAtivo
-) {
-
-return;
-
+          if (virouFavorito) {
+            btn.classList.add('ativo');
+            btn.textContent = '♥';
+          } else {
+            btn.classList.remove('ativo');
+            btn.textContent = '♡';
+          }
+        } catch (err) {
+          console.warn('[favorito] erro:', err);
+        }
+      };
+    });
+  } catch (e) {
+    console.warn('[favoritos] erro ao ativar:', e);
+  }
 }
 
+/* ============================================================
+   SETAS DOS CARROSSÉIS HORIZONTAIS
+   ============================================================ */
 
-btn.dataset.favAtivo =
-'1';
+function ativarSetasCarrossel() {
+  document.querySelectorAll('.carrossel-produtos').forEach(function (wrapper) {
+    const trilho = wrapper.querySelector('.carrossel-produtos__trilho');
+    const setaPrev = wrapper.querySelector('.carrossel-produtos__seta--prev');
+    const setaNext = wrapper.querySelector('.carrossel-produtos__seta--next');
 
+    if (!trilho || !setaPrev || !setaNext) return;
 
-const id =
-btn.dataset.fav;
+    function atualizarSetas() {
+      const scrollLeft = trilho.scrollLeft;
+      const scrollMax = trilho.scrollWidth - trilho.clientWidth;
 
+      setaPrev.hidden = scrollLeft <= 4;
+      setaNext.hidden = scrollLeft >= scrollMax - 4;
+    }
 
-if (
-favoritos.has(id)
-) {
+    function rolarPasso(direcao) {
+      const card = trilho.querySelector('.produto-card');
+      const passo = card ? (card.offsetWidth + 12) * 2 : trilho.clientWidth * 0.8;
+      trilho.scrollBy({ left: direcao * passo, behavior: 'smooth' });
+    }
 
-btn.classList.add(
-'ativo'
-);
+    setaPrev.addEventListener('click', function () { rolarPasso(-1); });
+    setaNext.addEventListener('click', function () { rolarPasso(1); });
 
-btn.textContent =
-'♥';
+    trilho.addEventListener('scroll', atualizarSetas, { passive: true });
+    window.addEventListener('resize', atualizarSetas);
 
+    setTimeout(atualizarSetas, 500);
+    setTimeout(atualizarSetas, 2000);
+  });
 }
-
-
-btn.onclick =
-async function (e) {
-
-e.preventDefault();
-
-e.stopPropagation();
-
-
-if (!user) {
-
-window.location.href =
-'./login.html?redirect=' +
-encodeURIComponent(
-window.location.pathname
-);
-
-return;
-
-}
-
-
-try {
-
-const virouFavorito =
-await alternarFavorito(
-id
-);
-
-
-if (
-virouFavorito
-) {
-
-btn.classList.add(
-'ativo'
-);
-
-btn.textContent =
-'♥';
-
-} else {
-
-btn.classList.remove(
-'ativo'
-);
-
-btn.textContent =
-'♡';
-
-}
-
-
-} catch (err) {
-
-console.warn(
-'[favorito] erro:',
-err
-);
-
-}
-
-};
-
-}
-);
-
-} catch (e) {
-
-console.warn(
-'[favoritos] erro ao ativar:',
-e
-);
-
-}
-
-}
-
 
 /* ============================================================
    ESCAPE HTML
    ============================================================ */
 
 function esc(s) {
-
-return s == null
-
-? ''
-
-: String(s).replace(
-/[&<>"']/g,
-function (m) {
-
-return {
-
-'&': '&amp;',
-'<': '&lt;',
-'>': '&gt;',
-'"': '&quot;',
-"'": '&#39;'
-
-}[m];
-
-}
-);
-
+  return s == null
+    ? ''
+    : String(s).replace(/[&<>"']/g, function (m) {
+        return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m];
+      });
 }
 
 </script>
