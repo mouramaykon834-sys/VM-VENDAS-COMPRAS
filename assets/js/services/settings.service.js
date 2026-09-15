@@ -2,6 +2,7 @@
 // SERVICE: CONFIGURAÇÕES — VM VENDAS E COMPRAS
 // =============================================================
 import { supabase } from '../supabase.js';
+import { log } from '../core/logger.js';
 
 let cache = null;
 let carregandoPromise = null;
@@ -32,6 +33,7 @@ export async function carregarConfiguracoes(force = false) {
       };
       return cache;
     } catch (e) {
+      log.error('settings', 'erro ao carregar:', e);
       cache = { company: {}, store: {}, visual: {} };
       return cache;
     } finally {
@@ -53,7 +55,11 @@ export function aplicarConfiguracoes({ company = {}, store = {}, visual = {} } =
 
   if (visual.favicon_url) {
     let link = document.querySelector("link[rel='icon']");
-    if (!link) { link = document.createElement('link'); link.rel = 'icon'; document.head.appendChild(link); }
+    if (!link) {
+      link = document.createElement('link');
+      link.rel = 'icon';
+      document.head.appendChild(link);
+    }
     link.href = visual.favicon_url;
   }
 
