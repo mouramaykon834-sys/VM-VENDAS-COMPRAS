@@ -52,132 +52,165 @@
 
 <script type="module">
 (async () => {
-try {
-const { renderHeader } = await import('./assets/js/components/header.js');
-const { renderFooter } = await import('./assets/js/components/footer.js');
-const { supabase } = await import('./assets/js/supabase.js');
+  try {
+    const { renderHeader } = await import('./assets/js/components/header.js');
+    const { renderFooter } = await import('./assets/js/components/footer.js');
+    const { supabase } = await import('./assets/js/supabase.js');
 
-const r = await supabase.auth.getSession();
-if (!r.data || !r.data.session) { location.href = './login.html?redirect=perfil.html'; return; }
+    const r = await supabase.auth.getSession();
+    if (!r.data || !r.data.session) {
+      location.href = './login.html?redirect=perfil.html';
+      return;
+    }
 
-await renderHeader('conta');
-await renderFooter();
-await carregar();
-} catch (e) {}
+    await renderHeader('conta');
+    await renderFooter();
+    await carregar();
+  } catch (e) {
+    console.error('[perfil] falha ao inicializar:', e);
+    document.body.insertAdjacentHTML('afterbegin',
+      '<div style="background:#fee2e2;color:#991b1b;padding:16px;font-family:monospace;font-size:13px;margin:16px;border-radius:8px;">'
+      + '<strong>Erro ao carregar:</strong> '
+      + (e && e.message ? e.message : String(e))
+      + '</div>'
+    );
+  }
 })();
 
 async function carregar() {
-const el = document.getElementById('conteudo-dados');
+  const el = document.getElementById('conteudo-dados');
 
-try {
-const { perfilAtual } = await import('./assets/js/services/auth.service.js');
-const p = await perfilAtual();
-if (!p) { el.innerHTML = '<div class="alerta alerta--erro">Não foi possível carregar seus dados.</div>'; return; }
+  try {
+    const { perfilAtual } = await import('./assets/js/services/auth.service.js');
+    const p = await perfilAtual();
 
-el.innerHTML =
-'<div class="perfil-card">' +
-'<form id="form-dados">' +
-'<div class="campo"><label>Nome completo</label><input type="text" id="nome" value="' + esc(p.nome || '') + '" required /></div>' +
-'<div class="campo"><label>E-mail (não editável)</label><input type="email" value="' + esc(p.email || '') + '" disabled /></div>' +
-'<div class="campo-grupo" style="gap:12px;">' +
-'<div class="campo" style="flex:1;"><label>Telefone</label><input type="tel" id="telefone" value="' + esc(p.telefone || '') + '" /></div>' +
-'<div class="campo" style="flex:1;"><label>WhatsApp</label><input type="tel" id="whatsapp" value="' + esc(p.whatsapp || '') + '" /></div>' +
-'</div>' +
-'<div class="campo"><label>Membro desde</label><div class="texto-suave texto-sm">' + new Date(p.created_at).toLocaleDateString('pt-BR') + '</div></div>' +
-'<button type="submit" class="btn btn--principal" id="btn-salvar-dados">Salvar alterações</button>' +
-'</form>' +
-'</div>';
+    if (!p) {
+      el.innerHTML = '<div class="alerta alerta--erro">Não foi possível carregar seus dados.</div>';
+      return;
+    }
 
-document.getElementById('form-dados').onsubmit = async function(e) {
-e.preventDefault();
-const btn = document.getElementById('btn-salvar-dados');
-btn.disabled = true; btn.textContent = 'Salvando...';
+    el.innerHTML =
+      '<div class="perfil-card">' +
+        '<form id="form-dados">' +
+          '<div class="campo"><label>Nome completo</label><input type="text" id="nome" value="' + esc(p.nome || '') + '" required /></div>' +
+          '<div class="campo"><label>E-mail (não editável)</label><input type="email" value="' + esc(p.email || '') + '" disabled /></div>' +
+          '<div class="campo-grupo" style="gap:12px;">' +
+            '<div class="campo" style="flex:1;"><label>Telefone</label><input type="tel" id="telefone" value="' + esc(p.telefone || '') + '" /></div>' +
+            '<div class="campo" style="flex:1;"><label>WhatsApp</label><input type="tel" id="whatsapp" value="' + esc(p.whatsapp || '') + '" /></div>' +
+          '</div>' +
+          '<div class="campo"><label>Membro desde</label><div class="texto-suave texto-sm">' + new Date(p.created_at).toLocaleDateString('pt-BR') + '</div></div>' +
+          '<button type="submit" class="btn btn--principal" id="btn-salvar-dados">Salvar alterações</button>' +
+        '</form>' +
+      '</div>';
 
-try {
-const { atualizarPerfil } = await import('./assets/js/services/auth.service.js');
-await atualizarPerfil({
-nome: document.getElementById('nome').value,
-telefone: document.getElementById('telefone').value,
-whatsapp: document.getElementById('whatsapp').value
-});
-mostrarToast('✅ Dados salvos', 'sucesso');
-} catch (err) {
-mostrarToast('❌ ' + err.message, 'erro');
-}
+    document.getElementById('form-dados').onsubmit = async function(e) {
+      e.preventDefault();
+      const btn = document.getElementById('btn-salvar-dados');
+      btn.disabled = true;
+      btn.textContent = 'Salvando...';
 
-btn.disabled = false; btn.textContent = 'Salvar alterações';
-};
-} catch (e) {
-el.innerHTML = '<div class="alerta alerta--erro">Erro ao carregar.</div>';
-}
+      try {
+        const { atualizarPerfil } = await import('./assets/js/services/auth.service.js');
+        await atualizarPerfil({
+          nome: document.getElementById('nome').value,
+          telefone: document.getElementById('telefone').value,
+          whatsapp: document.getElementById('whatsapp').value
+        });
+        mostrarToast('✅ Dados salvos', 'sucesso');
+      } catch (err) {
+        mostrarToast('❌ ' + err.message, 'erro');
+      }
+
+      btn.disabled = false;
+      btn.textContent = 'Salvar alterações';
+    };
+  } catch (e) {
+    el.innerHTML = '<div class="alerta alerta--erro">Erro ao carregar dados.</div>';
+    console.error('[perfil] carregar:', e);
+  }
 }
 
 document.getElementById('form-senha').onsubmit = async function(e) {
-e.preventDefault();
-const s1 = document.getElementById('nova-senha').value;
-const s2 = document.getElementById('confirma-senha').value;
+  e.preventDefault();
+  const s1 = document.getElementById('nova-senha').value;
+  const s2 = document.getElementById('confirma-senha').value;
 
-if (s1.length < 8) { mostrarToast('Senha muito curta (mínimo 8)', 'erro'); return; }
-if (!/[A-Za-z]/.test(s1) || !/[0-9]/.test(s1)) { mostrarToast('Senha deve ter letras e números', 'erro'); return; }
-if (s1 !== s2) { mostrarToast('As senhas não coincidem', 'erro'); return; }
+  if (s1.length < 8) { mostrarToast('Senha muito curta (mínimo 8)', 'erro'); return; }
+  if (!/[A-Za-z]/.test(s1) || !/[0-9]/.test(s1)) { mostrarToast('Senha deve ter letras e números', 'erro'); return; }
+  if (s1 !== s2) { mostrarToast('As senhas não coincidem', 'erro'); return; }
 
-const btn = document.getElementById('btn-salvar-senha');
-btn.disabled = true; btn.textContent = 'Alterando...';
+  const btn = document.getElementById('btn-salvar-senha');
+  btn.disabled = true;
+  btn.textContent = 'Alterando...';
 
-try {
-const { alterarSenha } = await import('./assets/js/services/auth.service.js');
-await alterarSenha(s1);
-mostrarToast('✅ Senha alterada', 'sucesso');
-document.getElementById('form-senha').reset();
-} catch (err) {
-mostrarToast('❌ ' + err.message, 'erro');
-}
+  try {
+    const { alterarSenha } = await import('./assets/js/services/auth.service.js');
+    await alterarSenha(s1);
+    mostrarToast('✅ Senha alterada', 'sucesso');
+    document.getElementById('form-senha').reset();
+  } catch (err) {
+    mostrarToast('❌ ' + err.message, 'erro');
+  }
 
-btn.disabled = false; btn.textContent = 'Alterar senha';
+  btn.disabled = false;
+  btn.textContent = 'Alterar senha';
 };
 
 document.querySelectorAll('.tab').forEach(function(t) {
-t.onclick = function() {
-document.querySelectorAll('.tab').forEach(function(x) { x.classList.remove('ativo'); });
-t.classList.add('ativo');
-const a = t.dataset.aba;
-document.getElementById('conteudo-dados').classList.toggle('oculto', a !== 'dados');
-document.getElementById('conteudo-senha').classList.toggle('oculto', a !== 'senha');
-};
+  t.onclick = function() {
+    document.querySelectorAll('.tab').forEach(function(x) { x.classList.remove('ativo'); });
+    t.classList.add('ativo');
+    const a = t.dataset.aba;
+    document.getElementById('conteudo-dados').classList.toggle('oculto', a !== 'dados');
+    document.getElementById('conteudo-senha').classList.toggle('oculto', a !== 'senha');
+  };
 });
 
 document.getElementById('btn-sair').onclick = async function() {
-if (!confirm('Sair da conta?')) return;
-try {
-const { sair } = await import('./assets/js/services/auth.service.js');
-await sair();
-location.href = './index.html';
-} catch (e) {
-location.href = './index.html';
-}
+  if (!confirm('Sair da conta?')) return;
+  try {
+    const { sair } = await import('./assets/js/services/auth.service.js');
+    await sair();
+    location.href = './index.html';
+  } catch (e) {
+    location.href = './index.html';
+  }
 };
 
 function mostrarToast(msg, tipo) {
-let a = document.querySelector('.toast-area-cart');
-if (!a) {
-a = document.createElement('div');
-a.className = 'toast-area-cart';
-a.style.cssText = 'position:fixed;top:20px;right:20px;z-index:99999;display:flex;flex-direction:column;gap:10px;pointer-events:none;';
-document.body.appendChild(a);
-}
-const cores = { sucesso: '#dcfce7:#166534:#16a34a', erro: '#fee2e2:#991b1b:#dc2626' };
-const c = (cores[tipo] || cores.sucesso).split(':');
-const el = document.createElement('div');
-el.style.cssText = 'background:' + c[0] + ';color:' + c[1] + ';border-left:4px solid ' + c[2] + ';padding:12px 16px;border-radius:10px;box-shadow:0 8px 20px rgba(15,23,42,.15);font-family:system-ui;font-size:14px;font-weight:600;min-width:240px;pointer-events:auto;';
-el.textContent = msg;
-a.appendChild(el);
-setTimeout(function() {
-el.style.opacity = '0';
-setTimeout(function() { el.remove(); }, 300);
-}, 3000);
+  let a = document.querySelector('.toast-area-cart');
+  if (!a) {
+    a = document.createElement('div');
+    a.className = 'toast-area-cart';
+    a.style.cssText = 'position:fixed;top:20px;right:20px;z-index:99999;display:flex;flex-direction:column;gap:10px;pointer-events:none;';
+    document.body.appendChild(a);
+  }
+
+  const cores = {
+    sucesso: { bg: '#dcfce7', cor: '#166534', borda: '#16a34a' },
+    erro:    { bg: '#fee2e2', cor: '#991b1b', borda: '#dc2626' }
+  };
+  const c = cores[tipo] || cores.sucesso;
+
+  const el = document.createElement('div');
+  el.style.cssText =
+    'background:' + c.bg + ';color:' + c.cor + ';border-left:4px solid ' + c.borda + ';' +
+    'padding:12px 16px;border-radius:10px;box-shadow:0 8px 20px rgba(15,23,42,.15);' +
+    'font-family:system-ui;font-size:14px;font-weight:600;min-width:240px;pointer-events:auto;';
+  el.textContent = msg;
+  a.appendChild(el);
+
+  setTimeout(function() {
+    el.style.opacity = '0';
+    setTimeout(function() { el.remove(); }, 300);
+  }, 3000);
 }
 
-function esc(s) { return s == null ? '' : String(s).replace(/[&<>"']/g, function(m) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]; }); }
+function esc(s) {
+  return s == null ? '' : String(s).replace(/[&<>"']/g, function(m) {
+    return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m];
+  });
+}
 </script>
 </body>
 </html>
