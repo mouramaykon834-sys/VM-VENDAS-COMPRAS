@@ -74,20 +74,8 @@
   </div>
 </section>
 
-<!-- NOVIDADES -->
-<section class="secao">
-  <div class="secao__cabecalho">
-    <h2 class="secao__titulo">Novidades</h2>
-    <a href="./produtos.html?ordenar=recentes" class="secao__link">Ver todas</a>
-  </div>
-  <div class="carrossel-produtos">
-    <button type="button" class="carrossel-produtos__seta carrossel-produtos__seta--prev" aria-label="Anterior" hidden>‹</button>
-    <div id="lista-recentes" class="carrossel-produtos__trilho">
-      <div class="carregando"><div class="spinner"></div></div>
-    </div>
-    <button type="button" class="carrossel-produtos__seta carrossel-produtos__seta--next" aria-label="Próximo" hidden>›</button>
-  </div>
-</section>
+<!-- SEÇÕES POR CATEGORIA (estilo Mercado Livre) -->
+<div id="categorias-produtos"></div>
 
 </div>
 </main>
@@ -148,7 +136,7 @@ Promise.all([
 })();
 
 /* ============================================================
-   CATEGORIAS
+   CATEGORIAS (círculos no topo)
    ============================================================ */
 
 (async () => {
@@ -196,18 +184,24 @@ Promise.all([
   try {
     const mod = await import('./assets/js/services/products.service.js');
 
+    // Carrega destaques + ofertas em paralelo
     await Promise.all([
       carregarSecao('lista-destaques', mod.listarDestaques, 'Nenhum produto em destaque ainda', mod),
-      carregarSecao('lista-ofertas', mod.listarOfertas, 'Nenhuma oferta no momento', mod),
-      carregarSecao('lista-recentes', mod.listarRecentes, 'Nenhum produto cadastrado ainda', mod)
+      carregarSecao('lista-ofertas', mod.listarOfertas, 'Nenhuma oferta no momento', mod)
     ]);
 
+    // Carrega as seções por categoria (estilo Mercado Livre)
+    await carregarCategoriasComProdutos(mod);
+
     ativarSetasCarrossel();
-  } catch (e) {}
+  } catch (e) {
+    console.warn('[home] erro ao carregar produtos:', e);
+  }
 })();
 
 async function carregarSecao(id, fn, textoVazio, mod) {
   const el = document.getElementById(id);
+  if (!el) return;
 
   try {
     const produtos = await Promise.race([
@@ -231,6 +225,84 @@ async function carregarSecao(id, fn, textoVazio, mod) {
       '<div class="estado-vazio" style="flex:0 0 100%;width:100%;">' +
         '<div class="estado-vazio__titulo">' + textoVazio + '</div>' +
       '</div>';
+  }
+}
+
+/* ============================================================
+   SEÇÕES POR CATEGORIA (estilo Mercado Livre)
+   ============================================================ */
+
+async function carregarCategoriasComProdutos(mod) {
+  const container = document.getElementById('categorias-produtos');
+  if (!container) return;
+
+  try {
+    // 1. Busca as categorias ativas
+    const categorias = await mod.listarCategorias();
+
+    if (!categorias || !categorias.length) {
+      return;
+    }
+
+    // 2. Para cada categoria, busca os produtos (em paralelo)
+    const secoes = await Promise.all(
+      categorias.map(function (cat) {
+        return buscarProdutosDaCategoria(cat, mod);
+      })
+    );
+
+    // 3. Filtra categorias que não têm produtos
+    const secoesValidas = secoes.filter(function (s) { return s !== null; });
+
+    if (!secoesValidas.length) {
+      return;
+    }
+
+    // 4. Monta o HTML de todas as seções
+    container.innerHTML = secoesValidas.join('');
+
+    // 5. Reativa favoritos dos cards recém-inseridos
+    ativarFavoritosCards();
+  } catch (e) {
+    console.warn('[categorias-produtos] erro:', e);
+  }
+}
+
+async function buscarProdutosDaCategoria(cat, mod) {
+  try {
+    const produtos = await Promise.race([
+      mod.listarPorCategoria(cat.id, 12),
+      new Promise(function (_, rej) {
+        setTimeout(function () { rej(new Error('timeout')); }, 8000);
+      })
+    ]);
+
+    // Se a categoria não tem produtos, não mostra a seção
+    if (!produtos || !produtos.length) {
+      return null;
+    }
+
+    // Monta a seção: cabeçalho + carrossel
+    const cardsHTML = produtos
+      .map(function (p) { return cardProduto(p, mod); })
+      .join('');
+
+    return (
+      '<section class="secao" data-categoria="' + cat.id + '">' +
+        '<div class="secao__cabecalho">' +
+          '<h2 class="secao__titulo">' + esc(cat.nome) + '</h2>' +
+          '<a href="./produtos.html?categoria=' + cat.id + '" class="secao__link">Ver todos</a>' +
+        '</div>' +
+        '<div class="carrossel-produtos">' +
+          '<button type="button" class="carrossel-produtos__seta carrossel-produtos__seta--prev" aria-label="Anterior" hidden>‹</button>' +
+          '<div class="carrossel-produtos__trilho">' + cardsHTML + '</div>' +
+          '<button type="button" class="carrossel-produtos__seta carrossel-produtos__seta--next" aria-label="Próximo" hidden>›</button>' +
+        '</div>' +
+      '</section>'
+    );
+  } catch (e) {
+    console.warn('[categoria ' + cat.nome + '] erro:', e);
+    return null;
   }
 }
 
@@ -362,6 +434,10 @@ function ativarSetasCarrossel() {
 
     if (!trilho || !setaPrev || !setaNext) return;
 
+    // Evita duplicar evento se já foi ativado antes
+    if (trilho.dataset.setasAtivas) return;
+    trilho.dataset.setasAtivas = '1';
+
     function atualizarSetas() {
       const scrollLeft = trilho.scrollLeft;
       const scrollMax = trilho.scrollWidth - trilho.clientWidth;
@@ -382,8 +458,8 @@ function ativarSetasCarrossel() {
     trilho.addEventListener('scroll', atualizarSetas, { passive: true });
     window.addEventListener('resize', atualizarSetas);
 
-    setTimeout(atualizarSetas, 500);
-    setTimeout(atualizarSetas, 2000);
+    setTimeout(atualizarSetas, 300);
+    setTimeout(atualizarSetas, 1500);
   });
 }
 
