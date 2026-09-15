@@ -146,7 +146,7 @@
 }
 
 /* =============================================================
-   GRID DA HOME (5 colunas em telas grandes)
+   GRID DA HOME
    ============================================================= */
 
 #lista-destaques,
@@ -227,7 +227,7 @@
 }
 
 /* =============================================================
-   CARD PRODUTO — MELHORADO
+   CARD PRODUTO
    ============================================================= */
 
 .produto-card {
@@ -256,7 +256,7 @@ html[data-tema="escuro"] .produto-card:hover {
 
 .produto-card__imagem {
   position: relative;
-  aspect-ratio: 1/1;
+  aspect-ratio: 1 / 1;
   background: var(--cor-fundo-suave);
   overflow: hidden;
   display: block;
@@ -438,7 +438,7 @@ html[data-tema="escuro"] .filtros { background: #1e293b; border-color: #334155; 
 @media (max-width: 900px) { .catalogo { grid-template-columns: 1fr; } .filtros { position: static; } }
 
 /* =============================================================
-   PRODUTO DETALHE — MELHORADO
+   PRODUTO DETALHE
    ============================================================= */
 
 .produto {
@@ -449,7 +449,6 @@ html[data-tema="escuro"] .filtros { background: #1e293b; border-color: #334155; 
   margin-bottom: 48px;
 }
 
-/* Galeria */
 .galeria {
   display: grid;
   gap: 12px;
@@ -521,7 +520,6 @@ html[data-tema="escuro"] .filtros { background: #1e293b; border-color: #334155; 
   border-color: var(--cor-principal);
 }
 
-/* Info do produto */
 .produto__info {
   display: flex;
   flex-direction: column;
@@ -648,7 +646,7 @@ html[data-tema="escuro"] .produto__especificacoes {
 }
 
 /* =============================================================
-   CARRINHO — MELHORADO
+   CARRINHO
    ============================================================= */
 
 .carrinho {
@@ -808,7 +806,6 @@ html[data-tema="escuro"] .carrinho__quantidade {
   letter-spacing: -0.02em;
 }
 
-/* Resumo */
 .resumo {
   background: #fff;
   border: 1px solid var(--cor-borda);
@@ -961,7 +958,7 @@ html[data-tema="escuro"] .resumo {
 }
 
 /* =============================================================
-   CATEGORIAS NA HOME (bolinhas arredondadas)
+   CATEGORIAS NA HOME
    ============================================================= */
 
 .categorias-circulos {
@@ -1209,12 +1206,9 @@ html[data-tema="escuro"] .resumo {
   .carrossel__botao { padding: 9px 16px; font-size: 13px; }
   .carrossel__bolinhas { bottom: 10px; }
 }
-/* =============================================================
-   TELAS DE USUÁRIO — FAVORITOS, PROPOSTAS, PEDIDOS, CHAT, ETC
-   ============================================================= */
 
 /* =============================================================
-   FAVORITOS
+   TELAS DE USUÁRIO — FAVORITOS, PROPOSTAS, PEDIDOS, CHAT
    ============================================================= */
 
 .favoritos-grid {
@@ -1235,10 +1229,6 @@ html[data-tema="escuro"] .resumo {
 @media (max-width: 480px) {
   .favoritos-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
 }
-
-/* =============================================================
-   PROPOSTAS — LISTA
-   ============================================================= */
 
 .proposta-card {
   display: grid;
@@ -1328,10 +1318,6 @@ html[data-tema="escuro"] .proposta-card {
   }
 }
 
-/* =============================================================
-   PEDIDOS
-   ============================================================= */
-
 .pedido-card {
   padding: 20px;
   background: #fff;
@@ -1393,10 +1379,6 @@ html[data-tema="escuro"] .pedido-card {
   font-weight: 700;
   color: var(--cor-secundaria);
 }
-
-/* =============================================================
-   CHAT — LISTA DE CONVERSAS
-   ============================================================= */
 
 .chat-lista {
   display: flex;
@@ -1495,10 +1477,6 @@ html[data-tema="escuro"] .chat-item {
     margin-top: 4px;
   }
 }
-
-/* =============================================================
-   CONVERSA (chat individual)
-   ============================================================= */
 
 .chat-wrap {
   background: #fff;
@@ -1618,10 +1596,6 @@ html[data-tema="escuro"] .chat-input input[type="text"] {
 
 .chat-input input[type="file"] { display: none; }
 
-/* =============================================================
-   NOTIFICAÇÕES
-   ============================================================= */
-
 .notif-card {
   display: block;
   padding: 16px 18px;
@@ -1674,10 +1648,6 @@ html[data-tema="escuro"] .notif-card.nao-lida {
   line-height: 1.5;
 }
 
-/* =============================================================
-   PERFIL / CONTA
-   ============================================================= */
-
 .tabs {
   display: flex;
   gap: 4px;
@@ -1713,10 +1683,6 @@ html[data-tema="escuro"] .perfil-card {
   background: #1e293b;
   border-color: #334155;
 }
-
-/* =============================================================
-   PROPOSTA DETALHE
-   ============================================================= */
 
 .proposta-detalhe {
   background: #fff;
@@ -1770,12 +1736,9 @@ html[data-tema="escuro"] .proposta-detalhe {
 .proposta-produto__info strong.valor {
   color: var(--cor-principal);
 }
-/* =============================================================
-   BLOCO A — SKELETON, MICRO-ANIMAÇÕES, EMPTY STATES, TOASTS
-   ============================================================= */
 
 /* =============================================================
-   SKELETON LOADING
+   SKELETON, MICRO-ANIMAÇÕES, EMPTY STATES, TOASTS
    ============================================================= */
 
 .skeleton {
@@ -1805,7 +1768,6 @@ html[data-tema="escuro"] .skeleton {
   100% { background-position: -200% 0; }
 }
 
-/* Card skeleton (mesmo formato de um produto-card) */
 .skeleton-card {
   display: flex;
   flex-direction: column;
@@ -1853,7 +1815,6 @@ html[data-tema="escuro"] .skeleton-card {
   border-radius: var(--raio-md);
 }
 
-/* Grid de skeletons (mesmo layout do grid de produtos) */
 .skeleton-grid {
   display: grid;
   gap: 16px;
@@ -1869,11 +1830,6 @@ html[data-tema="escuro"] .skeleton-card {
   .skeleton-grid { grid-template-columns: repeat(2, 1fr); }
 }
 
-/* =============================================================
-   MICRO-ANIMAÇÕES
-   ============================================================= */
-
-/* Fade-in ao carregar */
 .animar-fade {
   animation: fade-in 0.4s ease-out;
 }
@@ -1882,7 +1838,6 @@ html[data-tema="escuro"] .skeleton-card {
   to { opacity: 1; }
 }
 
-/* Subir suavemente (cards entrando) */
 .animar-subir {
   animation: subir-entrada 0.4s ease-out backwards;
 }
@@ -1897,7 +1852,6 @@ html[data-tema="escuro"] .skeleton-card {
   }
 }
 
-/* Efeito cascata — aplica delay progressivo nos primeiros itens */
 .animar-cascata > *:nth-child(1) { animation-delay: 0.02s; }
 .animar-cascata > *:nth-child(2) { animation-delay: 0.06s; }
 .animar-cascata > *:nth-child(3) { animation-delay: 0.10s; }
@@ -1907,12 +1861,10 @@ html[data-tema="escuro"] .skeleton-card {
 .animar-cascata > *:nth-child(7) { animation-delay: 0.26s; }
 .animar-cascata > *:nth-child(8) { animation-delay: 0.30s; }
 
-/* Botão com feedback ao clicar (já existe em .btn, mas reforça) */
 .btn-clicando {
   transform: scale(0.96) !important;
 }
 
-/* Pulse suave (para chamar atenção em algo novo) */
 .animar-pulse {
   animation: pulse-suave 1.8s ease-in-out infinite;
 }
@@ -1921,7 +1873,6 @@ html[data-tema="escuro"] .skeleton-card {
   50% { opacity: 0.7; }
 }
 
-/* Brilho que passa (efeito de loading em botão) */
 .animar-brilho {
   position: relative;
   overflow: hidden;
@@ -1943,7 +1894,6 @@ html[data-tema="escuro"] .skeleton-card {
   100% { transform: translateX(100%); }
 }
 
-/* Removendo animações se usuário preferir menos movimento */
 @media (prefers-reduced-motion: reduce) {
   .animar-fade,
   .animar-subir,
@@ -1953,10 +1903,6 @@ html[data-tema="escuro"] .skeleton-card {
     animation: none !important;
   }
 }
-
-/* =============================================================
-   EMPTY STATES — MELHORADOS
-   ============================================================= */
 
 .estado-vazio {
   text-align: center;
@@ -1999,10 +1945,6 @@ html[data-tema="escuro"] .estado-vazio {
   justify-content: center;
   flex-wrap: wrap;
 }
-
-/* =============================================================
-   TOASTS — SISTEMA UNIFICADO
-   ============================================================= */
 
 .toast-area {
   position: fixed;
@@ -2058,7 +2000,6 @@ html[data-tema="escuro"] .toast {
   line-height: 1.4;
 }
 
-/* Tipos de toast */
 .toast--sucesso {
   background: #dcfce7;
   color: #166534;
@@ -2097,10 +2038,6 @@ html[data-tema="escuro"] .toast--alerta {
   color: #fcd34d;
 }
 
-/* =============================================================
-   BOTÕES — ESTADO DE CARREGAMENTO
-   ============================================================= */
-
 .btn--carregando {
   position: relative;
   color: transparent !important;
@@ -2124,7 +2061,7 @@ html[data-tema="escuro"] .toast--alerta {
 }
 
 /* ============================================================
-   RESPONSIVIDADE AUTOMÁTICA — CORREÇÃO DOS CARDS
+   RESPONSIVIDADE DOS CARDS — VERSÃO AJUSTADA
    ============================================================ */
 
 html,
@@ -2147,26 +2084,72 @@ body {
   min-width: 0;
 }
 
-/* DESKTOP */
-@media (min-width: 1025px) {
+/* DESKTOP GRANDE */
+@media (min-width: 1440px) {
   #lista-destaques,
   #lista-ofertas,
   #lista-recentes,
   #lista-produtos {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+}
+
+/* DESKTOP MÉDIO */
+@media (min-width: 1025px) and (max-width: 1439px) {
+  #lista-destaques,
+  #lista-ofertas,
+  #lista-recentes,
+  #lista-produtos {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1025px) {
+  .produto-card__imagem {
+    aspect-ratio: 1 / 1;
   }
 
-  .produto-card__imagem {
-    aspect-ratio: 4 / 3;
+  .produto-card__info {
+    padding: 12px 14px 14px;
+    gap: 6px;
+  }
+
+  .produto-card__condicao {
+    font-size: 10px;
+  }
+
+  .produto-card__nome {
+    font-size: 13px;
+    line-height: 1.35;
+    min-height: 2.7em;
+    max-height: 2.7em;
+  }
+
+  .produto-card__preco {
+    font-size: 17px;
+  }
+
+  .produto-card__preco-antigo {
+    font-size: 11px;
   }
 
   .produto-card__acoes {
-    width: 100%;
-    gap: 8px;
+    padding-top: 10px;
+    gap: 6px;
   }
 
   .produto-card__acoes .btn {
-    flex: 1 1 0;
+    min-height: 34px;
+    padding: 0 8px;
+    font-size: 12px;
+  }
+
+  .produto-card__favorito {
+    width: 32px;
+    height: 32px;
+    top: 8px;
+    right: 8px;
+    font-size: 16px;
   }
 }
 
@@ -2177,23 +2160,38 @@ body {
   #lista-recentes,
   #lista-produtos {
     grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 16px;
+    gap: 14px;
   }
 
   .produto-card__imagem {
-    aspect-ratio: 4 / 3;
+    aspect-ratio: 1 / 1;
+  }
+
+  .produto-card__info {
+    padding: 10px 12px 12px;
+    gap: 6px;
+  }
+
+  .produto-card__nome {
+    font-size: 13px;
+    line-height: 1.35;
+    min-height: 2.7em;
+    max-height: 2.7em;
+  }
+
+  .produto-card__preco {
+    font-size: 16px;
   }
 
   .produto-card__acoes {
-    width: 100%;
+    padding-top: 10px;
     gap: 6px;
   }
 
   .produto-card__acoes .btn {
-    flex: 1 1 0;
-    min-width: 0;
-    padding-left: 8px;
-    padding-right: 8px;
+    min-height: 34px;
+    padding: 0 8px;
+    font-size: 12px;
   }
 }
 
@@ -2203,23 +2201,16 @@ body {
   #lista-ofertas,
   #lista-recentes,
   #lista-produtos {
-    width: 100%;
-    max-width: 100%;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 12px;
+    gap: 10px;
   }
 
   .produto-card {
-    width: 100%;
-    max-width: 100%;
-    min-width: 0;
-    height: 100%;
-    border-radius: 12px;
+    border-radius: 10px;
   }
 
   .produto-card__imagem {
-    width: 100%;
-    aspect-ratio: 4 / 3;
+    aspect-ratio: 1 / 1;
   }
 
   .produto-card__imagem img {
@@ -2230,30 +2221,30 @@ body {
   }
 
   .produto-card__info {
-    width: 100%;
-    padding: 10px;
-    gap: 6px;
+    padding: 9px 10px 10px;
+    gap: 5px;
   }
 
   .produto-card__condicao {
-    font-size: 10px;
+    font-size: 9px;
     line-height: 1.2;
   }
 
   .produto-card__nome {
-    width: 100%;
-    min-width: 0;
-    max-width: 100%;
-    font-size: 13px;
+    font-size: 12px;
     line-height: 1.35;
-    min-height: 35px;
-    max-height: 35px;
+    min-height: 2.7em;
+    max-height: 2.7em;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
     overflow: hidden;
+    word-break: break-word;
+    overflow-wrap: break-word;
   }
 
   .produto-card__preco {
-    max-width: 100%;
-    font-size: 17px;
+    font-size: 15px;
     line-height: 1.15;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -2261,14 +2252,12 @@ body {
   }
 
   .produto-card__preco-antigo {
-    font-size: 11px;
+    font-size: 10px;
   }
 
   .produto-card__acoes {
     display: flex;
-    width: 100%;
-    min-width: 0;
-    gap: 6px;
+    gap: 5px;
     padding-top: 8px;
   }
 
@@ -2276,37 +2265,21 @@ body {
     flex: 1 1 0;
     width: 0;
     min-width: 0;
-    max-width: 100%;
-    padding: 8px 4px;
-    font-size: 12px;
-    line-height: 1.2;
+    min-height: 32px;
+    padding: 6px 4px;
+    font-size: 11px;
+    line-height: 1.1;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
   }
 
   .produto-card__favorito {
-    width: 32px;
-    height: 32px;
-    top: 8px;
-    right: 8px;
-  }
-
-  .categorias-circulos {
-    width: 100%;
-    max-width: 100%;
-    overflow-x: auto;
-    overflow-y: hidden;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
-  }
-
-  .categorias-circulos::-webkit-scrollbar {
-    display: none;
-  }
-
-  .categorias-circulos__item {
-    flex: 0 0 auto;
+    width: 28px;
+    height: 28px;
+    top: 6px;
+    right: 6px;
+    font-size: 14px;
   }
 }
 
@@ -2320,43 +2293,7 @@ body {
   }
 
   .produto-card__info {
-    padding: 9px 8px 10px;
-  }
-
-  .produto-card__nome {
-    font-size: 12px;
-  }
-
-  .produto-card__preco {
-    font-size: 16px;
-  }
-
-  .produto-card__acoes {
-    gap: 4px;
-  }
-
-  .produto-card__acoes .btn {
-    font-size: 11px;
-    padding: 7px 3px;
-  }
-
-  .produto-card__favorito {
-    width: 30px;
-    height: 30px;
-  }
-}
-
-/* CELULAR MUITO PEQUENO */
-@media (max-width: 340px) {
-  #lista-destaques,
-  #lista-ofertas,
-  #lista-recentes,
-  #lista-produtos {
-    gap: 6px;
-  }
-
-  .produto-card__info {
-    padding: 7px;
+    padding: 8px 8px 9px;
   }
 
   .produto-card__nome {
@@ -2367,12 +2304,14 @@ body {
     font-size: 14px;
   }
 
-  .produto-card__acoes {
-    gap: 3px;
-  }
-
   .produto-card__acoes .btn {
     font-size: 10px;
-    padding: 6px 2px;
+    padding: 5px 3px;
+  }
+
+  .produto-card__favorito {
+    width: 26px;
+    height: 26px;
+    font-size: 13px;
   }
 }
