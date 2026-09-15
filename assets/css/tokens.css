@@ -1,5 +1,126 @@
 /* =============================================================
-   TEMA ESCURO — correção global
+   DESIGN TOKENS — VM VENDAS E COMPRAS
+   ============================================================= */
+
+:root {
+  /* Cores da marca */
+  --cor-principal: #0ea5e9;
+  --cor-principal-escura: #0284c7;
+  --cor-principal-clara: #7dd3fc;
+  --cor-secundaria: #0f172a;
+  --cor-destaque: #f59e0b;
+  --cor-destaque-escura: #d97706;
+
+  /* Cores de fundo e texto */
+  --cor-fundo: #ffffff;
+  --cor-fundo-suave: #f8fafc;
+  --cor-texto: #0f172a;
+  --cor-texto-suave: #64748b;
+  --cor-borda: #e2e8f0;
+  --cor-borda-escura: #cbd5e1;
+
+  /* Cores semânticas */
+  --cor-sucesso: #16a34a;
+  --cor-sucesso-escura: #15803d;
+  --cor-alerta: #f59e0b;
+  --cor-erro: #dc2626;
+  --cor-erro-escura: #b91c1c;
+  --cor-info: #0ea5e9;
+
+  /* Tipografia */
+  --fonte-principal: system-ui, -apple-system, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+  --fonte-titulo: var(--fonte-principal);
+  --fonte-mono: ui-monospace, "SF Mono", Menlo, Monaco,
+    "Cascadia Code", Consolas, monospace;
+
+  --texto-xs: 12px;
+  --texto-sm: 14px;
+  --texto-base: 16px;
+  --texto-lg: 18px;
+  --texto-xl: 20px;
+  --texto-2xl: 24px;
+  --texto-3xl: 30px;
+  --texto-4xl: 36px;
+
+  --peso-normal: 400;
+  --peso-medio: 500;
+  --peso-semibold: 600;
+  --peso-bold: 700;
+
+  --linha-apertada: 1.25;
+  --linha-normal: 1.5;
+  --linha-solta: 1.75;
+
+  /* Espaçamentos */
+  --esp-1: 4px;
+  --esp-2: 8px;
+  --esp-3: 12px;
+  --esp-4: 16px;
+  --esp-5: 20px;
+  --esp-6: 24px;
+  --esp-8: 32px;
+  --esp-10: 40px;
+  --esp-12: 48px;
+  --esp-16: 64px;
+  --esp-20: 80px;
+  --esp-24: 96px;
+
+  /* Raios */
+  --raio-sm: 6px;
+  --raio-md: 8px;
+  --raio-lg: 12px;
+  --raio-xl: 16px;
+  --raio-full: 9999px;
+
+  --raio-botao: var(--raio-md);
+  --raio-card: var(--raio-lg);
+  --raio-input: var(--raio-md);
+
+  /* Sombras */
+  --sombra-sm: 0 1px 2px rgba(15, 23, 42, 0.05);
+  --sombra-md: 0 4px 12px rgba(15, 23, 42, 0.08);
+  --sombra-lg: 0 10px 30px rgba(15, 23, 42, 0.10);
+  --sombra-xl: 0 20px 40px rgba(15, 23, 42, 0.12);
+
+  /* Transições */
+  --transicao-rapida: 120ms ease;
+  --transicao-normal: 200ms ease;
+  --transicao-lenta: 320ms ease;
+
+  /* Layout */
+  --largura-maxima: 1440px;
+  --largura-maxima-xl: 1440px;
+  --largura-conteudo: 1200px;
+  --altura-header: 72px;
+  --altura-header-mob: 60px;
+
+  /* Z-index */
+  --z-base: 1;
+  --z-dropdown: 100;
+  --z-sticky: 200;
+  --z-overlay: 900;
+  --z-modal: 1000;
+  --z-toast: 1100;
+
+  /* Botões — padrões */
+  --botao-altura: 44px;
+  --botao-altura-sm: 36px;
+  --botao-altura-lg: 52px;
+  --botao-pad-x: 18px;
+  --botao-pad-x-sm: 12px;
+  --botao-pad-x-lg: 24px;
+  --botao-fonte: 15px;
+  --botao-fonte-sm: 13px;
+  --botao-fonte-lg: 16px;
+
+  /* Foco */
+  --anel-foco: 0 0 0 3px rgba(14, 165, 233, 0.35);
+}
+
+
+/* =============================================================
+   MODO ESCURO
    ============================================================= */
 
 html[data-tema="escuro"] {
@@ -16,13 +137,12 @@ html[data-tema="escuro"] {
   --sombra-xl: 0 20px 40px rgba(0, 0, 0, 0.45);
 }
 
-/* Corpo */
 html[data-tema="escuro"] body {
   background-color: #0f172a;
   color: #f8fafc;
 }
 
-/* ⚠️ FORÇA texto claro em TODOS os elementos de conteúdo */
+/* Força texto claro nos elementos principais */
 html[data-tema="escuro"] h1,
 html[data-tema="escuro"] h2,
 html[data-tema="escuro"] h3,
@@ -36,44 +156,27 @@ html[data-tema="escuro"] li,
 html[data-tema="escuro"] td,
 html[data-tema="escuro"] th,
 html[data-tema="escuro"] strong,
-html[data-tema="escuro"] small,
-html[data-tema="escuro"] a,
-html[data-tema="escuro"] div,
-html[data-tema="escuro"] section,
-html[data-tema="escuro"] article,
-html[data-tema="escuro"] aside,
-html[data-tema="escuro"] main,
-html[data-tema="escuro"] header,
-html[data-tema="escuro"] footer,
-html[data-tema="escuro"] nav,
-html[data-tema="escuro"] form,
-html[data-tema="escuro"] button,
-html[data-tema="escuro"] input,
-html[data-tema="escuro"] select,
-html[data-tema="escuro"] textarea {
-  color: #f8fafc;
+html[data-tema="escuro"] small {
+  color: var(--cor-texto);
 }
 
-/* Textos secundários (mais suaves) */
 html[data-tema="escuro"] .texto-suave,
 html[data-tema="escuro"] .texto-secundario,
 html[data-tema="escuro"] .subtitulo,
 html[data-tema="escuro"] .descricao,
-html[data-tema="escuro"] small,
-html[data-tema="escuro"] .campo__dica,
-html[data-tema="escuro"] .produto-card__condicao {
-  color: #cbd5e1;
+html[data-tema="escuro"] small {
+  color: var(--cor-texto-suave);
 }
 
-/* Links */
 html[data-tema="escuro"] a {
   color: #7dd3fc;
 }
+
 html[data-tema="escuro"] a:hover {
   color: #bae6fd;
 }
 
-/* Cards, blocos, containers */
+/* Cards e containers */
 html[data-tema="escuro"] .cabecalho,
 html[data-tema="escuro"] .cartao,
 html[data-tema="escuro"] .produto-card,
@@ -83,7 +186,6 @@ html[data-tema="escuro"] .bloco,
 html[data-tema="escuro"] .tabela,
 html[data-tema="escuro"] .carrinho__item,
 html[data-tema="escuro"] .produto__especificacoes,
-html[data-tema="escuro"] .sidebar,
 html[data-tema="escuro"] .checkout-secao,
 html[data-tema="escuro"] .checkout-resumo,
 html[data-tema="escuro"] .pedido-card,
@@ -97,9 +199,7 @@ html[data-tema="escuro"] .notif-card,
 html[data-tema="escuro"] .card,
 html[data-tema="escuro"] .modal,
 html[data-tema="escuro"] .modal-content,
-html[data-tema="escuro"] .secao,
-html[data-tema="escuro"] .topbar,
-html[data-tema="escuro"] .main {
+html[data-tema="escuro"] .secao {
   background-color: #1e293b;
   border-color: #334155;
 }
@@ -112,10 +212,12 @@ html[data-tema="escuro"] select {
   color: #f8fafc;
   border-color: #475569;
 }
+
 html[data-tema="escuro"] input::placeholder,
 html[data-tema="escuro"] textarea::placeholder {
   color: #94a3b8;
 }
+
 html[data-tema="escuro"] option {
   background-color: #0f172a;
   color: #f8fafc;
@@ -125,30 +227,49 @@ html[data-tema="escuro"] option {
 html[data-tema="escuro"] table {
   color: #f8fafc;
 }
+
 html[data-tema="escuro"] th {
   background-color: #0f172a;
   color: #f8fafc;
   border-color: #334155;
 }
+
 html[data-tema="escuro"] td {
   color: #f1f5f9;
   border-color: #334155;
 }
 
-/* Sidebar (admin) */
-html[data-tema="escuro"] .sidebar,
-html[data-tema="escuro"] .admin-sidebar {
-  background-color: #020617;
-  color: #cbd5e1;
+/* Cabeçalho */
+html[data-tema="escuro"] .cabecalho {
+  background-color: #1e293b;
+  border-color: #334155;
 }
-html[data-tema="escuro"] .admin-sidebar__item,
-html[data-tema="escuro"] .sidebar__item {
-  color: #cbd5e1;
+
+html[data-tema="escuro"] .cabecalho__busca {
+  background-color: #0f172a;
+  border-color: #475569;
 }
-html[data-tema="escuro"] .admin-sidebar__item.ativo,
-html[data-tema="escuro"] .sidebar__item.ativo {
-  background-color: #0ea5e9;
-  color: #fff;
+
+html[data-tema="escuro"] .cabecalho__busca input {
+  color: #f8fafc;
+}
+
+html[data-tema="escuro"] .cabecalho__acao {
+  color: #f8fafc;
+}
+
+html[data-tema="escuro"] .cabecalho__acao:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* Navegação inferior */
+html[data-tema="escuro"] .nav-inferior {
+  background-color: #1e293b;
+  border-color: #334155;
+}
+
+html[data-tema="escuro"] .nav-inferior__item {
+  color: #cbd5e1;
 }
 
 /* Rodapé */
@@ -162,7 +283,7 @@ html[data-tema="escuro"] .modal-overlay {
   background: rgba(0, 0, 0, 0.8);
 }
 
-/* Botões que têm fundo próprio mantêm a cor branca */
+/* Botões com fundo próprio mantêm texto branco */
 html[data-tema="escuro"] .btn--principal,
 html[data-tema="escuro"] .btn--secundario,
 html[data-tema="escuro"] .btn--destaque,
@@ -175,7 +296,7 @@ html[data-tema="escuro"] .carrossel__botao {
   color: #fff;
 }
 
-/* Estado vazio e alertas */
+/* Estado vazio */
 html[data-tema="escuro"] .estado-vazio,
 html[data-tema="escuro"] .vazio {
   background-color: #1e293b;
@@ -183,35 +304,52 @@ html[data-tema="escuro"] .vazio {
   border-color: #334155;
 }
 
-/* Esqueleto de loading */
+/* Skeleton */
 html[data-tema="escuro"] .skeleton {
   background: linear-gradient(90deg, #1e293b 0%, #334155 50%, #1e293b 100%);
 }
 
-/* Cabeçalho */
-html[data-tema="escuro"] .cabecalho {
-  background-color: #1e293b;
-  border-color: #334155;
-}
-html[data-tema="escuro"] .cabecalho__busca {
-  background-color: #0f172a;
-  border-color: #475569;
-}
-html[data-tema="escuro"] .cabecalho__busca input {
-  color: #f8fafc;
-}
-html[data-tema="escuro"] .cabecalho__acao {
-  color: #f8fafc;
-}
-html[data-tema="escuro"] .cabecalho__acao:hover {
-  background: rgba(255, 255, 255, 0.1);
+
+/* =============================================================
+   MODO MOBILE FORÇADO (via botão)
+   ============================================================= */
+
+html[data-modo="mobile"] body {
+  max-width: 480px;
+  margin: 0 auto;
+  box-shadow: 0 0 40px rgba(0,0,0,.1);
+  background: #f1f5f9;
 }
 
-/* Navegação inferior */
-html[data-tema="escuro"] .nav-inferior {
-  background-color: #1e293b;
-  border-color: #334155;
+html[data-modo="mobile"] .cabecalho,
+html[data-modo="mobile"] .nav-categorias,
+html[data-modo="mobile"] .nav-inferior {
+  max-width: 480px;
+  margin-left: auto;
+  margin-right: auto;
+  left: 0;
+  right: 0;
 }
-html[data-tema="escuro"] .nav-inferior__item {
-  color: #cbd5e1;
+
+html[data-modo="desktop"] body {
+  min-width: 1280px;
+}
+
+
+/* =============================================================
+   TELAS GRANDES
+   ============================================================= */
+
+@media (min-width: 1600px) {
+  :root {
+    --largura-maxima: 1440px;
+    --esp-16: 72px;
+  }
+}
+
+@media (min-width: 1920px) {
+  :root {
+    --largura-maxima: 1440px;
+    --esp-16: 80px;
+  }
 }
