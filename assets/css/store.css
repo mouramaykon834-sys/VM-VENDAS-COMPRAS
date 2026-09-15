@@ -240,12 +240,28 @@ html[data-tema="escuro"] .carrossel-produtos__seta:hover {
   .carrossel-produtos__seta--next { right: -12px; }
 }
 @media (max-width: 768px) {
-  .carrossel-produtos__trilho { gap: 10px; }
-  .carrossel-produtos__trilho > * { width: 150px; }
+  .carrossel-produtos__trilho {
+    gap: 14px;
+    padding: 4px 16px 14px;
+    margin: 0 -16px;
+    scroll-padding-left: 16px;
+  }
+  .carrossel-produtos__trilho > * {
+    width: 62vw;
+    max-width: 220px;
+    min-width: 160px;
+  }
   .carrossel-produtos__seta { display: none; }
 }
 @media (max-width: 400px) {
-  .carrossel-produtos__trilho > * { width: 140px; }
+  .carrossel-produtos__trilho {
+    gap: 12px;
+  }
+  .carrossel-produtos__trilho > * {
+    width: 64vw;
+    max-width: 210px;
+    min-width: 150px;
+  }
 }
 
 /* =============================================================
@@ -857,7 +873,12 @@ html[data-tema="escuro"] .resumo { background: #1e293b; border-color: #334155; }
 .categorias-circulos__item:hover .categorias-circulos__nome { color: var(--cor-principal); }
 
 @media (max-width: 640px) {
-  .categorias-circulos { gap: 16px; }
+  .categorias-circulos {
+    gap: 16px;
+    padding: 4px 16px 12px;
+    margin: 0 -16px;
+    scroll-padding-left: 16px;
+  }
   .categorias-circulos__item { width: 88px; }
   .categorias-circulos__imagem { width: 88px; height: 88px; }
   .categorias-circulos__nome { font-size: 12px; }
