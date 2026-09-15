@@ -497,3 +497,25 @@ export function rotuloCondicao(cond) {
 
   return cond || '';
 }
+// =============================================================
+// PRODUTOS POR CATEGORIA (para a home estilo Mercado Livre)
+// =============================================================
+export async function listarPorCategoria(categoriaId, limite) {
+  limite = limite || 12;
+
+  const { data, error } = await supabase
+    .from('products')
+    .select(
+      'id, nome, slug, descricao_curta, preco, preco_promocional, condicao, estoque, status, destaque, marca, sku, created_at, garantia_padrao_meses, garantia_padrao_descricao, garantias_estendidas, categoria_id, categories ( id, nome, slug ), product_images ( url, principal, ordem )'
+    )
+    .neq('status', 'oculto')
+    .eq('categoria_id', categoriaId)
+    .order('created_at', { ascending: false })
+    .limit(limite);
+
+  if (error) {
+    throw error;
+  }
+
+  return (data || []).map(normalizarProduto);
+}
