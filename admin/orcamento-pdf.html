@@ -4,131 +4,409 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="robots" content="noindex, nofollow" />
-  <title>Dashboard — Admin</title>
+  <title>Orçamento — PDF</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: system-ui, -apple-system, sans-serif; background: #f8fafc; color: #0f172a; }
-    .layout { display: grid; grid-template-columns: 240px 1fr; min-height: 100vh; }
-    .sidebar { background: #0f172a; color: #cbd5e1; padding: 16px 0; }
-    .sidebar__logo { display: flex; align-items: center; gap: 8px; padding: 0 16px 20px; border-bottom: 1px solid rgba(255,255,255,.1); margin-bottom: 16px; color: #fff; font-weight: 700; font-size: 15px; }
-    .sidebar__badge { background: #0ea5e9; color: #fff; padding: 2px 8px; border-radius: 6px; font-size: 10px; font-weight: 700; }
-    .sidebar__secao { padding: 16px 16px 8px; font-size: 11px; text-transform: uppercase; letter-spacing: .5px; color: #64748b; font-weight: 600; }
-    .sidebar__lista { display: flex; flex-direction: column; gap: 2px; padding: 0 8px; }
-    .sidebar__item { padding: 10px 12px; border-radius: 8px; color: #cbd5e1; text-decoration: none; font-size: 14px; display: block; }
-    .sidebar__item:hover { background: rgba(255,255,255,.06); color: #fff; }
-    .sidebar__item.ativo { background: #0ea5e9; color: #fff; }
-    .main { display: flex; flex-direction: column; }
-    .topbar { background: #fff; border-bottom: 1px solid #e2e8f0; padding: 12px 24px; display: flex; justify-content: space-between; align-items: center; gap: 12px; }
-    .topbar h1 { font-size: 18px; }
-    .btn-loja { padding: 8px 14px; border: 1px solid #0ea5e9; border-radius: 8px; color: #0ea5e9; text-decoration: none; font-size: 13px; font-weight: 600; }
-    .btn-loja:hover { background: #0ea5e9; color: #fff; }
-    .conteudo { padding: 24px; }
-    .cards { display: grid; grid-template-columns: repeat(4,1fr); gap: 16px; margin-bottom: 32px; }
-    .card { background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; }
-    .card__rotulo { font-size: 12px; text-transform: uppercase; color: #64748b; font-weight: 600; margin-bottom: 8px; }
-    .card__valor { font-size: 30px; font-weight: 700; line-height: 1; }
-    .secao { background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; margin-bottom: 16px; }
-    .secao__titulo { padding: 16px 20px; border-bottom: 1px solid #e2e8f0; font-size: 15px; font-weight: 600; }
-    .secao__vazio { padding: 24px; text-align: center; color: #94a3b8; font-size: 14px; }
-    .erro { padding: 20px; background: #fee2e2; color: #991b1b; border-radius: 8px; margin: 20px; font-family: monospace; }
-    @media (max-width: 900px) { .layout { grid-template-columns: 1fr; } .cards { grid-template-columns: 1fr 1fr; } }
+
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      background: #f1f5f9;
+      color: #0f172a;
+      padding: 24px;
+    }
+
+    /* ===== Barra de ações (não aparece na impressão) ===== */
+    .acoes {
+      max-width: 800px;
+      margin: 0 auto 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .acoes__voltar {
+      color: #0ea5e9;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 600;
+    }
+    .acoes__voltar:hover { text-decoration: underline; }
+
+    .btn {
+      padding: 10px 18px;
+      border-radius: 8px;
+      border: 1px solid #0ea5e9;
+      background: #0ea5e9;
+      color: #fff;
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+      font-family: inherit;
+    }
+    .btn:hover { filter: brightness(.94); }
+
+    /* ===== Documento (folha) ===== */
+    .folha {
+      max-width: 800px;
+      margin: 0 auto;
+      background: #fff;
+      padding: 48px 40px;
+      border-radius: 8px;
+      box-shadow: 0 4px 20px rgba(15,23,42,.08);
+    }
+
+    .folha__cabecalho {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 24px;
+      padding-bottom: 24px;
+      border-bottom: 2px solid #0f172a;
+      margin-bottom: 24px;
+    }
+
+    .folha__logo {
+      max-height: 60px;
+      max-width: 200px;
+      object-fit: contain;
+    }
+
+    .folha__titulo {
+      font-size: 26px;
+      font-weight: 700;
+      text-align: right;
+      line-height: 1.2;
+    }
+
+    .folha__numero {
+      font-size: 14px;
+      color: #64748b;
+      text-align: right;
+      margin-top: 4px;
+    }
+
+    /* ===== Blocos de informação ===== */
+    .bloco-info {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      margin-bottom: 28px;
+    }
+
+    .bloco-info__titulo {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: .5px;
+      color: #64748b;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .bloco-info__valor {
+      font-size: 14px;
+      line-height: 1.6;
+    }
+    .bloco-info__valor strong { font-weight: 600; }
+
+    /* ===== Tabela de itens ===== */
+    .tabela {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 24px;
+      font-size: 13px;
+    }
+
+    .tabela thead {
+      background: #0f172a;
+      color: #fff;
+    }
+
+    .tabela th {
+      text-align: left;
+      padding: 10px 12px;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: .5px;
+      font-weight: 700;
+    }
+
+    .tabela th.dir { text-align: right; }
+    .tabela td.dir { text-align: right; }
+
+    .tabela td {
+      padding: 10px 12px;
+      border-bottom: 1px solid #e2e8f0;
+    }
+
+    .tabela tbody tr:nth-child(even) { background: #f8fafc; }
+
+    /* ===== Totais ===== */
+    .totais {
+      text-align: right;
+      margin-bottom: 32px;
+      padding-top: 16px;
+      border-top: 2px solid #0f172a;
+    }
+
+    .totais__linha {
+      display: flex;
+      justify-content: flex-end;
+      gap: 16px;
+      margin-bottom: 6px;
+      font-size: 14px;
+    }
+    .totais__linha span:first-child { color: #64748b; }
+    .totais__linha strong { min-width: 120px; text-align: right; }
+
+    .totais__total {
+      font-size: 22px;
+      font-weight: 700;
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px solid #e2e8f0;
+    }
+    .totais__total strong { color: #0ea5e9; }
+
+    /* ===== Observações ===== */
+    .observacoes {
+      background: #f8fafc;
+      border-left: 3px solid #0ea5e9;
+      padding: 14px 16px;
+      border-radius: 6px;
+      font-size: 13px;
+      line-height: 1.6;
+      margin-bottom: 32px;
+    }
+    .observacoes strong {
+      display: block;
+      margin-bottom: 4px;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: .5px;
+      color: #64748b;
+    }
+
+    /* ===== Rodapé ===== */
+    .rodape {
+      margin-top: 40px;
+      padding-top: 16px;
+      border-top: 1px solid #e2e8f0;
+      text-align: center;
+      font-size: 11px;
+      color: #94a3b8;
+      line-height: 1.6;
+    }
+
+    /* ===== Erro ===== */
+    .erro {
+      max-width: 800px;
+      margin: 40px auto;
+      padding: 24px;
+      background: #fee2e2;
+      color: #991b1b;
+      border-radius: 8px;
+      text-align: center;
+      font-family: monospace;
+      font-size: 13px;
+    }
+
+    /* ===== Impressão ===== */
+    @media print {
+      body { background: #fff; padding: 0; }
+      .acoes { display: none !important; }
+      .folha {
+        box-shadow: none;
+        border-radius: 0;
+        padding: 20px 0;
+        max-width: 100%;
+      }
+      .tabela thead { background: #0f172a !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      .totais__total strong { color: #0f172a !important; }
+    }
   </style>
 </head>
 <body>
-  <div class="layout">
-    <aside class="sidebar">
-      <div class="sidebar__logo"><span>🏠</span><span>Minha Loja</span><span class="sidebar__badge">ADMIN</span></div>
-      <div class="sidebar__secao">Principal</div>
-      <nav class="sidebar__lista">
-        <a href="./index.html" class="sidebar__item ativo">Dashboard</a>
-        <a href="./pedidos.html" class="sidebar__item">Pedidos</a>
-        <a href="./propostas.html" class="sidebar__item">Propostas</a>
-        <a href="./conversas.html" class="sidebar__item">Conversas</a>
-      </nav>
-      <div class="sidebar__secao">Vendas</div>
-      <nav class="sidebar__lista">
-        <a href="./orcamentos.html" class="sidebar__item">Orçamentos</a>
-      </nav>
-      <div class="sidebar__secao">Catálogo</div>
-      <nav class="sidebar__lista">
-        <a href="./produtos.html" class="sidebar__item">Produtos</a>
-        <a href="./categorias.html" class="sidebar__item">Categorias</a>
-        <a href="./produtos-destaque.html" class="sidebar__item">Destaques e promoções</a>
-      </nav>
-      <div class="sidebar__secao">Estoque</div>
-      <nav class="sidebar__lista">
-        <a href="./estoque.html" class="sidebar__item">Visão geral</a>
-        <a href="./estoque-movimentar.html" class="sidebar__item">Movimentar</a>
-        <a href="./estoque-historico.html" class="sidebar__item">Histórico</a>
-        <a href="./estoque-alertas.html" class="sidebar__item">Alertas</a>
-      </nav>
-      <div class="sidebar__secao">Compras</div>
-      <nav class="sidebar__lista">
-        <a href="./fornecedores.html" class="sidebar__item">Fornecedores</a>
-        <a href="./compras.html" class="sidebar__item">Compras</a>
-      </nav>
-      <div class="sidebar__secao">Clientes</div>
-      <nav class="sidebar__lista">
-        <a href="./clientes.html" class="sidebar__item">Clientes</a>
-      </nav>
-      <div class="sidebar__secao">Sistema</div>
-      <nav class="sidebar__lista">
-        <a href="./auditoria.html" class="sidebar__item">Auditoria</a>
-      </nav>
-      <div class="sidebar__secao">Configurações</div>
-      <nav class="sidebar__lista">
-        <a href="./empresa.html" class="sidebar__item">Dados da empresa</a>
-        <a href="./identidade.html" class="sidebar__item">Identidade visual</a>
-        <a href="./configuracoes.html" class="sidebar__item">Outras configurações</a>
-      </nav>
-    </aside>
-    <main class="main">
-      <header class="topbar">
-        <h1>Dashboard</h1>
-        <a href="../index.html" class="btn-loja">← Ver loja</a>
-      </header>
-      <div class="conteudo">
-        <div id="conteudo"><div class="secao__vazio">Carregando...</div></div>
-      </div>
-    </main>
+
+  <!-- Barra de ações (não imprime) -->
+  <div class="acoes">
+    <a href="./orcamentos.html" class="acoes__voltar">← Voltar aos orçamentos</a>
+    <button class="btn" id="btn-imprimir" style="display:none;">🖨️ Imprimir / Salvar PDF</button>
+  </div>
+
+  <!-- Conteúdo (será preenchido pelo JS) -->
+  <div id="conteudo">
+    <div class="erro">Carregando orçamento...</div>
   </div>
 
   <script type="module">
-    const el = document.getElementById('conteudo');
-    const erro = (msg) => el.innerHTML = '<div class="erro">❌ ' + msg + '</div>';
+    const params = new URLSearchParams(location.search);
+    const id = params.get('id');
+    const esc = s => s == null ? '' : String(s).replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]));
+
+    function dinheiro(v) {
+      return Number(v || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+
+    function dataBR(d) {
+      if (!d) return '—';
+      const dt = new Date(d + (String(d).length === 10 ? 'T00:00:00' : ''));
+      if (Number.isNaN(dt.getTime())) return '—';
+      return dt.toLocaleDateString('pt-BR');
+    }
 
     (async () => {
+      const el = document.getElementById('conteudo');
+
+      if (!id) {
+        el.innerHTML = '<div class="erro">Nenhum orçamento informado.</div>';
+        return;
+      }
+
       try {
         const { supabase } = await import('../assets/js/supabase.js');
+
         const r = await supabase.auth.getSession();
-        const session = r.data ? r.data.session : null;
-        if (!session) { location.href = '../login.html'; return; }
+        if (!r.data || !r.data.session) {
+          location.href = '../login.html';
+          return;
+        }
 
-        const p = await supabase.from('profiles').select('role, nome').eq('id', session.user.id).maybeSingle();
-        if (!p.data) { erro('Perfil não encontrado'); return; }
+        const mod = await import('../assets/js/services/quotes.service.js');
+        const o = await mod.buscarOrcamento(id);
 
-        const contar = async (tabela) => {
-          const r = await supabase.from(tabela).select('*', { count: 'exact', head: true });
-          return r.count || 0;
-        };
+        if (!o) {
+          el.innerHTML = '<div class="erro">Orçamento não encontrado.</div>';
+          return;
+        }
 
-        const resultados = await Promise.all([
-          contar('products'), contar('orders'), contar('proposals'), contar('profiles')
-        ]);
+        // Carrega dados da empresa (para o cabeçalho)
+        let empresa = {};
+        try {
+          const er = await supabase.from('company_settings').select('*').eq('id', 1).maybeSingle();
+          empresa = er.data || {};
+        } catch {}
+
+        // Carrega logo
+        let logoUrl = null;
+        try {
+          const vr = await supabase.from('visual_settings').select('logo_url').eq('id', 1).maybeSingle();
+          logoUrl = vr.data?.logo_url || null;
+        } catch {}
+
+        const nomeLoja = empresa.nome_fantasia || empresa.nome_empresa || 'Minha Loja';
+        const contato = [
+          empresa.telefone,
+          empresa.whatsapp ? 'WhatsApp: ' + empresa.whatsapp : null,
+          empresa.email
+        ].filter(Boolean).join(' · ');
+
+        const endereco = [
+          empresa.endereco,
+          [empresa.cidade, empresa.estado].filter(Boolean).join(' - '),
+          empresa.cep ? 'CEP ' + empresa.cep : null
+        ].filter(Boolean).join(', ');
+
+        const logoHTML = logoUrl
+          ? '<img src="' + esc(logoUrl) + '" alt="" class="folha__logo" />'
+          : '<div style="font-size:22px;font-weight:700;color:#0f172a;">' + esc(nomeLoja) + '</div>';
+
+        const itens = o.quote_items || [];
+        const subtotal = Number(o.subtotal) || 0;
+        const desconto = Number(o.desconto) || 0;
+        const frete = Number(o.frete) || 0;
+        const total = Number(o.total) || 0;
 
         el.innerHTML =
-          '<div class="cards">' +
-            '<div class="card"><div class="card__rotulo">Produtos</div><div class="card__valor">' + resultados[0] + '</div></div>' +
-            '<div class="card"><div class="card__rotulo">Pedidos</div><div class="card__valor">' + resultados[1] + '</div></div>' +
-            '<div class="card"><div class="card__rotulo">Propostas</div><div class="card__valor">' + resultados[2] + '</div></div>' +
-            '<div class="card"><div class="card__rotulo">Clientes</div><div class="card__valor">' + resultados[3] + '</div></div>' +
-          '</div>' +
-          '<div class="secao"><div class="secao__titulo">Últimos pedidos</div><div class="secao__vazio">Nenhum pedido ainda.</div></div>' +
-          '<div class="secao"><div class="secao__titulo">Últimas propostas</div><div class="secao__vazio">Nenhuma proposta ainda.</div></div>' +
-          '<div class="secao"><div class="secao__titulo">Últimas conversas</div><div class="secao__vazio">Nenhuma conversa ainda.</div></div>' +
-          '<div style="margin-top:24px;padding:12px;background:#dcfce7;color:#166534;border-radius:8px;text-align:center;font-size:13px;">✅ Logado como <strong>' + session.user.email + '</strong></div>';
+          '<div class="folha">' +
+
+            '<div class="folha__cabecalho">' +
+              '<div>' + logoHTML +
+                (contato ? '<div style="font-size:12px;color:#64748b;margin-top:8px;">' + esc(contato) + '</div>' : '') +
+                (endereco ? '<div style="font-size:12px;color:#64748b;margin-top:2px;">' + esc(endereco) + '</div>' : '') +
+              '</div>' +
+              '<div>' +
+                '<div class="folha__titulo">ORÇAMENTO</div>' +
+                '<div class="folha__numero">Nº ' + esc(o.numero || '—') + '</div>' +
+                '<div class="folha__numero">Emitido em ' + dataBR(o.created_at ? o.created_at.slice(0, 10) : null) + '</div>' +
+              '</div>' +
+            '</div>' +
+
+            '<div class="bloco-info">' +
+              '<div>' +
+                '<div class="bloco-info__titulo">Cliente</div>' +
+                '<div class="bloco-info__valor">' +
+                  '<strong>' + esc(o.cliente_nome || '—') + '</strong><br>' +
+                  (o.cliente_telefone ? 'Tel: ' + esc(o.cliente_telefone) + '<br>' : '') +
+                  (o.cliente_whatsapp ? 'WhatsApp: ' + esc(o.cliente_whatsapp) + '<br>' : '') +
+                  (o.cliente_email ? esc(o.cliente_email) : '') +
+                '</div>' +
+              '</div>' +
+              '<div>' +
+                '<div class="bloco-info__titulo">Detalhes</div>' +
+                '<div class="bloco-info__valor">' +
+                  (o.validade ? '<strong>Validade:</strong> ' + dataBR(o.validade) + '<br>' : '') +
+                  (o.responsavel ? '<strong>Responsável:</strong> ' + esc(o.responsavel) + '<br>' : '') +
+                  (o.condicao_pagamento ? '<strong>Pagamento:</strong> ' + esc(o.condicao_pagamento) + '<br>' : '') +
+                  (o.prazo_entrega ? '<strong>Prazo:</strong> ' + esc(o.prazo_entrega) : '') +
+                '</div>' +
+              '</div>' +
+            '</div>' +
+
+            '<table class="tabela">' +
+              '<thead>' +
+                '<tr>' +
+                  '<th>Produto</th>' +
+                  '<th class="dir">Qtd</th>' +
+                  '<th class="dir">Preço un.</th>' +
+                  '<th class="dir">Desc.</th>' +
+                  '<th class="dir">Subtotal</th>' +
+                '</tr>' +
+              '</thead>' +
+              '<tbody>' +
+                itens.map(function(i) {
+                  return '<tr>' +
+                    '<td>' + esc(i.product_nome || '—') + '</td>' +
+                    '<td class="dir">' + (i.quantidade || 0) + '</td>' +
+                    '<td class="dir">R$ ' + dinheiro(i.preco_unitario) + '</td>' +
+                    '<td class="dir">R$ ' + dinheiro(i.desconto_item) + '</td>' +
+                    '<td class="dir"><strong>R$ ' + dinheiro(i.subtotal) + '</strong></td>' +
+                  '</tr>';
+                }).join('') +
+              '</tbody>' +
+            '</table>' +
+
+            '<div class="totais">' +
+              '<div class="totais__linha"><span>Subtotal:</span><strong>R$ ' + dinheiro(subtotal) + '</strong></div>' +
+              (desconto > 0 ? '<div class="totais__linha"><span>Desconto:</span><strong>- R$ ' + dinheiro(desconto) + '</strong></div>' : '') +
+              '<div class="totais__linha"><span>Frete:</span><strong>+ R$ ' + dinheiro(frete) + '</strong></div>' +
+              '<div class="totais__linha totais__total"><span>Total:</span><strong>R$ ' + dinheiro(total) + '</strong></div>' +
+            '</div>' +
+
+            (o.observacoes
+              ? '<div class="observacoes"><strong>Observações</strong>' + esc(o.observacoes) + '</div>'
+              : '') +
+
+            '<div class="rodape">' +
+              'Este orçamento é válido até ' + (o.validade ? dataBR(o.validade) : 'a data informada em contato') + '.<br>' +
+              'Documento gerado eletronicamente por ' + esc(nomeLoja) + '.' +
+            '</div>' +
+
+          '</div>';
+
+        // Mostra botão de imprimir
+        document.getElementById('btn-imprimir').style.display = 'inline-block';
+        document.getElementById('btn-imprimir').onclick = function() {
+          window.print();
+        };
+
+        // Auto-abre o diálogo de impressão depois de um pequeno delay
+        // (descomente se quiser imprimir automaticamente)
+        // setTimeout(() => window.print(), 500);
+
       } catch (e) {
-        erro(e.message);
+        el.innerHTML = '<div class="erro">Erro ao carregar orçamento: ' + esc(e.message) + '</div>';
       }
     })();
   </script>
