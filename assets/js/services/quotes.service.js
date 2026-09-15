@@ -100,18 +100,15 @@ export async function alterarStatusOrcamento(id, novoStatus) {
 // CONVERTER EM VENDA + criar conta a receber automaticamente
 // -------------------------------------------------------------
 export async function converterEmVenda(id) {
-  // 1) Busca o orçamento completo
   const orc = await buscarOrcamento(id);
   if (!orc) throw new Error('Orçamento não encontrado.');
   if (orc.venda_id) throw new Error('Este orçamento já foi convertido.');
 
-  // 2) Chama a função do banco para converter em venda
   const r = await supabase.rpc('converter_orcamento_em_venda', { p_quote_id: id });
   if (r.error) throw r.error;
 
   const vendaId = r.data;
 
-  // 3) Cria automaticamente a conta a receber
   try {
     await supabase.rpc('criar_conta_receber', {
       p_order_id: vendaId,
