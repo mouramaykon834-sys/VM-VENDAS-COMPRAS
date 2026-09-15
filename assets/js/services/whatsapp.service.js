@@ -2,6 +2,7 @@
 // SERVICE: WHATSAPP — VM VENDAS E COMPRAS
 // =============================================================
 import { supabase } from '../supabase.js';
+import { log } from '../core/logger.js';
 
 let numeroCache = null;
 
@@ -10,14 +11,16 @@ export async function carregarNumeroWhatsapp() {
   try {
     const { data } = await supabase.from('company_settings').select('whatsapp').eq('id', 1).maybeSingle();
     numeroCache = data?.whatsapp || null;
-  } catch { numeroCache = null; }
+  } catch {
+    numeroCache = null;
+  }
   return numeroCache;
 }
 
 export async function gerarLinkWhatsapp({ tipo = 'geral', produto = null, texto = null } = {}) {
   const numero = await carregarNumeroWhatsapp();
   if (!numero) {
-    console.warn('[whatsapp] Número não configurado');
+    log.warn('whatsapp', 'Número não configurado');
     return null;
   }
   const limpo = numero.replace(/\D/g, '');
@@ -49,8 +52,13 @@ async function montarMensagem({ tipo, produto }) {
 
 export async function abrirWhatsapp(params) {
   const link = await gerarLinkWhatsapp(params);
-  if (!link) { alert('O WhatsApp da loja ainda não foi configurado.'); return; }
+  if (!link) {
+    alert('O WhatsApp da loja ainda não foi configurado.');
+    return;
+  }
   window.open(link, '_blank', 'noopener');
 }
 
-export function limparCacheWhatsapp() { numeroCache = null; }
+export function limparCacheWhatsapp() {
+  numeroCache = null;
+}
