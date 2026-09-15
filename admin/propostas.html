@@ -93,6 +93,10 @@
   </div>
 
   <script type="module">
+
+    // ✅ GUARD — bloqueia não-admins ANTES de qualquer outra coisa
+    import { exigirAdmin } from '../assets/js/core/admin-guard.js';
+
     let supabase;
     const el = document.getElementById('conteudo');
     const modalBg = document.getElementById('modal-bg');
@@ -215,7 +219,6 @@
         const { error } = await supabase.from('proposals').update(payload).eq('id', p.id);
         if (error) { alert('Erro: ' + error.message); return; }
 
-        // Notifica cliente
         try {
           await supabase.from('notifications').insert({
             user_id: p.user_id,
@@ -236,15 +239,18 @@
 
     (async () => {
       try {
+        // ✅ BLOQUEIA ANTES DE QUALQUER COISA
+        await exigirAdmin();
+
+        // Só chega aqui se for admin
         ({ supabase } = await import('../assets/js/supabase.js'));
-        const r = await supabase.auth.getSession();
-        if (!r.data?.session) { location.href = '../login.html'; return; }
-        const p = await supabase.from('profiles').select('role').eq('id', r.data.session.user.id).maybeSingle();
-        if (!p.data || p.data.role !== 'admin') { el.innerHTML = '<div class="erro">Acesso restrito</div>'; return; }
 
         document.getElementById('filtro').onchange = carregar;
         await carregar();
-      } catch (e) { el.innerHTML = `<div class="erro">${esc(e.message)}</div>`; }
+      } catch (e) {
+        if (e.message === 'NAO_E_ADMIN' || e.message === 'NAO_AUTENTICADO') return;
+        el.innerHTML = `<div class="erro">${esc(e.message)}</div>`;
+      }
     })();
   </script>
 </body>
