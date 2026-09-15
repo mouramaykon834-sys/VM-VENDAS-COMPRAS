@@ -11,8 +11,13 @@ export async function renderFooter() {
   const el = document.getElementById('footer');
   if (!el) return;
 
-  // Ativa o botão voltar ao topo (independe do footer)
   inicializarVoltarTopo();
+
+  // Detecta se está na home (index.html) ou em subpágina
+  const path = window.location.pathname;
+  const ehHome = path.endsWith('/') ||
+                 path.endsWith('/index.html') ||
+                 path.endsWith('index.html');
 
   let empresa = {};
   try {
@@ -39,14 +44,21 @@ export async function renderFooter() {
     empresa.cep
   ].filter(Boolean).join('<br>');
 
+  // Bloco "Sobre" só aparece na home
+  const blocoSobre = ehHome
+    ? '<div>' +
+        '<div class="rodape__titulo">' + esc(nome) + '</div>' +
+        '<p style="max-width:300px;">' + esc(empresa.descricao || 'Loja virtual especializada em vendas e compras de produtos.') + '</p>' +
+      '</div>'
+    : '<div>' +
+        '<div class="rodape__titulo">' + esc(nome) + '</div>' +
+      '</div>';
+
   el.innerHTML =
     '<footer class="rodape">' +
       '<div class="container">' +
         '<div class="rodape__grid">' +
-          '<div>' +
-            '<div class="rodape__titulo">' + esc(nome) + '</div>' +
-            '<p style="max-width:300px;">' + esc(empresa.descricao || 'Loja virtual especializada em vendas e compras de produtos.') + '</p>' +
-          '</div>' +
+          blocoSobre +
           '<div>' +
             '<div class="rodape__titulo">Loja</div>' +
             '<nav class="rodape__lista">' +
