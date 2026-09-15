@@ -855,9 +855,6 @@ html[data-tema="escuro"] .resumo { background: #1e293b; border-color: #334155; }
 }
 .categorias-circulos__item:hover .categorias-circulos__imagem {
   border-color: var(--cor-principal);
-  box-shadow: 0 6px 
-.categorias-circulos__item:hover .categorias-circulos__imagem {
-  border-color: var(--cor-principal);
   box-shadow: 0 6px 20px rgba(14, 165, 233, 0.2);
 }
 .categorias-circulos__imagem img { width: 100%; height: 100%; object-fit: cover; display: block; }
@@ -1143,6 +1140,10 @@ html[data-tema="escuro"] .chat-item { background: #1e293b; border-color: #334155
   }
 }
 
+/* =============================================================
+   CHAT — conversa (USUÁRIO + ADMIN)
+   ============================================================= */
+
 .chat-wrap {
   background: #fff;
   border: 1px solid var(--cor-borda);
@@ -1153,6 +1154,7 @@ html[data-tema="escuro"] .chat-item { background: #1e293b; border-color: #334155
   height: calc(100vh - 240px);
 }
 html[data-tema="escuro"] .chat-wrap { background: #1e293b; border-color: #334155; }
+
 .chat-header {
   padding: 14px 18px;
   border-bottom: 1px solid var(--cor-borda);
@@ -1164,6 +1166,7 @@ html[data-tema="escuro"] .chat-wrap { background: #1e293b; border-color: #334155
 html[data-tema="escuro"] .chat-header { background: #1e293b; border-color: #334155; }
 .chat-header strong { font-size: 15px; color: var(--cor-texto); }
 .chat-header small { font-size: 12px; color: var(--cor-texto-suave); }
+
 .chat-body {
   flex: 1;
   overflow-y: auto;
@@ -1174,12 +1177,14 @@ html[data-tema="escuro"] .chat-header { background: #1e293b; border-color: #3341
   gap: 10px;
 }
 html[data-tema="escuro"] .chat-body { background: #0f172a; }
+
 .msg { max-width: 75%; padding: 10px 14px; border-radius: 14px; font-size: 14px; line-height: 1.45; word-wrap: break-word; position: relative; }
 .msg--me { background: var(--cor-principal); color: #fff; align-self: flex-end; border-bottom-right-radius: 4px; }
 .msg--other { background: #fff; color: var(--cor-texto); align-self: flex-start; border: 1px solid var(--cor-borda); border-bottom-left-radius: 4px; }
 html[data-tema="escuro"] .msg--other { background: #1e293b; border-color: #334155; }
 .msg__hora { font-size: 10px; opacity: .7; margin-top: 6px; display: block; }
 .msg img { max-width: 100%; border-radius: 8px; margin-top: 6px; display: block; }
+
 .chat-input {
   padding: 14px 18px;
   border-top: 1px solid var(--cor-borda);
@@ -1192,6 +1197,10 @@ html[data-tema="escuro"] .chat-input { background: #1e293b; border-color: #33415
 .chat-input input[type="text"] { flex: 1; padding: 10px 14px; border: 1px solid var(--cor-borda); border-radius: 8px; font-size: 14px; background: #fff; }
 html[data-tema="escuro"] .chat-input input[type="text"] { background: #0f172a; border-color: #475569; color: #f8fafc; }
 .chat-input input[type="file"] { display: none; }
+
+/* =============================================================
+   NOTIFICAÇÕES
+   ============================================================= */
 
 .notif-card {
   display: block;
@@ -1212,6 +1221,10 @@ html[data-tema="escuro"] .notif-card.nao-lida { background: rgba(14, 165, 233, 0
 .notif-card__titulo { font-weight: 700; font-size: 14px; color: var(--cor-texto); }
 .notif-card__data { font-size: 11px; color: var(--cor-texto-suave); white-space: nowrap; }
 .notif-card__msg { font-size: 13px; color: var(--cor-texto-suave); line-height: 1.5; }
+
+/* =============================================================
+   TABS / PERFIL / PROPOSTA
+   ============================================================= */
 
 .tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--cor-borda); margin-bottom: 24px; }
 .tab {
