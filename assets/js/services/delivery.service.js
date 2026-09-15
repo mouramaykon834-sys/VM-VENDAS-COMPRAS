@@ -2,6 +2,7 @@
 // SERVICE: ENTREGA — VM VENDAS E COMPRAS
 // =============================================================
 import { supabase } from '../supabase.js';
+import { log } from '../core/logger.js';
 
 // -------------------------------------------------------------
 // Lista zonas de entrega ativas (para o admin)
@@ -33,7 +34,7 @@ export async function calcularFrete(cep, subtotal) {
   });
 
   if (r.error) {
-    console.warn('[delivery] erro ao calcular frete:', r.error);
+    log.warn('delivery', 'erro ao calcular frete:', r.error);
     return { encontrado: false, motivo: 'Erro ao calcular frete' };
   }
 
