@@ -2122,209 +2122,152 @@ html[data-tema="escuro"] .toast--alerta {
   animation: girar .7s linear infinite;
   color: #fff;
 }
-/* =============================================================
-   CORREÇÃO RESPONSIVA — MOBILE
-   Produtos, botões e categorias
-   ============================================================= */
 
-/* Evita que elementos internos criem rolagem horizontal */
+/* ============================================================
+   RESPONSIVIDADE AUTOMÁTICA — CORREÇÃO DOS CARDS
+   ============================================================ */
+
 html,
 body {
-  width: 100%;
   max-width: 100%;
   overflow-x: hidden;
 }
 
-/* Garante que os grids possam encolher corretamente */
 #lista-destaques,
 #lista-ofertas,
 #lista-recentes,
-#lista-produtos {
-  width: 100%;
-  min-width: 0;
-}
-
-/* Cards de produtos */
-.produto-card {
-  width: 100%;
-  max-width: 100%;
-  min-width: 0;
-}
-
-/* Conteúdo interno do card */
-.produto-card__info {
-  width: 100%;
-  min-width: 0;
-}
-
-/* Nome do produto não pode aumentar a largura do card */
-.produto-card__nome {
-  min-width: 0;
-  max-width: 100%;
-  overflow: hidden;
-}
-
-/* Área dos botões */
+#lista-produtos,
+.produto-card,
+.produto-card__info,
 .produto-card__acoes {
-  display: flex;
-  width: 100%;
-  max-width: 100%;
   min-width: 0;
-  gap: 6px;
 }
 
-/* Botões dos cards */
 .produto-card__acoes .btn {
-  flex: 1 1 0;
-  width: 0;
   min-width: 0;
-  max-width: 100%;
-  padding-left: 8px;
-  padding-right: 8px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
-/* =============================================================
-   CATEGORIAS — MOBILE
-   ============================================================= */
-
-.categorias-circulos {
-  width: 100%;
-  max-width: 100%;
-  min-width: 0;
-  overflow-x: auto;
-  overflow-y: hidden;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: none;
-}
-
-.categorias-circulos::-webkit-scrollbar {
-  display: none;
-}
-
-.categorias-circulos__item {
-  flex: 0 0 auto;
-}
-
-/* =============================================================
-   AJUSTES PARA CELULARES
-   ============================================================= */
-
-@media (max-width: 640px) {
-
-  /* Mantém os cards dentro da tela */
-  .produto-card {
-    min-width: 0;
+/* DESKTOP */
+@media (min-width: 1025px) {
+  #lista-destaques,
+  #lista-ofertas,
+  #lista-recentes,
+  #lista-produtos {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 
-  .produto-card__info {
-    padding: 12px 10px 12px;
+  .produto-card__imagem {
+    aspect-ratio: 4 / 3;
   }
 
-  /* Botões menores e proporcionais ao card */
   .produto-card__acoes {
+    width: 100%;
+    gap: 8px;
+  }
+
+  .produto-card__acoes .btn {
+    flex: 1 1 0;
+  }
+}
+
+/* TABLET */
+@media (min-width: 769px) and (max-width: 1024px) {
+  #lista-destaques,
+  #lista-ofertas,
+  #lista-recentes,
+  #lista-produtos {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px;
+  }
+
+  .produto-card__imagem {
+    aspect-ratio: 4 / 3;
+  }
+
+  .produto-card__acoes {
+    width: 100%;
     gap: 6px;
   }
 
   .produto-card__acoes .btn {
     flex: 1 1 0;
     min-width: 0;
-    padding-left: 6px;
-    padding-right: 6px;
-    font-size: 13px;
+    padding-left: 8px;
+    padding-right: 8px;
   }
 }
 
-/* =============================================================
-   CELULARES MUITO PEQUENOS
-   ============================================================= */
-
-@media (max-width: 380px) {
-
-  .produto-card__acoes {
-    gap: 5px;
-  }
-
-  .produto-card__acoes .btn {
-    font-size: 12px;
-    padding-left: 4px;
-    padding-right: 4px;
-  }
-
-}
-/* =============================================================
-   AJUSTE FINAL DOS CARDS — MOBILE
-   ============================================================= */
-
+/* MOBILE */
 @media (max-width: 768px) {
-
-  /* Grade dos produtos */
   #lista-destaques,
   #lista-ofertas,
   #lista-recentes,
   #lista-produtos {
+    width: 100%;
+    max-width: 100%;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 12px;
-    width: 100%;
   }
 
-  /* Card */
   .produto-card {
     width: 100%;
+    max-width: 100%;
     min-width: 0;
     height: 100%;
     border-radius: 12px;
   }
 
-  /* Imagem */
   .produto-card__imagem {
-    aspect-ratio: 4 / 3;
     width: 100%;
+    aspect-ratio: 4 / 3;
   }
 
   .produto-card__imagem img {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    display: block;
   }
 
-  /* Conteúdo */
   .produto-card__info {
+    width: 100%;
     padding: 10px;
     gap: 6px;
-    min-width: 0;
   }
 
-  /* "NOVO", "USADO", etc. */
   .produto-card__condicao {
     font-size: 10px;
     line-height: 1.2;
   }
 
-  /* Nome */
   .produto-card__nome {
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
     font-size: 13px;
     line-height: 1.35;
     min-height: 35px;
     max-height: 35px;
+    overflow: hidden;
   }
 
-  /* Preço */
   .produto-card__preco {
+    max-width: 100%;
     font-size: 17px;
     line-height: 1.15;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   .produto-card__preco-antigo {
     font-size: 11px;
   }
 
-  /* Botões */
   .produto-card__acoes {
     display: flex;
     width: 100%;
+    min-width: 0;
     gap: 6px;
     padding-top: 8px;
   }
@@ -2333,27 +2276,42 @@ body {
     flex: 1 1 0;
     width: 0;
     min-width: 0;
+    max-width: 100%;
     padding: 8px 4px;
     font-size: 12px;
+    line-height: 1.2;
+    overflow: hidden;
+    text-overflow: ellipsis;
     white-space: nowrap;
   }
 
-  /* Favorito */
   .produto-card__favorito {
     width: 32px;
     height: 32px;
     top: 8px;
     right: 8px;
   }
+
+  .categorias-circulos {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .categorias-circulos::-webkit-scrollbar {
+    display: none;
+  }
+
+  .categorias-circulos__item {
+    flex: 0 0 auto;
+  }
 }
 
-
-/* =============================================================
-   CELULARES PEQUENOS
-   ============================================================= */
-
+/* CELULAR PEQUENO */
 @media (max-width: 400px) {
-
   #lista-destaques,
   #lista-ofertas,
   #lista-recentes,
@@ -2385,5 +2343,36 @@ body {
   .produto-card__favorito {
     width: 30px;
     height: 30px;
+  }
+}
+
+/* CELULAR MUITO PEQUENO */
+@media (max-width: 340px) {
+  #lista-destaques,
+  #lista-ofertas,
+  #lista-recentes,
+  #lista-produtos {
+    gap: 6px;
+  }
+
+  .produto-card__info {
+    padding: 7px;
+  }
+
+  .produto-card__nome {
+    font-size: 11px;
+  }
+
+  .produto-card__preco {
+    font-size: 14px;
+  }
+
+  .produto-card__acoes {
+    gap: 3px;
+  }
+
+  .produto-card__acoes .btn {
+    font-size: 10px;
+    padding: 6px 2px;
   }
 }
