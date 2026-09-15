@@ -1,8 +1,12 @@
 // =============================================================
 // SERVICE: CONFIGURAÇÕES — VM VENDAS E COMPRAS
 // =============================================================
+// Este arquivo NÃO deve importar logger.js nem nenhum outro
+// módulo além de supabase.js — para evitar quebra em cadeia
+// no header.js de todas as páginas.
+// =============================================================
+
 import { supabase } from '../supabase.js';
-import { log } from '../core/logger.js';
 
 let cache = null;
 let carregandoPromise = null;
@@ -33,7 +37,7 @@ export async function carregarConfiguracoes(force = false) {
       };
       return cache;
     } catch (e) {
-      log.error('settings', 'erro ao carregar:', e);
+      console.error('[settings] erro ao carregar:', e);
       cache = { company: {}, store: {}, visual: {} };
       return cache;
     } finally {
@@ -46,6 +50,7 @@ export async function carregarConfiguracoes(force = false) {
 
 export function aplicarConfiguracoes({ company = {}, store = {}, visual = {} } = {}) {
   const root = document.documentElement;
+
   if (visual.cor_principal)  root.style.setProperty('--cor-principal', visual.cor_principal);
   if (visual.cor_secundaria) root.style.setProperty('--cor-secundaria', visual.cor_secundaria);
   if (visual.cor_destaque)   root.style.setProperty('--cor-destaque', visual.cor_destaque);
