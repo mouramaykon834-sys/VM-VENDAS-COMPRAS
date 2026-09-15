@@ -184,15 +184,16 @@ Promise.all([
   try {
     const mod = await import('./assets/js/services/products.service.js');
 
-    // Carrega destaques + ofertas em paralelo
+    // Carrega destaques + ofertas em paralelo (essas continuam "eager")
     await Promise.all([
       carregarSecao('lista-destaques', mod.listarDestaques, 'Nenhum produto em destaque ainda', mod),
       carregarSecao('lista-ofertas', mod.listarOfertas, 'Nenhuma oferta no momento', mod)
     ]);
 
-    // Carrega as seções por categoria (estilo Mercado Livre)
-    await carregarCategoriasComProdutos(mod);
+    // Carrega as seções por categoria com LAZY LOAD
+    await carregarCategoriasComLazyLoad(mod);
 
+    // Ativa as setas dos carrosséis que já existem (destaques + ofertas)
     ativarSetasCarrossel();
   } catch (e) {
     console.warn('[home] erro ao carregar produtos:', e);
@@ -229,80 +230,131 @@ async function carregarSecao(id, fn, textoVazio, mod) {
 }
 
 /* ============================================================
-   SEÇÕES POR CATEGORIA (estilo Mercado Livre)
+   SEÇÕES POR CATEGORIA — COM LAZY LOAD (IntersectionObserver)
+   ============================================================
+   Estrutura:
+   1. Renderiza um "esqueleto" de cada categoria de imediato
+      (cabeçalho + skeleton de cards) — aparece rápido na tela.
+   2. Quando a seção se aproxima da viewport (200px antes),
+      busca os produtos e substitui o skeleton pelos cards.
+   3. Uma vez carregada, a seção é "desobservada" (não carrega 2x).
    ============================================================ */
 
-async function carregarCategoriasComProdutos(mod) {
+async function carregarCategoriasComLazyLoad(mod) {
   const container = document.getElementById('categorias-produtos');
   if (!container) return;
 
+  let categorias = [];
+
   try {
-    // 1. Busca as categorias ativas
-    const categorias = await mod.listarCategorias();
-
-    if (!categorias || !categorias.length) {
-      return;
-    }
-
-    // 2. Para cada categoria, busca os produtos (em paralelo)
-    const secoes = await Promise.all(
-      categorias.map(function (cat) {
-        return buscarProdutosDaCategoria(cat, mod);
-      })
-    );
-
-    // 3. Filtra categorias que não têm produtos
-    const secoesValidas = secoes.filter(function (s) { return s !== null; });
-
-    if (!secoesValidas.length) {
-      return;
-    }
-
-    // 4. Monta o HTML de todas as seções
-    container.innerHTML = secoesValidas.join('');
-
-    // 5. Reativa favoritos dos cards recém-inseridos
-    ativarFavoritosCards();
+    categorias = await mod.listarCategorias();
   } catch (e) {
-    console.warn('[categorias-produtos] erro:', e);
+    console.warn('[categorias-produtos] erro ao listar:', e);
+    return;
   }
+
+  if (!categorias || !categorias.length) {
+    return;
+  }
+
+  // 1. Renderiza o "esqueleto" de cada seção (skeleton + cabeçalho)
+  container.innerHTML = categorias.map(function (cat) {
+    return montarEsqueletoCategoria(cat);
+  }).join('');
+
+  // 2. Configura o IntersectionObserver
+  //    rootMargin: 300px → começa a carregar 300px ANTES da seção aparecer
+  const observer = new IntersectionObserver(
+    function (entries) {
+      entries.forEach(function (entry) {
+        if (!entry.isIntersecting) return;
+
+        const secao = entry.target;
+        const categoriaId = secao.dataset.categoriaId;
+        const categoriaNome = secao.dataset.categoriaNome;
+
+        // Para de observar (não recarrega se voltar)
+        observer.unobserve(secao);
+
+        // Carrega os produtos daquela categoria
+        carregarProdutosDaSecao(secao, categoriaId, categoriaNome, mod);
+      });
+    },
+    {
+      rootMargin: '300px 0px',
+      threshold: 0
+    }
+  );
+
+  // 3. Observa todas as seções recém-inseridas
+  container.querySelectorAll('.secao[data-categoria-id]').forEach(function (secao) {
+    observer.observe(secao);
+  });
 }
 
-async function buscarProdutosDaCategoria(cat, mod) {
+function montarEsqueletoCategoria(cat) {
+  // Skeleton: 6 cards fake, imitando os produtos reais
+  const skeletons = Array(6).fill(0).map(function () {
+    return (
+      '<div class="skeleton-card">' +
+        '<div class="skeleton-card__imagem skeleton"></div>' +
+        '<div class="skeleton-card__info">' +
+          '<div class="skeleton skeleton-linha skeleton-linha--curta"></div>' +
+          '<div class="skeleton skeleton-linha skeleton-linha--longa"></div>' +
+          '<div class="skeleton skeleton-linha skeleton-linha--preco"></div>' +
+        '</div>' +
+      '</div>'
+    );
+  }).join('');
+
+  return (
+    '<section class="secao" ' +
+      'data-categoria-id="' + cat.id + '" ' +
+      'data-categoria-nome="' + esc(cat.nome) + '">' +
+      '<div class="secao__cabecalho">' +
+        '<h2 class="secao__titulo">' + esc(cat.nome) + '</h2>' +
+        '<a href="./produtos.html?categoria=' + cat.id + '" class="secao__link">Ver todos</a>' +
+      '</div>' +
+      '<div class="carrossel-produtos">' +
+        '<button type="button" class="carrossel-produtos__seta carrossel-produtos__seta--prev" aria-label="Anterior" hidden>‹</button>' +
+        '<div class="carrossel-produtos__trilho">' + skeletons + '</div>' +
+        '<button type="button" class="carrossel-produtos__seta carrossel-produtos__seta--next" aria-label="Próximo" hidden>›</button>' +
+      '</div>' +
+    '</section>'
+  );
+}
+
+async function carregarProdutosDaSecao(secao, categoriaId, categoriaNome, mod) {
+  const trilho = secao.querySelector('.carrossel-produtos__trilho');
+  if (!trilho) return;
+
   try {
     const produtos = await Promise.race([
-      mod.listarPorCategoria(cat.id, 12),
+      mod.listarPorCategoria(categoriaId, 12),
       new Promise(function (_, rej) {
         setTimeout(function () { rej(new Error('timeout')); }, 8000);
       })
     ]);
 
-    // Se a categoria não tem produtos, não mostra a seção
+    // Sem produtos: remove a seção da tela
     if (!produtos || !produtos.length) {
-      return null;
+      secao.remove();
+      return;
     }
 
-    // Monta a seção: cabeçalho + carrossel
-    const cardsHTML = produtos
-      .map(function (p) { return cardProduto(p, mod); })
-      .join('');
+    // Substitui os skeletons pelos cards reais
+    trilho.innerHTML = produtos.map(function (p) {
+      return cardProduto(p, mod);
+    }).join('');
 
-    return (
-      '<section class="secao" data-categoria="' + cat.id + '">' +
-        '<div class="secao__cabecalho">' +
-          '<h2 class="secao__titulo">' + esc(cat.nome) + '</h2>' +
-          '<a href="./produtos.html?categoria=' + cat.id + '" class="secao__link">Ver todos</a>' +
-        '</div>' +
-        '<div class="carrossel-produtos">' +
-          '<button type="button" class="carrossel-produtos__seta carrossel-produtos__seta--prev" aria-label="Anterior" hidden>‹</button>' +
-          '<div class="carrossel-produtos__trilho">' + cardsHTML + '</div>' +
-          '<button type="button" class="carrossel-produtos__seta carrossel-produtos__seta--next" aria-label="Próximo" hidden>›</button>' +
-        '</div>' +
-      '</section>'
-    );
+    // Reativa favoritos e setas SÓ dessa seção
+    ativarFavoritosCards();
+    ativarSetasCarrosselEm(secao);
   } catch (e) {
-    console.warn('[categoria ' + cat.nome + '] erro:', e);
-    return null;
+    console.warn('[categoria ' + categoriaNome + '] erro:', e);
+
+    // Se der erro, remove a seção silenciosamente
+    secao.remove();
   }
 }
 
@@ -428,13 +480,25 @@ async function ativarFavoritosCards() {
 
 function ativarSetasCarrossel() {
   document.querySelectorAll('.carrossel-produtos').forEach(function (wrapper) {
+    ativarSetasCarrosselEm(wrapper);
+  });
+}
+
+function ativarSetasCarrosselEm(escopo) {
+  // Se for um wrapper .carrossel-produtos, usa direto.
+  // Se for uma <section>, busca o carrossel dentro dela.
+  const wrappers = escopo.classList && escopo.classList.contains('carrossel-produtos')
+    ? [escopo]
+    : escopo.querySelectorAll('.carrossel-produtos');
+
+  wrappers.forEach(function (wrapper) {
     const trilho = wrapper.querySelector('.carrossel-produtos__trilho');
     const setaPrev = wrapper.querySelector('.carrossel-produtos__seta--prev');
     const setaNext = wrapper.querySelector('.carrossel-produtos__seta--next');
 
     if (!trilho || !setaPrev || !setaNext) return;
 
-    // Evita duplicar evento se já foi ativado antes
+    // Evita duplicar eventos
     if (trilho.dataset.setasAtivas) return;
     trilho.dataset.setasAtivas = '1';
 
