@@ -2,6 +2,7 @@
 // SERVICE: ORÇAMENTOS — VM VENDAS E COMPRAS
 // =============================================================
 import { supabase } from '../supabase.js';
+import { log } from '../core/logger.js';
 
 export async function listarOrcamentos({ status = null, busca = '' } = {}) {
   let q = supabase
@@ -120,7 +121,7 @@ export async function converterEmVenda(id) {
       p_parcelas: 1
     });
   } catch (e) {
-    console.warn('[quotes] Conta a receber não criada:', e.message);
+    log.warn('quotes', 'Conta a receber não criada:', e.message);
   }
 
   return vendaId;
