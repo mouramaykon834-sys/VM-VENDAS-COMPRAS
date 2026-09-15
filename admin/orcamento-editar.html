@@ -211,7 +211,8 @@
         $('form').onsubmit = salvar;
         $('btn-salvar-topo').onclick = function(e) { e.preventDefault(); salvar(); };
 
-        calcularTotais();
+        // ✅ CORREÇÃO: recalcula depois que tudo está no DOM
+        setTimeout(calcularTotais, 0);
       } catch (e) {
         document.body.innerHTML = '<div class="erro">Erro: ' + esc(e.message) + '</div>';
       }
@@ -221,6 +222,12 @@
       const lista = $('lista-itens');
       const div = document.createElement('div');
       div.className = 'item-linha';
+
+      // ✅ CORREÇÃO: usa valores numéricos seguros
+      const precoItem = item && item.preco_unitario != null ? Number(item.preco_unitario) : 0;
+      const qtdItem = item && item.quantidade != null ? Number(item.quantidade) : 1;
+      const descItem = item && item.desconto_item != null ? Number(item.desconto_item) : 0;
+
       div.innerHTML =
         '<div>' +
           '<label style="font-size:11px;color:#64748b;display:block;margin-bottom:2px;">Produto</label>' +
@@ -231,9 +238,9 @@
           '</select>' +
           '<input type="text" class="item-nome-manual" placeholder="Nome do produto" style="margin-top:4px;display:none;" value="' + (item && !item.product_id ? esc(item.product_nome) : '') + '" />' +
         '</div>' +
-        '<div><label style="font-size:11px;color:#64748b;display:block;margin-bottom:2px;">Preço un.</label><input type="number" class="item-preco" min="0" step="0.01" value="' + (item ? item.preco_unitario : 0) + '" /></div>' +
-        '<div><label style="font-size:11px;color:#64748b;display:block;margin-bottom:2px;">Qtd</label><input type="number" class="item-qtd" min="1" value="' + (item ? item.quantidade : 1) + '" /></div>' +
-        '<div><label style="font-size:11px;color:#64748b;display:block;margin-bottom:2px;">Desc. item</label><input type="number" class="item-desc" min="0" step="0.01" value="' + (item ? (item.desconto_item || 0) : 0) + '" /></div>' +
+        '<div><label style="font-size:11px;color:#64748b;display:block;margin-bottom:2px;">Preço un.</label><input type="number" class="item-preco" min="0" step="0.01" value="' + precoItem + '" /></div>' +
+        '<div><label style="font-size:11px;color:#64748b;display:block;margin-bottom:2px;">Qtd</label><input type="number" class="item-qtd" min="1" value="' + qtdItem + '" /></div>' +
+        '<div><label style="font-size:11px;color:#64748b;display:block;margin-bottom:2px;">Desc. item</label><input type="number" class="item-desc" min="0" step="0.01" value="' + descItem + '" /></div>' +
         '<button type="button" class="item-remover">×</button>';
 
       lista.appendChild(div);
@@ -248,7 +255,11 @@
           manual.style.display = 'none';
           if (sel.value) {
             const p = produtos.find(function(x) { return x.id === sel.value; });
-            if (p && !div.querySelector('.item-preco').value) div.querySelector('.item-preco').value = p.preco || 0;
+            const precoInput = div.querySelector('.item-preco');
+            if (p && (!precoInput.value || Number(precoInput.value) === 0)) {
+              precoInput.value = p.preco || 0;
+              calcularTotais();
+            }
           }
         }
       };
@@ -272,9 +283,15 @@
     function calcularTotais() {
       let subtotal = 0;
       document.querySelectorAll('.item-linha').forEach(function(div) {
-        const preco = Number(div.querySelector('.item-preco').value) || 0;
-        const qtd = Number(div.querySelector('.item-qtd').value) || 0;
-        const desc = Number(div.querySelector('.item-desc').value) || 0;
+        const precoEl = div.querySelector('.item-preco');
+        const qtdEl = div.querySelector('.item-qtd');
+        const descEl = div.querySelector('.item-desc');
+
+        if (!precoEl || !qtdEl || !descEl) return;
+
+        const preco = Number(precoEl.value) || 0;
+        const qtd = Number(qtdEl.value) || 0;
+        const desc = Number(descEl.value) || 0;
         subtotal += (preco * qtd) - desc;
       });
 
